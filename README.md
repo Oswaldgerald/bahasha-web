@@ -70,12 +70,16 @@ When dependencies change, rebuild the image with `make up` or `make dev`.
 The shared page shell lives in `templates/base.html`, with navigation, top bar, and footer in `templates/partials/`. Templates contain structure only; reusable presentation and behavior live under `static/`:
 
 - `static/css/base.css` - typography, cards, buttons, and shared utilities
-- `static/css/layout.css` - sidebar, top bar, page headers, and responsive navigation
+- `static/css/layout.css` - collapsible sidebar, mobile drawer, top bar, and page headers
 - `static/css/forms.css` and `static/css/tables.css` - reusable form and table patterns
 - `static/css/dashboard.css`, `reports.css`, and `notifications.css` - feature styles
 - `static/css/member-card.css` - member card styles loaded only by that page
 - `static/css/printing.css` - print-only behavior
-- `static/js/app.js` - shared progressive enhancement for navigation, printing, and progress bars
+- `static/js/app.js` - icons, printing, and progress bars
+- `static/js/navigation.js` - persisted desktop sidebar and mobile drawer behavior
+- `static/js/forms.js` - progressive enhancement for Django select fields
+
+Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 
 Use `{% block extra_css %}` and `{% block extra_js %}` in page templates when a feature needs isolated assets. Avoid inline styles and event handlers so browser issues remain easy to trace.
 

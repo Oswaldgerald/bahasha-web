@@ -18,34 +18,73 @@
     border-radius: 8px;
     box-shadow: 0 12px 38px rgba(33, 24, 13, 0.22);
     box-sizing: border-box;
-    max-width: 380px;
-    padding: 32px;
+    max-width: 480px;
+    padding: 46px;
     width: 100%;
 }
 
 .login-card h1 {
     color: #2d1b69;
+    font-size: 40px;
+    line-height: 1.1;
     margin: 0;
     text-align: center;
 }
 
 .login-card > p {
     color: #666;
-    margin-bottom: 28px;
+    font-size: 16px;
+    margin: 10px 0 34px;
     text-align: center;
 }
 
+.login-card label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+}
+
 .login-card input {
-    border: 1px solid #ddd;
+    background: white;
+    border: 1px solid #d6d5da;
     border-radius: 8px;
     box-sizing: border-box;
-    margin: 6px 0 18px;
-    padding: 12px;
+    display: block;
+    font-size: 16px;
+    margin: 7px 0 20px;
+    min-height: 50px;
+    padding: 12px 14px;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
     width: 100%;
 }
 
+.login-card input:focus {
+    border-color: #6d5daf;
+    box-shadow: 0 0 0 3px rgba(109, 93, 175, 0.16);
+    outline: 0;
+}
+
 .login-card button {
+    font-size: 16px;
+    min-height: 50px;
     width: 100%;
+}
+
+.login-mark {
+    align-items: center;
+    background: #2d1b69;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    height: 52px;
+    justify-content: center;
+    margin: 0 auto 18px;
+    width: 52px;
+}
+
+.login-mark svg {
+    height: 28px;
+    width: 28px;
 }
 
 .auth-error {
@@ -66,5 +105,10 @@
 
     .login-card {
         background: rgba(255, 255, 255, 0.96);
+        padding: 34px 28px;
+    }
+
+    .login-card h1 {
+        font-size: 34px;
     }
 }

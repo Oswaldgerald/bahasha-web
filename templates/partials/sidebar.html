@@ -1,42 +1,119 @@
 <nav class="sidebar" id="main-navigation" aria-label="Main navigation">
+    <div class="sidebar-brand">
+        <span class="sidebar-brand-mark" aria-hidden="true"><i data-lucide="church"></i></span>
+        <span class="sidebar-brand-name">Bahasha</span>
+        <button type="button" class="sidebar-collapse" data-action="collapse-sidebar" aria-controls="main-navigation" aria-expanded="true" title="Collapse sidebar">
+            <i class="collapse-icon" data-lucide="panel-left-close" aria-hidden="true"></i>
+            <i class="expand-icon" data-lucide="panel-left-open" aria-hidden="true"></i>
+            <span class="sr-only">Toggle sidebar</span>
+        </button>
+    </div>
 
-    <h2>Bahasha</h2>
+    <div class="sidebar-scroll">
+        <div class="nav-group">
+            <span class="nav-group-title">Overview</span>
+            <a href="{% url 'web_dashboard' %}" data-label="Dashboard"{% if request.resolver_match.url_name == 'web_dashboard' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                <span class="nav-label">Dashboard</span>
+            </a>
+        </div>
 
-    <hr>
+        <div class="nav-group">
+            <span class="nav-group-title">Church Management</span>
+            <a href="{% url 'web_churches' %}" data-label="Church Profile"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="landmark" aria-hidden="true"></i>
+                <span class="nav-label">Church Profile</span>
+            </a>
+            <a href="{% url 'web_jumuiya' %}" data-label="Jumuiya"{% if request.resolver_match.url_name == 'web_jumuiya' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="users-round" aria-hidden="true"></i>
+                <span class="nav-label">Jumuiya</span>
+            </a>
+            <a href="{% url 'web_members' %}" data-label="Members"{% if request.resolver_match.url_name == 'web_members' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="contact-round" aria-hidden="true"></i>
+                <span class="nav-label">Members</span>
+            </a>
+            {% if request.user.role == "MAIN_PASTOR" or request.user.role == "ADMIN" %}
+                <a href="{% url 'web_users' %}" data-label="Users & Roles"{% if request.resolver_match.url_name == 'web_users' %} class="active" aria-current="page"{% endif %}>
+                    <i data-lucide="shield-check" aria-hidden="true"></i>
+                    <span class="nav-label">Users & Roles</span>
+                </a>
+            {% endif %}
+        </div>
 
-    <a href="{% url 'web_dashboard' %}"{% if request.resolver_match.url_name == 'web_dashboard' %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+        <div class="nav-group">
+            <span class="nav-group-title">Contributions</span>
+            <a href="{% url 'web_categories' %}" data-label="Categories"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="tags" aria-hidden="true"></i>
+                <span class="nav-label">Categories</span>
+            </a>
+            <a href="{% url 'web_contribution_weeks' %}" data-label="Contribution Weeks"{% if request.resolver_match.url_name == 'web_contribution_weeks' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="calendar-days" aria-hidden="true"></i>
+                <span class="nav-label">Contribution Weeks</span>
+            </a>
+            <a href="{% url 'web_annual_targets' %}" data-label="Annual Targets"{% if request.resolver_match.url_name == 'web_annual_targets' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="target" aria-hidden="true"></i>
+                <span class="nav-label">Annual Targets</span>
+            </a>
+            <a href="{% url 'web_contributions' %}" data-label="Contributions"{% if request.resolver_match.url_name == 'web_contributions' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="hand-coins" aria-hidden="true"></i>
+                <span class="nav-label">Contributions</span>
+            </a>
+        </div>
 
-    <h4>Church Management</h4>
-    <a href="{% url 'web_churches' %}"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>Church Profile</a>
-    <a href="{% url 'web_jumuiya' %}"{% if request.resolver_match.url_name == 'web_jumuiya' %} class="active" aria-current="page"{% endif %}>Jumuiya</a>
-    <a href="{% url 'web_members' %}"{% if request.resolver_match.url_name == 'web_members' %} class="active" aria-current="page"{% endif %}>Members</a>
-    {% if request.user.role == "MAIN_PASTOR" or request.user.role == "ADMIN" %}
-        <a href="{% url 'web_users' %}"{% if request.resolver_match.url_name == 'web_users' %} class="active" aria-current="page"{% endif %}>Users & Roles</a>
-    {% endif %}
-    <h4>Contributions</h4>
-    <a href="{% url 'web_categories' %}"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>Contribution Categories</a>
-    <a href="{% url 'web_contribution_weeks' %}"{% if request.resolver_match.url_name == 'web_contribution_weeks' %} class="active" aria-current="page"{% endif %}>Contribution Weeks</a>
-    <a href="{% url 'web_annual_targets' %}"{% if request.resolver_match.url_name == 'web_annual_targets' %} class="active" aria-current="page"{% endif %}>Annual Targets</a>
-    <a href="{% url 'web_contributions' %}"{% if request.resolver_match.url_name == 'web_contributions' %} class="active" aria-current="page"{% endif %}>Contributions</a>
+        <div class="nav-group">
+            <span class="nav-group-title">Uploads</span>
+            <a href="{% url 'web_excel_uploads' %}" data-label="Excel Uploads"{% if request.resolver_match.url_name == 'web_excel_uploads' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
+                <span class="nav-label">Excel Uploads</span>
+            </a>
+        </div>
 
-    <h4>Uploads</h4>
-    <a href="{% url 'web_excel_uploads' %}"{% if request.resolver_match.url_name == 'web_excel_uploads' %} class="active" aria-current="page"{% endif %}>Excel Uploads</a>
+        <div class="nav-group">
+            <span class="nav-group-title">Reports</span>
+            <a href="{% url 'web_contribution_summary_report' %}" data-label="Contribution Reports"{% if request.resolver_match.url_name == 'web_contribution_summary_report' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
+                <span class="nav-label">Contribution Reports</span>
+            </a>
+            <a href="{% url 'web_member_statement_report' %}" data-label="Member Statements"{% if request.resolver_match.url_name == 'web_member_statement_report' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="receipt-text" aria-hidden="true"></i>
+                <span class="nav-label">Member Statements</span>
+            </a>
+            <a href="{% url 'web_weekly_collection_report' %}" data-label="Weekly Collection"{% if request.resolver_match.url_name == 'web_weekly_collection_report' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="calendar-range" aria-hidden="true"></i>
+                <span class="nav-label">Weekly Collection</span>
+            </a>
+        </div>
 
-    <h4>Reports</h4>
-    <a href="{% url 'web_contribution_summary_report' %}"{% if request.resolver_match.url_name == 'web_contribution_summary_report' %} class="active" aria-current="page"{% endif %}>Contribution Reports</a>
-    <a href="{% url 'web_member_statement_report' %}"{% if request.resolver_match.url_name == 'web_member_statement_report' %} class="active" aria-current="page"{% endif %}>Member Statements</a>
-    <a href="{% url 'web_weekly_collection_report' %}"{% if request.resolver_match.url_name == 'web_weekly_collection_report' %} class="active" aria-current="page"{% endif %}>Weekly Collection Report</a>
+        <div class="nav-group">
+            <span class="nav-group-title">Communication</span>
+            <a href="{% url 'web_notifications' %}" data-label="Notifications"{% if request.resolver_match.url_name == 'web_notifications' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="bell" aria-hidden="true"></i>
+                <span class="nav-label">Notifications</span>
+            </a>
+        </div>
 
-    <h4>Notifications</h4>
-    <a href="{% url 'web_notifications' %}"{% if request.resolver_match.url_name == 'web_notifications' %} class="active" aria-current="page"{% endif %}>Notifications</a>
+        <div class="nav-group">
+            <span class="nav-group-title">System</span>
+            <a href="{% url 'admin:index' %}" data-label="Django Admin">
+                <i data-lucide="settings" aria-hidden="true"></i>
+                <span class="nav-label">Django Admin</span>
+            </a>
+            <a href="{% url 'web_financial_years' %}" data-label="Financial Years"{% if request.resolver_match.url_name == 'web_financial_years' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="calendar-cog" aria-hidden="true"></i>
+                <span class="nav-label">Financial Years</span>
+            </a>
+            <a href="{% url 'web_audit_logs' %}" data-label="Audit Logs"{% if request.resolver_match.url_name == 'web_audit_logs' %} class="active" aria-current="page"{% endif %}>
+                <i data-lucide="scroll-text" aria-hidden="true"></i>
+                <span class="nav-label">Audit Logs</span>
+            </a>
+        </div>
+    </div>
 
-    <h4>System</h4>
-    <a href="{% url 'admin:index' %}">Django Admin</a>
-    <a href="{% url 'web_financial_years' %}"{% if request.resolver_match.url_name == 'web_financial_years' %} class="active" aria-current="page"{% endif %}>Financial Years</a>
-    <a href="{% url 'web_audit_logs' %}"{% if request.resolver_match.url_name == 'web_audit_logs' %} class="active" aria-current="page"{% endif %}>Audit Logs</a>
-    <form method="post" action="{% url 'logout' %}">
+    <form method="post" action="{% url 'logout' %}" class="sidebar-logout">
         {% csrf_token %}
-        <button type="submit" class="sidebar-action">Logout</button>
+        <button type="submit" class="sidebar-action" data-label="Logout">
+            <i data-lucide="log-out" aria-hidden="true"></i>
+            <span class="nav-label">Logout</span>
+        </button>
     </form>
-
 </nav>

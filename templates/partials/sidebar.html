@@ -11,15 +11,24 @@
 
     <div class="sidebar-scroll">
         <div class="nav-group">
-            <span class="nav-group-title">Overview</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-overview" aria-expanded="true">
+                <span>Overview</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-overview">
             <a href="{% url 'web_dashboard' %}" data-label="Dashboard"{% if request.resolver_match.url_name == 'web_dashboard' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="layout-dashboard" aria-hidden="true"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">Church Management</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-church" aria-expanded="true">
+                <span>Church Management</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-church">
             <a href="{% url 'web_churches' %}" data-label="Church Profile"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="landmark" aria-hidden="true"></i>
                 <span class="nav-label">Church Profile</span>
@@ -38,10 +47,15 @@
                     <span class="nav-label">Users & Roles</span>
                 </a>
             {% endif %}
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">Contributions</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-contributions" aria-expanded="true">
+                <span>Contributions</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-contributions">
             <a href="{% url 'web_categories' %}" data-label="Categories"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="tags" aria-hidden="true"></i>
                 <span class="nav-label">Categories</span>
@@ -58,18 +72,28 @@
                 <i data-lucide="hand-coins" aria-hidden="true"></i>
                 <span class="nav-label">Contributions</span>
             </a>
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">Uploads</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-uploads" aria-expanded="true">
+                <span>Uploads</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-uploads">
             <a href="{% url 'web_excel_uploads' %}" data-label="Excel Uploads"{% if request.resolver_match.url_name == 'web_excel_uploads' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
                 <span class="nav-label">Excel Uploads</span>
             </a>
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">Reports</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-reports" aria-expanded="true">
+                <span>Reports</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-reports">
             <a href="{% url 'web_contribution_summary_report' %}" data-label="Contribution Reports"{% if request.resolver_match.url_name == 'web_contribution_summary_report' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
                 <span class="nav-label">Contribution Reports</span>
@@ -82,18 +106,28 @@
                 <i data-lucide="calendar-range" aria-hidden="true"></i>
                 <span class="nav-label">Weekly Collection</span>
             </a>
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">Communication</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-communication" aria-expanded="true">
+                <span>Communication</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-communication">
             <a href="{% url 'web_notifications' %}" data-label="Notifications"{% if request.resolver_match.url_name == 'web_notifications' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="bell" aria-hidden="true"></i>
                 <span class="nav-label">Notifications</span>
             </a>
+            </div>
         </div>
 
         <div class="nav-group">
-            <span class="nav-group-title">System</span>
+            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-system" aria-expanded="true">
+                <span>System</span>
+                <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="nav-group-items" id="nav-system">
             <a href="{% url 'admin:index' %}" data-label="Django Admin">
                 <i data-lucide="settings" aria-hidden="true"></i>
                 <span class="nav-label">Django Admin</span>
@@ -106,6 +140,7 @@
                 <i data-lucide="scroll-text" aria-hidden="true"></i>
                 <span class="nav-label">Audit Logs</span>
             </a>
+            </div>
         </div>
     </div>
 

@@ -77,6 +77,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/css/printing.css` - print-only behavior
 - `static/js/app.js` - icons, printing, and progress bars
 - `static/js/navigation.js` - persisted desktop sidebar and mobile drawer behavior
+- `static/js/dropdowns.js` - reusable accessible dropdown menus and dismissal behavior
 - `static/js/forms.js` - progressive enhancement for Django select fields
 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.

@@ -19,6 +19,7 @@
     <script src="{% static 'vendor/choices/choices.min.js' %}" defer></script>
     <script src="{% static 'js/app.js' %}" defer></script>
     <script src="{% static 'js/navigation.js' %}" defer></script>
+    <script src="{% static 'js/dropdowns.js' %}" defer></script>
     <script src="{% static 'js/forms.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </head>
@@ -53,8 +54,10 @@
             </div>
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
+        <main class="page-content">
+            {% block content %}
+            {% endblock %}
+        </main>
 
         {% include "partials/footer.html" %}
 

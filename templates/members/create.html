@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add New Member</h1>
+<p>Create a church member account and assign Bahasha number.</p>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Username</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div>
+                <label>Full Name</label>
+                {{ form.full_name }}
+                {{ form.full_name.errors }}
+            </div>
+
+            <div>
+                <label>Phone Number</label>
+                {{ form.phone_number }}
+                {{ form.phone_number.errors }}
+            </div>
+
+            <div>
+                <label>Email</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+
+            <div>
+                <label>Password</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Jumuiya</label>
+                {{ form.jumuiya }}
+                {{ form.jumuiya.errors }}
+            </div>
+
+            <div>
+                <label>Bahasha Number</label>
+                {{ form.bahasha_number }}
+                {{ form.bahasha_number.errors }}
+            </div>
+
+            <div>
+                <label>Gender</label>
+                {{ form.gender }}
+                {{ form.gender.errors }}
+            </div>
+
+            <div>
+                <label>Approval Status</label>
+                {{ form.approval_status }}
+                {{ form.approval_status.errors }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <label>Demographics</label>
+            {{ form.demographics }}
+            {{ form.demographics.errors }}
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Save Member</button>
+        <a href="{% url 'web_members' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

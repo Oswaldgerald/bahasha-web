@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Church Management</h1>
+        <p>Manage registered churches and their unique church codes.</p>
+    </div>
+
+    <a href="{% url 'web_church_create' %}" class="btn-primary">
+        + Add Church
+    </a>
+</div>
+
+<div class="card table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Church Code</th>
+                <th>Church Name</th>
+                <th>Parish</th>
+                <th>District</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for church in churches %}
+            <tr>
+                <td>{{ church.church_code }}</td>
+                <td>{{ church.church_name }}</td>
+                <td>{{ church.parish|default:"-" }}</td>
+                <td>{{ church.district|default:"-" }}</td>
+                <td>{{ church.location|default:"-" }}</td>
+                <td>
+                    {% if church.is_active %}
+                        <span class="badge-success">Active</span>
+                    {% else %}
+                        <span class="badge-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <a href="{% url 'web_church_edit' church.id %}" class="action-link">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="empty-state">
+                    No churches registered yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add Church</h1>
+<p>Create a new church and assign its unique church code.</p>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church Code</label>
+                {{ form.church_code }}
+                {{ form.church_code.errors }}
+            </div>
+
+            <div>
+                <label>Church Name</label>
+                {{ form.church_name }}
+                {{ form.church_name.errors }}
+            </div>
+
+            <div>
+                <label>Parish</label>
+                {{ form.parish }}
+                {{ form.parish.errors }}
+            </div>
+
+            <div>
+                <label>District</label>
+                {{ form.district }}
+                {{ form.district.errors }}
+            </div>
+
+            <div>
+                <label>Location</label>
+                {{ form.location }}
+                {{ form.location.errors }}
+            </div>
+
+            <div>
+                <label>Active?</label><br>
+                {{ form.is_active }} Active
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Save Church</button>
+        <a href="{% url 'web_churches' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

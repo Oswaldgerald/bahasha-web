@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/member-card.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header no-print">
+    <div>
+        <h1>Bahasha Member Card</h1>
+        <p>Print member Bahasha identification card.</p>
+    </div>
+
+    <button type="button" class="btn-primary" data-action="print">
+        Print Card
+    </button>
+</div>
+
+<div class="bahasha-card">
+    <div class="card-header">
+        <h2>{{ member.church.church_name }}</h2>
+        <p>Bahasha Contribution Card</p>
+    </div>
+
+    <div class="card-body">
+        <div class="bahasha-number">
+            {{ member.bahasha_number }}
+        </div>
+
+        <h3>{{ member.user.full_name }}</h3>
+
+        <p>
+            <strong>Jumuiya:</strong>
+            {% if member.jumuiya %}
+                {{ member.jumuiya.name }}
+            {% else %}
+                -
+            {% endif %}
+        </p>
+
+        <p><strong>Phone:</strong> {{ member.user.phone_number }}</p>
+        <p><strong>Role:</strong> {{ member.user.get_role_display }}</p>
+    </div>
+
+    <div class="card-footer">
+        <p>Use this Bahasha number when making contributions.</p>
+    </div>
+</div>
+
+{% endblock %}

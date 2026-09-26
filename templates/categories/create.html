@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add Contribution Category</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Name</label>
+                {{ form.name }}
+                {{ form.name.errors }}
+            </div>
+
+            <div>
+                <label>Code</label>
+                {{ form.code }}
+                {{ form.code.errors }}
+            </div>
+
+            <div>
+                <label>Frequency</label>
+                {{ form.frequency }}
+                {{ form.frequency.errors }}
+            </div>
+
+            <div>
+                <label>Display Order</label>
+                {{ form.display_order }}
+                {{ form.display_order.errors }}
+            </div>
+
+            <div>
+                <label>Annual Category?</label><br>
+                {{ form.is_annual }} Yes
+                {{ form.is_annual.errors }}
+            </div>
+
+            <div>
+                <label>Active?</label><br>
+                {{ form.is_active }} Active
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <label>Description</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Save Category</button>
+        <a href="{% url 'web_categories' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Member Statement Report</h1>
+<button type="button" class="btn-primary" data-action="print">
+    Print Statement
+</button>
+
+<br><br>
+<p>View a member's annual targets, balances, and contribution history.</p>
+
+<div class="card">
+    <form method="get">
+        <div class="form-grid">
+            <div>
+                <label>Select Member</label>
+                <select name="member">
+                    <option value="">-- Select Member --</option>
+
+                    {% for member in members %}
+                        <option value="{{ member.id }}"
+                            {% if selected_member_id == member.id|stringformat:"s" %}selected{% endif %}>
+                            {{ member.user.full_name }} - {{ member.bahasha_number }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">
+            View Statement
+        </button>
+    </form>
+</div>
+
+{% if selected_member %}
+
+<div class="card">
+    <h2>{{ selected_member.user.full_name }}</h2>
+
+    <p><strong>Bahasha Number:</strong> {{ selected_member.bahasha_number }}</p>
+    <p><strong>Phone:</strong> {{ selected_member.user.phone_number }}</p>
+    <p><strong>Church:</strong> {{ selected_member.church.church_name }}</p>
+    <p>
+        <strong>Jumuiya:</strong>
+        {% if selected_member.jumuiya %}
+            {{ selected_member.jumuiya.name }}
+        {% else %}
+            -
+        {% endif %}
+    </p>
+
+    <h3>Total Contributed: {{ total_contributed }}</h3>
+</div>
+
+<div class="card">
+    <h2>Annual Targets Summary</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Category</th>
+                <th>Target</th>
+                <th>Contributed</th>
+                <th>Remaining</th>
+                <th>Completion</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for target in targets %}
+            <tr>
+                <td>{{ target.financial_year.year }}</td>
+                <td>{{ target.category.name }}</td>
+                <td>{{ target.target_amount }}</td>
+                <td>{{ target.contributed_amount }}</td>
+                <td>{{ target.remaining_amount }}</td>
+                <td>
+                    <strong>{{ target.completion_percentage }}%</strong>
+
+                    <div class="progress-track">
+                        <div class="progress-bar" data-progress="{{ target.completion_percentage }}"></div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No annual targets found for this member.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Contribution History</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Year</th>
+                <th>Week</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for contribution in contributions %}
+            <tr>
+                <td>{{ contribution.contribution_date }}</td>
+                <td>{{ contribution.financial_year.year }}</td>
+                <td>Week {{ contribution.contribution_week.week_number }}</td>
+                <td>{{ contribution.category.name }}</td>
+                <td>{{ contribution.amount }}</td>
+                <td>{{ contribution.source }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No contributions found for this member.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endif %}
+
+{% endblock %}

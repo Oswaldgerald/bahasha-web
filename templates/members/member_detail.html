@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Member Profile</h1>
+
+<div class="card">
+
+    <h2>{{ member.user.full_name }}</h2>
+
+    <p><strong>Bahasha Number:</strong> {{ member.bahasha_number }}</p>
+
+    <p><strong>Phone:</strong> {{ member.user.phone_number }}</p>
+
+    <p><strong>Church:</strong> {{ member.church.church_name }}</p>
+
+    <p><strong>Jumuiya:</strong>
+        {% if member.jumuiya %}
+            {{ member.jumuiya.name }}
+        {% else %}
+            -
+        {% endif %}
+    </p>
+
+    <p><strong>Approval Status:</strong> {{ member.approval_status }}</p>
+
+</div>
+
+<div class="card">
+
+    <h2>Annual Targets</h2>
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Target</th>
+                <th>Contributed</th>
+                <th>Remaining</th>
+                <th>Completion</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for target in targets %}
+
+            <tr>
+
+                <td>
+                    {{ target.category.name }}
+                </td>
+
+                <td>
+                    {{ target.target_amount }}
+                </td>
+
+                <td>
+                    {{ target.contributed_amount }}
+                </td>
+
+                <td>
+                    {{ target.remaining_amount }}
+                </td>
+
+                <td>
+                    {{ target.completion_percentage }}%
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No annual targets found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="card">
+
+    <h2>Recent Contributions</h2>
+
+    <p>
+        <strong>Total Contributed:</strong>
+        {{ total_contributed }}
+    </p>
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Week</th>
+                <th>Category</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for contribution in contributions %}
+
+            <tr>
+
+                <td>
+                    {{ contribution.contribution_date }}
+                </td>
+
+                <td>
+                    Week {{ contribution.contribution_week.week_number }}
+                </td>
+
+                <td>
+                    {{ contribution.category.name }}
+                </td>
+
+                <td>
+                    {{ contribution.amount }}
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4" class="empty-state">
+                    No contributions found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Jumuiya Management</h1>
+<p>Manage church communities/groups used for member classification.</p>
+
+<a href="{% url 'web_jumuiya_create' %}" class="btn-primary">
+    + Add Jumuiya
+</a>
+
+<br><br>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Church</th>
+                <th>Jumuiya Name</th>
+                <th>Leader</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in jumuiya_list %}
+            <tr>
+                <td>{{ item.church.church_name }}</td>
+                <td>{{ item.name }}</td>
+                <td>
+                    {% if item.leader_name %}
+                        {{ item.leader_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'web_jumuiya_edit' item.id %}">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No Jumuiya records found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

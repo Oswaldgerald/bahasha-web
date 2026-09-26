@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h3>Users & Roles</h3>
+          <p>  Manage system users and their roles</p>
+    </div>
+
+    <a href="{% url 'web_user_create' %}" class="btn-primary">
+        + Add User
+    </a>
+</div>
+
+<br><br>
+
+<div class="card table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Username</th>
+                <th>Phone</th>
+                <th>Church</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.phone_number }}</td>
+                <td>
+                    {% if user.church %}
+                        {{ user.church.church_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ user.get_role_display }}</td>
+                <td class="text-right">
+                    <a href="{% url 'web_user_edit' user.id %}"class="action-link"> Edit</a>
+                    <a href="{% url 'web_user_reset_password' user.id %}"class="action-link">Reset Password</a>
+                    {% if user.is_active %}
+                        <form method="post" action="{% url 'web_user_deactivate' user.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button danger">Deactivate</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'web_user_activate' user.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button">Activate</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="empty-state">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

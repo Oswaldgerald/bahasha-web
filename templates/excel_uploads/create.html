@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Upload Weekly Contributions</h1>
+<p>Upload an Excel file containing Bahasha Number and Amount.</p>
+
+<div class="card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Financial Year</label>
+                {{ form.financial_year }}
+                {{ form.financial_year.errors }}
+            </div>
+
+            <div>
+                <label>Contribution Week</label>
+                {{ form.contribution_week }}
+                {{ form.contribution_week.errors }}
+            </div>
+
+            <div>
+                <label>Category</label>
+                {{ form.selected_category }}
+                {{ form.selected_category.errors }}
+            </div>
+
+            <div>
+                <label>Excel File</label>
+                {{ form.file }}
+                {{ form.file.errors }}
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Upload & Validate</button>
+        <a href="{% url 'web_excel_uploads' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Expected Excel Format</h3>
+    <p>The uploaded Excel file should contain two columns:</p>
+
+    <table class="data-table data-table-compact table-half">
+        <tr>
+            <th>Bahasha Number</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>B001</td>
+            <td>5000</td>
+        </tr>
+        <tr>
+            <td>B002</td>
+            <td>10000</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

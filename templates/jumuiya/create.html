@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add Jumuiya</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Jumuiya Name</label>
+                {{ form.name }}
+                {{ form.name.errors }}
+            </div>
+
+            <div>
+                <label>Leader Name</label>
+                {{ form.leader_name }}
+                {{ form.leader_name.errors }}
+            </div>
+
+            <div>
+                <label>Active?</label><br>
+                {{ form.is_active }} Active
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <label>Description</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Save Jumuiya</button>
+        <a href="{% url 'web_jumuiya' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

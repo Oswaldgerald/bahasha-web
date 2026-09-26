@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Weekly Collection Report</h1>
+<p>View total contributions collected per category for a selected Sunday week.</p>
+<button type="button" class="btn-primary" data-action="print">
+    Print Report
+</button>
+
+<br><br>
+<div class="card">
+    <form method="get">
+        <div class="form-grid">
+            <div>
+                <label>Select Contribution Week</label>
+                <select name="week">
+                    <option value="">-- Select Week --</option>
+
+                    {% for week in weeks %}
+                        <option value="{{ week.id }}"
+                            {% if selected_week_id == week.id|stringformat:"s" %}selected{% endif %}>
+                            {{ week.church.church_name }} -
+                            {{ week.financial_year.year }} -
+                            Week {{ week.week_number }} -
+                            {{ week.sunday_date }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">
+            View Report
+        </button>
+    </form>
+</div>
+
+{% if selected_week %}
+
+<div class="card">
+    <h2>
+        Week {{ selected_week.week_number }} Collection Summary
+    </h2>
+
+    <p><strong>Church:</strong> {{ selected_week.church.church_name }}</p>
+    <p><strong>Financial Year:</strong> {{ selected_week.financial_year.year }}</p>
+    <p><strong>Sunday Date:</strong> {{ selected_week.sunday_date }}</p>
+
+    <h3>Total Collected: {{ grand_total }}</h3>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount Collected</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in summary %}
+            <tr>
+                <td>{{ item.category__name }}</td>
+                <td>{{ item.total_amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" class="empty-state">
+                    No contributions found for this week.
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr class="report-total-row">
+                <td>Grand Total</td>
+                <td>{{ grand_total }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endif %}
+
+{% endblock %}

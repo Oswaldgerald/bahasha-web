@@ -1,0 +1,42 @@
+<nav class="sidebar" id="main-navigation" aria-label="Main navigation">
+
+    <h2>Bahasha</h2>
+
+    <hr>
+
+    <a href="{% url 'web_dashboard' %}"{% if request.resolver_match.url_name == 'web_dashboard' %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+
+    <h4>Church Management</h4>
+    <a href="{% url 'web_churches' %}"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>Church Profile</a>
+    <a href="{% url 'web_jumuiya' %}"{% if request.resolver_match.url_name == 'web_jumuiya' %} class="active" aria-current="page"{% endif %}>Jumuiya</a>
+    <a href="{% url 'web_members' %}"{% if request.resolver_match.url_name == 'web_members' %} class="active" aria-current="page"{% endif %}>Members</a>
+    {% if request.user.role == "MAIN_PASTOR" or request.user.role == "ADMIN" %}
+        <a href="{% url 'web_users' %}"{% if request.resolver_match.url_name == 'web_users' %} class="active" aria-current="page"{% endif %}>Users & Roles</a>
+    {% endif %}
+    <h4>Contributions</h4>
+    <a href="{% url 'web_categories' %}"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>Contribution Categories</a>
+    <a href="{% url 'web_contribution_weeks' %}"{% if request.resolver_match.url_name == 'web_contribution_weeks' %} class="active" aria-current="page"{% endif %}>Contribution Weeks</a>
+    <a href="{% url 'web_annual_targets' %}"{% if request.resolver_match.url_name == 'web_annual_targets' %} class="active" aria-current="page"{% endif %}>Annual Targets</a>
+    <a href="{% url 'web_contributions' %}"{% if request.resolver_match.url_name == 'web_contributions' %} class="active" aria-current="page"{% endif %}>Contributions</a>
+
+    <h4>Uploads</h4>
+    <a href="{% url 'web_excel_uploads' %}"{% if request.resolver_match.url_name == 'web_excel_uploads' %} class="active" aria-current="page"{% endif %}>Excel Uploads</a>
+
+    <h4>Reports</h4>
+    <a href="{% url 'web_contribution_summary_report' %}"{% if request.resolver_match.url_name == 'web_contribution_summary_report' %} class="active" aria-current="page"{% endif %}>Contribution Reports</a>
+    <a href="{% url 'web_member_statement_report' %}"{% if request.resolver_match.url_name == 'web_member_statement_report' %} class="active" aria-current="page"{% endif %}>Member Statements</a>
+    <a href="{% url 'web_weekly_collection_report' %}"{% if request.resolver_match.url_name == 'web_weekly_collection_report' %} class="active" aria-current="page"{% endif %}>Weekly Collection Report</a>
+
+    <h4>Notifications</h4>
+    <a href="{% url 'web_notifications' %}"{% if request.resolver_match.url_name == 'web_notifications' %} class="active" aria-current="page"{% endif %}>Notifications</a>
+
+    <h4>System</h4>
+    <a href="{% url 'admin:index' %}">Django Admin</a>
+    <a href="{% url 'web_financial_years' %}"{% if request.resolver_match.url_name == 'web_financial_years' %} class="active" aria-current="page"{% endif %}>Financial Years</a>
+    <a href="{% url 'web_audit_logs' %}"{% if request.resolver_match.url_name == 'web_audit_logs' %} class="active" aria-current="page"{% endif %}>Audit Logs</a>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="sidebar-action">Logout</button>
+    </form>
+
+</nav>

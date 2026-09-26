@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Excel Upload Detail</h1>
+
+<div class="card">
+    <h3>{{ upload.upload_reference }}</h3>
+
+    <p><strong>Church:</strong> {{ upload.church.church_name }}</p>
+    <p><strong>Financial Year:</strong> {{ upload.financial_year.year }}</p>
+    <p><strong>Week:</strong> Week {{ upload.contribution_week.week_number }}</p>
+    <p><strong>Category:</strong> {{ upload.selected_category.name }}</p>
+    <p><strong>Status:</strong> {{ upload.status }}</p>
+    <p><strong>Total Rows:</strong> {{ upload.total_rows }}</p>
+    <p><strong>Valid Rows:</strong> {{ upload.valid_rows }}</p>
+    <p><strong>Failed Rows:</strong> {{ upload.failed_rows }}</p>
+    <p><strong>Total Amount:</strong> {{ upload.total_amount }}</p>
+
+    {% if upload.status == "VALIDATED" %}
+        <form method="post" action="{% url 'web_excel_upload_approve' upload.id %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">Approve & Post Contributions</button>
+        </form>
+    {% endif %}
+
+    <a href="{% url 'web_excel_uploads' %}" class="btn-secondary">
+        Back
+    </a>
+</div>
+
+<div class="card">
+    <h3>Uploaded Rows</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Row</th>
+                <th>Bahasha Number</th>
+                <th>Amount</th>
+                <th>Member</th>
+                <th>Validation</th>
+                <th>Error</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.row_number }}</td>
+                <td>{{ row.bahasha_number }}</td>
+                <td>{{ row.amount }}</td>
+                <td>
+                    {% if row.resolved_member %}
+                        {{ row.resolved_member.user.full_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ row.validation_status }}</td>
+                <td>{{ row.error_message }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No rows found for this upload.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

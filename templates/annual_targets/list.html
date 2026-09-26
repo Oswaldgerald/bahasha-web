@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Annual Targets</h1>
+<p>Manage yearly contribution commitments for each church member.</p>
+
+<a href="{% url 'web_annual_target_create' %}" class="btn-primary">
+    + Add Annual Target
+</a>
+
+<br><br>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Bahasha No.</th>
+                <th>Church</th>
+                <th>Year</th>
+                <th>Category</th>
+                <th>Target</th>
+                <th>Contributed</th>
+                <th>Remaining</th>
+                <th>Completion</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for target in targets %}
+            <tr>
+                <td>{{ target.member.user.full_name }}</td>
+                <td>{{ target.member.bahasha_number }}</td>
+                <td>{{ target.church.church_name }}</td>
+                <td>{{ target.financial_year.year }}</td>
+                <td>{{ target.category.name }}</td>
+                <td>{{ target.target_amount }}</td>
+                <td>{{ target.contributed_amount }}</td>
+                <td>{{ target.remaining_amount }}</td>
+                <td>{{ target.completion_percentage }}%</td>
+                <td>
+                    <a href="{% url 'web_annual_target_edit' target.id %}">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10" class="empty-state">
+                    No annual targets configured yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

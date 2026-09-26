@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Contribution Summary Report</h1>
+<button type="button" class="btn-primary" data-action="print">
+    Print Report
+</button>
+
+<br><br>
+<p>View target, contribution, and remaining balance summaries by category.</p>
+
+<div class="card">
+    <form method="get">
+        <div class="form-grid">
+
+            <div>
+                <label>Church</label>
+                <select name="church">
+                    <option value="">All Churches</option>
+                    {% for church in churches %}
+                        <option value="{{ church.id }}"
+                            {% if selected_church == church.id|stringformat:"s" %}selected{% endif %}>
+                            {{ church.church_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Financial Year</label>
+                <select name="financial_year">
+                    <option value="">All Years</option>
+                    {% for year in financial_years %}
+                        <option value="{{ year.id }}"
+                            {% if selected_financial_year == year.id|stringformat:"s" %}selected{% endif %}>
+                            {{ year.year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Category</label>
+                <select name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                            {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Filter Report</button>
+        <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary">Reset</a>
+    </form>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Total Target</th>
+                <th>Total Contributed</th>
+                <th>Remaining</th>
+                <th>Completion</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in summary %}
+            <tr>
+                <td>{{ item.category__name }}</td>
+                <td>{{ item.total_target }}</td>
+                <td>{{ item.total_contributed }}</td>
+                <td>{{ item.total_remaining }}</td>
+            <td>
+                <strong>{{ item.completion_percentage }}%</strong>
+
+                <div class="progress-track">
+                    <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
+                </div>
+            </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No report data found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

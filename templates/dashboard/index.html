@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% comment %} <div class="page-header">
+    <div>
+        <h1>Bahasha Dashboard</h1>
+        <p>Overview of church contributions, members, uploads and annual targets.</p>
+    </div>
+</div> {% endcomment %}
+
+<div class="dashboard-grid">
+
+            <div class="stat-card">
+                <h4>Total Churches</h4>
+                <h2>{{ total_churches }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Members</h4>
+                <h2>{{ total_members }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Approved Members</h4>
+                <h2>{{ approved_members }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Pending Approvals</h4>
+                <h2>{{ pending_members }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Contributions</h4>
+                <h2>{{ total_contributions }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Collected</h4>
+                <h2>{{ total_contributed }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Target</h4>
+                <h2>{{ total_target }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Overall Completion</h4>
+                <h2>{{ overall_completion }}%</h2>
+            </div>
+
+</div>
+
+<br>
+
+<div class="card">
+    <h3>Active Period</h3>
+
+    <p>
+        <strong>Financial Year:</strong>
+        {% if active_year %}
+            {{ active_year.year }}
+        {% else %}
+            Not configured
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>Active Week:</strong>
+        {% if active_week %}
+            Week {{ active_week.week_number }} - {{ active_week.sunday_date }}
+        {% else %}
+            No active week
+        {% endif %}
+    </p>
+</div>
+
+<div class="card table-card">
+    <h3>Category Performance</h3>
+    <p>Target achievement summary by contribution category.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Total Target</th>
+                <th>Collected</th>
+                <th>Remaining</th>
+                <th>Completion</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in category_performance %}
+            <tr>
+                <td>{{ item.category__name }}</td>
+                <td>{{ item.total_target }}</td>
+                <td>{{ item.total_contributed }}</td>
+                <td>{{ item.total_remaining }}</td>
+                <td>
+                    <strong>{{ item.completion_percentage }}%</strong>
+
+                    <div class="progress-track">
+                        <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No category performance data found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% comment %} <div class="dashboard-grid">
+
+    <div class="stat-card">
+        <h4>Excel Uploads</h4>
+        <h2>{{ total_uploads }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h4>Pending Uploads</h4>
+        <h2>{{ pending_uploads }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h4>Failed Uploads</h4>
+        <h2>{{ failed_uploads }}</h2>
+    </div>
+
+</div> {% endcomment %}
+
+<br>
+
+{% comment %} <div class="card table-card">
+    <h3>Recent Excel Uploads</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Church</th>
+                <th>Week</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for upload in recent_uploads %}
+            <tr>
+                <td>{{ upload.upload_reference }}</td>
+                <td>{{ upload.church.church_name }}</td>
+                <td>Week {{ upload.contribution_week.week_number }}</td>
+                <td>{{ upload.selected_category.name }}</td>
+                <td>{{ upload.status }}</td>
+                <td>{{ upload.total_amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No recent uploads found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div> {% endcomment %}
+
+{% comment %} <div class="card table-card">
+    <h3>Recent Contributions</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Week</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for contribution in recent_contributions %}
+            <tr>
+                <td>{{ contribution.member.user.full_name }}</td>
+                <td>Week {{ contribution.contribution_week.week_number }}</td>
+                <td>{{ contribution.category.name }}</td>
+                <td>{{ contribution.amount }}</td>
+                <td>{{ contribution.contribution_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No recent contributions found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div> {% endcomment %}
+
+{% endblock %}

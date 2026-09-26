@@ -1,0 +1,16 @@
+.git
+.vscode
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.env.*
+venv/
+.venv/
+media/
+staticfiles/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+Dockerfile
+compose.yml

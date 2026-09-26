@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Edit Contribution Week</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Financial Year</label>
+                {{ form.financial_year }}
+                {{ form.financial_year.errors }}
+            </div>
+
+            <div>
+                <label>Week Number</label>
+                {{ form.week_number }}
+                {{ form.week_number.errors }}
+            </div>
+
+            <div>
+                <label>Sunday Date</label>
+                {{ form.sunday_date }}
+                {{ form.sunday_date.errors }}
+            </div>
+
+            <div>
+                <label>Active?</label><br>
+                {{ form.is_active }} Active
+                {{ form.is_active.errors }}
+            </div>
+
+            <div>
+                <label>Closed?</label><br>
+                {{ form.is_closed }} Closed
+                {{ form.is_closed.errors }}
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Update Week</button>
+        <a href="{% url 'web_contribution_weeks' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

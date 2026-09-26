@@ -1,0 +1,13 @@
+.report-toolbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.report-total-row {
+    background: #f4f6f9;
+    font-weight: 700;
+}

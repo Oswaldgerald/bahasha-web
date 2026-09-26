@@ -1,0 +1,85 @@
+.table-card {
+    padding: 18px;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table-compact th,
+.data-table-compact td {
+    padding: 10px;
+}
+
+.table-half {
+    max-width: 520px;
+}
+
+.data-table th {
+    background: #f4f6f9;
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.data-table td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.data-table tr:hover {
+    background: #fafafa;
+}
+
+.empty-state {
+    color: #666;
+    padding: 20px !important;
+    text-align: center;
+}
+
+.badge-success {
+    background: #e8f7ee;
+    color: #18804b;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.badge-danger {
+    background: #fde8e8;
+    color: #b42318;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.status-text {
+    font-weight: 700;
+}
+
+.status-text.success {
+    color: #18804b;
+}
+
+.status-text.info {
+    color: #2d1b69;
+}
+
+.status-text.danger {
+    color: #b42318;
+}
+
+.action-link {
+    color: #2d1b69;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.action-link.danger {
+    color: #b42318;
+}

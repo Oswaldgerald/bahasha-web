@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Send Notification</h1>
+<p>Create a church announcement, reminder, or system message.</p>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Notification Type</label>
+                {{ form.notification_type }}
+                {{ form.notification_type.errors }}
+            </div>
+
+            <div>
+                <label>Target Role</label>
+                {{ form.target_role }}
+                {{ form.target_role.errors }}
+            </div>
+
+            <div>
+                <label>Title</label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <label>Message</label>
+            {{ form.message }}
+            {{ form.message.errors }}
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Send Notification</button>
+        <a href="{% url 'web_notifications' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

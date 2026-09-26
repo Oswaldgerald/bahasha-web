@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Financial Years</h1>
+<p>Manage active church financial years.</p>
+
+<a href="{% url 'web_financial_year_create' %}" class="btn-primary">
+    + Add Financial Year
+</a>
+
+<br><br>
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Church</th>
+                <th>Year</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for financial_year in financial_years %}
+            <tr>
+                <td>{{ financial_year.church.church_name }}</td>
+                <td>{{ financial_year.year }}</td>
+                <td>{{ financial_year.start_date }}</td>
+                <td>{{ financial_year.end_date }}</td>
+                <td>
+                    {% if financial_year.is_active %}Yes{% else %}No{% endif %}
+                </td>
+                <td class="text-center">
+                    <a href="{% url 'web_financial_year_edit' financial_year.id %}" class= "action-link" class="text-center">Edit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No financial years added yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

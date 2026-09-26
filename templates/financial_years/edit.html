@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Edit Financial Year</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            <div>
+                <label>Church</label>
+                {{ form.church }}
+                {{ form.church.errors }}
+            </div>
+
+            <div>
+                <label>Year</label>
+                {{ form.year }}
+                {{ form.year.errors }}
+            </div>
+
+            <div>
+                <label>Start Date</label>
+                {{ form.start_date }}
+                {{ form.start_date.errors }}
+            </div>
+
+            <div>
+                <label>End Date</label>
+                {{ form.end_date }}
+                {{ form.end_date.errors }}
+            </div>
+
+            <div>
+                <label>Active?</label><br>
+                {{ form.is_active }} Active
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-primary">Update Financial Year</button>
+        <a href="{% url 'web_financial_years' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

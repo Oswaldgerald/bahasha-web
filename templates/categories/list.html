@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Contribution Categories</h1>
+<p>Manage Bahasha offering categories such as Ahadi, Jengo, Uwakili, Jumuiya and Mavuno.</p>
+
+<a href="{% url 'web_category_create' %}" class="btn-primary">
+    + Add Category
+</a>
+
+<br><br>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Frequency</th>
+                <th>Annual</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.display_order }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.code }}</td>
+                <td>{{ category.frequency }}</td>
+                <td>
+                    {% if category.is_annual %}Yes{% else %}No{% endif %}
+                </td>
+                <td>
+                    {% if category.is_active %}Active{% else %}Inactive{% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'web_category_edit' category.id %}">Edit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="empty-state">
+                    No categories added yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

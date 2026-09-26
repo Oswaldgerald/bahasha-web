@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Audit Logs</h1>
+        <p>Track important system activities and financial actions.</p>
+    </div>
+</div>
+
+<div class="card table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>Action</th>
+                <th>User</th>
+                <th>Church</th>
+                <th>Entity</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.created_at }}</td>
+                <td>{{ log.get_action_display }}</td>
+                <td>
+                    {% if log.user %}
+                        {{ log.user.full_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if log.church %}
+                        {{ log.church.church_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if log.entity_type %}
+                        {{ log.entity_type }} #{{ log.entity_id }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ log.description }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    No audit logs recorded yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

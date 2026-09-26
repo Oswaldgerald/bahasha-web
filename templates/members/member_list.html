@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Members Management</h1>
+<p>Manage church members, approval status, Bahasha numbers, and Jumuiya allocation.</p>
+
+<a href="{% url 'web_member_create' %}" class="btn-primary">
+    + Add Member
+</a>
+<br><br>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+
+            <tr>
+                <th>Bahasha No.</th>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>Church</th>
+                <th>Jumuiya</th>
+                <th>Approval</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+            {% for member in members %}
+            <tr>
+                <td>{{ member.bahasha_number }}</td>
+                <td>{{ member.user.full_name }}</td>
+                <td>{{ member.user.phone_number }}</td>
+                <td>{{ member.church.church_name }}</td>
+                <td>
+                    {% if member.jumuiya %}
+                        {{ member.jumuiya.name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ member.approval_status }}</td>
+                <td>
+                    {% if member.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+                <td>
+                    {% if member.approval_status == "PENDING" %}
+                        <form method="post" action="{% url 'web_member_approve' member.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button success">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'web_member_reject' member.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button danger">Reject</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'web_member_detail' member.id %}" class="action-link">View</a> |
+                        <a href="{% url 'web_member_edit' member.id %}" class="action-link" >Edit</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="empty-state">
+                    No members registered yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

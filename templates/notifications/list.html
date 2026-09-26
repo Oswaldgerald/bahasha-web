@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Notifications</h1>
+        <p>View sent announcements, reminders, and system messages.</p>
+    </div>
+
+    <a href="{% url 'web_notification_create' %}" class="btn-primary">
+        + Send Notification
+    </a>
+</div>
+
+<div class="card table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Church</th>
+                <th>Type</th>
+                <th>Target</th>
+                <th>Status</th>
+                <th>Created By</th>
+                <th>Sent At</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for notification in notifications %}
+            <tr>
+                <td>{{ notification.title }}</td>
+                <td>{{ notification.church.church_name }}</td>
+                <td>{{ notification.get_notification_type_display }}</td>
+                <td>
+                    {% if notification.target_role %}
+                        {{ notification.target_role }}
+                    {% else %}
+                        All Users
+                    {% endif %}
+                </td>
+                <td>
+                    {% if notification.status == "SENT" %}
+                        <span class="badge-success">Sent</span>
+                    {% else %}
+                        <span class="badge-danger">Draft</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if notification.created_by %}
+                        {{ notification.created_by.full_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ notification.sent_at|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="empty-state">
+                    No notifications found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

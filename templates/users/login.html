@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bahasha Login</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+
+<body class="auth-page">
+
+<div class="login-card">
+    <h1>Bahasha</h1>
+    <p>Church Contribution Management System</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="auth-error">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit" class="btn-primary">Login</button>
+    </form>
+</div>
+
+</body>
+</html>

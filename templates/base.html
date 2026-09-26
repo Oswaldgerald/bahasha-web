@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bahasha System</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reports.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    <link rel="stylesheet" href="{% static 'css/printing.css' %}">
+    {% block extra_css %}{% endblock %}
+    <script src="{% static 'js/app.js' %}" defer></script>
+    {% block extra_js %}{% endblock %}
+</head>
+<body>
+
+    <button
+        type="button"
+        class="sidebar-toggle"
+        aria-controls="main-navigation"
+        aria-expanded="false"
+        data-action="toggle-navigation"
+    >
+        Menu
+    </button>
+
+    {% include "partials/sidebar.html" %}
+
+    <div class="content">
+
+        {% include "partials/navbar.html" %}
+
+        {% if messages %}
+            <div class="flash-stack" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <div class="flash-message {{ message.tags|default:'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+        {% include "partials/footer.html" %}
+
+    </div>
+
+</body>
+</html>

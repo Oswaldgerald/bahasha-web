@@ -49,6 +49,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.http import require_POST
 from .forms import ProfileUpdateForm
+from django.http import FileResponse, Http404
+import mimetypes
 
 
 # Dashboard and Analysis
@@ -1173,6 +1175,7 @@ def profile_view(request):
     if request.method == "POST":
         form = ProfileUpdateForm(
             request.POST,
+            request.FILES,
             instance=request.user
         )
 
@@ -1186,6 +1189,23 @@ def profile_view(request):
     return render(request, "profile/detail.html", {
         "form": form
     })
+
+
+@login_required(login_url="login")
+def profile_picture_view(request):
+    picture = request.user.profile_picture
+    if not picture:
+        raise Http404("Profile picture not found.")
+
+    try:
+        picture_file = picture.open("rb")
+    except FileNotFoundError as error:
+        raise Http404("Profile picture not found.") from error
+
+    content_type = mimetypes.guess_type(picture.name)[0] or "application/octet-stream"
+    response = FileResponse(picture_file, content_type=content_type)
+    response["Cache-Control"] = "private, no-store"
+    return response
 
 
 @login_required(login_url="login")

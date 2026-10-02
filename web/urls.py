@@ -75,5 +75,6 @@ urlpatterns = [
     # auth
     path("", include("users.urls")),
     path("profile/", views.profile_view, name="web_profile"),
+    path("profile/picture/", views.profile_picture_view, name="web_profile_picture"),
     path("profile/change-password/", views.change_password_view, name="web_change_password"),
     ]

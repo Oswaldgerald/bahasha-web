@@ -72,15 +72,18 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/css/base.css` - typography, cards, buttons, and shared utilities
 - `static/css/layout.css` - collapsible sidebar, mobile drawer, top bar, and page headers
 - `static/css/forms.css` and `static/css/tables.css` - reusable form and table patterns
-- `static/css/dashboard.css`, `reports.css`, and `notifications.css` - feature styles
+- `static/css/dashboard.css`, `reports.css`, `notifications.css`, and `profile.css` - feature styles
 - `static/css/member-card.css` - member card styles loaded only by that page
 - `static/css/printing.css` - print-only behavior
 - `static/js/app.js` - icons, printing, and progress bars
 - `static/js/navigation.js` - persisted desktop sidebar and mobile drawer behavior
 - `static/js/dropdowns.js` - reusable accessible dropdown menus and dismissal behavior
 - `static/js/forms.js` - progressive enhancement for Django select fields
+- `static/js/profile.js` - profile picture preview and removal behavior
 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
+
+Profile pictures are stored in the persistent Docker media volume and served through an authenticated route. They are not exposed by a public media directory.
 
 Use `{% block extra_css %}` and `{% block extra_js %}` in page templates when a feature needs isolated assets. Avoid inline styles and event handlers so browser issues remain easy to trace.
 

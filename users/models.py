@@ -1,6 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from churches.models import Church
+from pathlib import Path
+import uuid
+
+
+def profile_picture_path(instance, filename):
+    extension = Path(filename).suffix.lower()
+    return f"profile_pictures/user_{instance.pk}/{uuid.uuid4().hex}{extension}"
 
 
 class User(AbstractUser):
@@ -25,6 +32,10 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=30, choices=ROLE_CHOICES)
+    profile_picture = models.ImageField(
+        upload_to=profile_picture_path,
+        blank=True,
+    )
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

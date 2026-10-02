@@ -14,7 +14,11 @@
             aria-label="Open account menu"
         >
             <span class="user-avatar" aria-hidden="true">
-                {{ request.user.full_name|default:request.user.username|slice:":1"|upper }}
+                {% if request.user.profile_picture %}
+                    <img src="{% url 'web_profile_picture' %}" alt="">
+                {% else %}
+                    {{ request.user.full_name|default:request.user.username|slice:":1"|upper }}
+                {% endif %}
             </span>
             <i data-lucide="chevron-down" aria-hidden="true"></i>
         </button>
@@ -22,7 +26,11 @@
         <div class="account-dropdown" id="account-dropdown" role="menu" aria-hidden="true">
             <div class="account-dropdown-header">
                 <span class="user-avatar user-avatar-large" aria-hidden="true">
-                    {{ request.user.full_name|default:request.user.username|slice:":1"|upper }}
+                    {% if request.user.profile_picture %}
+                        <img src="{% url 'web_profile_picture' %}" alt="">
+                    {% else %}
+                        {{ request.user.full_name|default:request.user.username|slice:":1"|upper }}
+                    {% endif %}
                 </span>
                 <div class="account-identity">
                     <strong>{{ request.user.full_name|default:request.user.username }}</strong>

@@ -40,6 +40,7 @@ class CustomUserAdmin(UserAdmin):
                 "phone_number",
                 "role",
                 "church",
+                "profile_picture",
             )
         }),
     )
@@ -51,6 +52,7 @@ class CustomUserAdmin(UserAdmin):
                 "phone_number",
                 "role",
                 "church",
+                "profile_picture",
             )
         }),
     )

@@ -1,60 +1,125 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}" defer></script>
+{% endblock %}
 
 {% block content %}
 
 <div class="page-header">
     <div>
         <h1>My Profile</h1>
-        <p>View and update your personal account information.</p>
+        <p>Manage your personal details, profile picture, and account security.</p>
     </div>
 
-    <a href="{% url 'web_change_password' %}" class="btn-primary">
-        Change Password
+    <a href="{% url 'web_change_password' %}" class="btn-secondary">
+        <i data-lucide="key-round" aria-hidden="true"></i>
+        <span>Change Password</span>
     </a>
 </div>
 
-<div class="card">
-    <h3>Account Details</h3>
+<div class="profile-layout">
+    <aside class="card profile-overview">
+        <div class="profile-avatar">
+            {% if request.user.profile_picture %}
+                <img src="{% url 'web_profile_picture' %}" alt="{{ request.user.full_name }}" data-profile-image>
+            {% else %}
+                <span>{{ request.user.full_name|default:request.user.username|slice:":1"|upper }}</span>
+            {% endif %}
+        </div>
 
-    <p><strong>Username:</strong> {{ request.user.username }}</p>
-    <p><strong>Role:</strong> {{ request.user.get_role_display }}</p>
+        <h2>{{ request.user.full_name|default:request.user.username }}</h2>
+        <span class="profile-role">{{ request.user.get_role_display }}</span>
 
-    <p>
-        <strong>Church:</strong>
-        {% if request.user.church %}
-            {{ request.user.church.church_name }}
-        {% else %}
-            -
-        {% endif %}
-    </p>
-</div>
-
-<div class="card">
-    <h3>Edit Profile</h3>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
+        <dl class="profile-facts">
             <div>
-                <label>Full Name</label>
-                {{ form.full_name }}
-                {{ form.full_name.errors }}
+                <dt><i data-lucide="at-sign" aria-hidden="true"></i> Username</dt>
+                <dd>{{ request.user.username }}</dd>
             </div>
-
             <div>
-                <label>Phone Number</label>
-                {{ form.phone_number }}
-                {{ form.phone_number.errors }}
+                <dt><i data-lucide="landmark" aria-hidden="true"></i> Church</dt>
+                <dd>
+                    {% if request.user.church %}
+                        {{ request.user.church.church_name }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt><i data-lucide="shield-check" aria-hidden="true"></i> Account</dt>
+                <dd>{% if request.user.is_active %}Active{% else %}Inactive{% endif %}</dd>
+            </div>
+        </dl>
+    </aside>
+
+    <section class="card profile-settings">
+        <div class="profile-section-heading">
+            <div>
+                <h2>Personal Information</h2>
+                <p>Keep your contact information and account photo up to date.</p>
             </div>
         </div>
 
-        <br>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        <button type="submit" class="btn-primary">
-            Update Profile
-        </button>
-    </form>
+            <div class="profile-photo-editor">
+                <div class="profile-photo-preview" data-photo-preview>
+                    <img
+                        src="{% if request.user.profile_picture %}{% url 'web_profile_picture' %}{% endif %}"
+                        alt="Profile picture preview"
+                        data-preview-image
+                        data-original-src="{% if request.user.profile_picture %}{% url 'web_profile_picture' %}{% endif %}"
+                        {% if not request.user.profile_picture %}hidden{% endif %}
+                    >
+                    <span data-preview-fallback{% if request.user.profile_picture %} hidden{% endif %}>
+                        {{ request.user.full_name|default:request.user.username|slice:":1"|upper }}
+                    </span>
+                </div>
+
+                <div class="profile-photo-controls">
+                    <label for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+                    {{ form.profile_picture }}
+                    {{ form.profile_picture.errors }}
+                    <p class="field-help">JPEG, PNG, or WebP. Maximum size 5 MB.</p>
+
+                    {% if request.user.profile_picture %}
+                        <label class="remove-picture-option">
+                            {{ form.remove_picture }}
+                            <span>Remove current picture</span>
+                        </label>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-grid profile-fields">
+                <div>
+                    <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+                    {{ form.full_name }}
+                    {{ form.full_name.errors }}
+                </div>
+
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                    {{ form.phone_number }}
+                    {{ form.phone_number.errors }}
+                </div>
+            </div>
+
+            <div class="form-actions profile-actions">
+                <button type="submit" class="btn-primary">
+                    <i data-lucide="save" aria-hidden="true"></i>
+                    <span>Save Changes</span>
+                </button>
+            </div>
+        </form>
+    </section>
 </div>
 
 {% endblock %}

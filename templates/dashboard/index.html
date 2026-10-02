@@ -2,211 +2,195 @@
 
 {% block content %}
 
-{% comment %} <div class="page-header">
+<div class="page-header dashboard-header">
     <div>
-        <h1>Bahasha Dashboard</h1>
-        <p>Overview of church contributions, members, uploads and annual targets.</p>
+        <h1>Dashboard</h1>
+        <p>Monitor membership, contributions, and annual target performance.</p>
     </div>
-</div> {% endcomment %}
 
-<div class="dashboard-grid">
-
-            <div class="stat-card">
-                <h4>Total Churches</h4>
-                <h2>{{ total_churches }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Total Members</h4>
-                <h2>{{ total_members }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Approved Members</h4>
-                <h2>{{ approved_members }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Pending Approvals</h4>
-                <h2>{{ pending_members }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Total Contributions</h4>
-                <h2>{{ total_contributions }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Total Collected</h4>
-                <h2>{{ total_contributed }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Total Target</h4>
-                <h2>{{ total_target }}</h2>
-            </div>
-
-            <div class="stat-card">
-                <h4>Overall Completion</h4>
-                <h2>{{ overall_completion }}%</h2>
-            </div>
-
+    <div class="dashboard-actions">
+        <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary">
+            <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
+            <span>View Report</span>
+        </a>
+        <a href="{% url 'web_contribution_create' %}" class="btn-primary">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Record Contribution</span>
+        </a>
+    </div>
 </div>
 
-<br>
+<section class="dashboard-grid" aria-label="System overview">
+    <article class="metric-card metric-card-blue">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="landmark" aria-hidden="true"></i></span>
+            <span class="metric-label">Total Churches</span>
+        </div>
+        <strong class="metric-value">{{ total_churches }}</strong>
+        <span class="metric-context">Registered congregations</span>
+    </article>
 
-<div class="card">
-    <h3>Active Period</h3>
+    <article class="metric-card metric-card-violet">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+            <span class="metric-label">Total Members</span>
+        </div>
+        <strong class="metric-value">{{ total_members }}</strong>
+        <span class="metric-context">All member records</span>
+    </article>
 
-    <p>
-        <strong>Financial Year:</strong>
-        {% if active_year %}
-            {{ active_year.year }}
-        {% else %}
-            Not configured
-        {% endif %}
-    </p>
+    <article class="metric-card metric-card-green">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="user-check" aria-hidden="true"></i></span>
+            <span class="metric-label">Approved Members</span>
+        </div>
+        <strong class="metric-value">{{ approved_members }}</strong>
+        <span class="metric-context">Ready for contributions</span>
+    </article>
 
-    <p>
-        <strong>Active Week:</strong>
-        {% if active_week %}
-            Week {{ active_week.week_number }} - {{ active_week.sunday_date }}
-        {% else %}
-            No active week
-        {% endif %}
-    </p>
-</div>
+    <article class="metric-card metric-card-amber">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="clock" aria-hidden="true"></i></span>
+            <span class="metric-label">Pending Approvals</span>
+        </div>
+        <strong class="metric-value">{{ pending_members }}</strong>
+        <span class="metric-context">Awaiting review</span>
+    </article>
 
-<div class="card table-card">
-    <h3>Category Performance</h3>
-    <p>Target achievement summary by contribution category.</p>
+    <article class="metric-card metric-card-indigo">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+            <span class="metric-label">Contributions</span>
+        </div>
+        <strong class="metric-value">{{ total_contributions }}</strong>
+        <span class="metric-context">Posted transactions</span>
+    </article>
 
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Total Target</th>
-                <th>Collected</th>
-                <th>Remaining</th>
-                <th>Completion</th>
-            </tr>
-        </thead>
+    <article class="metric-card metric-card-emerald">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="wallet-cards" aria-hidden="true"></i></span>
+            <span class="metric-label">Total Collected</span>
+        </div>
+        <strong class="metric-value metric-money"><small>TZS</small> {{ total_contributed|floatformat:"0g" }}</strong>
+        <span class="metric-context">Posted contribution value</span>
+    </article>
 
-        <tbody>
-            {% for item in category_performance %}
-            <tr>
-                <td>{{ item.category__name }}</td>
-                <td>{{ item.total_target }}</td>
-                <td>{{ item.total_contributed }}</td>
-                <td>{{ item.total_remaining }}</td>
-                <td>
-                    <strong>{{ item.completion_percentage }}%</strong>
+    <article class="metric-card metric-card-cyan">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="goal" aria-hidden="true"></i></span>
+            <span class="metric-label">Annual Target</span>
+        </div>
+        <strong class="metric-value metric-money"><small>TZS</small> {{ total_target|floatformat:"0g" }}</strong>
+        <span class="metric-context">Combined member targets</span>
+    </article>
 
-                    <div class="progress-track">
-                        <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
-                    </div>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="empty-state">
-                    No category performance data found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <article class="metric-card metric-card-purple">
+        <div class="metric-card-heading">
+            <span class="metric-icon"><i data-lucide="gauge" aria-hidden="true"></i></span>
+            <span class="metric-label">Overall Completion</span>
+        </div>
+        <strong class="metric-value">{{ overall_completion|floatformat:"-2" }}%</strong>
+        <div class="metric-progress" aria-label="{{ overall_completion }} percent complete">
+            <div class="progress-track">
+                <div class="progress-bar" data-progress="{{ overall_completion }}"></div>
+            </div>
+            <span>Target progress</span>
+        </div>
+    </article>
+</section>
 
-{% comment %} <div class="dashboard-grid">
-
-    <div class="stat-card">
-        <h4>Excel Uploads</h4>
-        <h2>{{ total_uploads }}</h2>
+<section class="card dashboard-period" aria-labelledby="active-period-title">
+    <div class="period-heading">
+        <span class="period-heading-icon"><i data-lucide="calendar-clock" aria-hidden="true"></i></span>
+        <div>
+            <h2 id="active-period-title">Active Period</h2>
+            <p>Current reporting window for contribution activity.</p>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <h4>Pending Uploads</h4>
-        <h2>{{ pending_uploads }}</h2>
+    <div class="period-details">
+        <div class="period-item">
+            <i data-lucide="calendar-range" aria-hidden="true"></i>
+            <span>
+                <small>Financial Year</small>
+                <strong>{% if active_year %}{{ active_year.year }}{% else %}Not configured{% endif %}</strong>
+            </span>
+        </div>
+
+        <div class="period-item">
+            <i data-lucide="calendar-check-2" aria-hidden="true"></i>
+            <span>
+                <small>Active Week</small>
+                <strong>
+                    {% if active_week %}
+                        Week {{ active_week.week_number }} - {{ active_week.sunday_date|date:"M j, Y" }}
+                    {% else %}
+                        No active week
+                    {% endif %}
+                </strong>
+            </span>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <h4>Failed Uploads</h4>
-        <h2>{{ failed_uploads }}</h2>
+    <a href="{% url 'web_contribution_weeks' %}" class="period-link">
+        <span>Manage periods</span>
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+    </a>
+</section>
+
+<section class="card table-card dashboard-performance" aria-labelledby="category-performance-title">
+    <div class="performance-heading">
+        <div>
+            <h2 id="category-performance-title">Category Performance</h2>
+            <p>Target achievement by contribution category.</p>
+        </div>
+        <a href="{% url 'web_annual_targets' %}" class="section-link">
+            <span>View annual targets</span>
+            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+        </a>
     </div>
 
-</div> {% endcomment %}
+    <div class="dashboard-table-wrap">
+        <table class="data-table dashboard-table{% if not category_performance %} is-empty{% endif %}">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="numeric-column">Target (TZS)</th>
+                    <th class="numeric-column">Collected (TZS)</th>
+                    <th class="numeric-column">Remaining (TZS)</th>
+                    <th>Completion</th>
+                </tr>
+            </thead>
 
-<br>
-
-{% comment %} <div class="card table-card">
-    <h3>Recent Excel Uploads</h3>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Reference</th>
-                <th>Church</th>
-                <th>Week</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for upload in recent_uploads %}
-            <tr>
-                <td>{{ upload.upload_reference }}</td>
-                <td>{{ upload.church.church_name }}</td>
-                <td>Week {{ upload.contribution_week.week_number }}</td>
-                <td>{{ upload.selected_category.name }}</td>
-                <td>{{ upload.status }}</td>
-                <td>{{ upload.total_amount }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No recent uploads found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div> {% endcomment %}
-
-{% comment %} <div class="card table-card">
-    <h3>Recent Contributions</h3>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Member</th>
-                <th>Week</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for contribution in recent_contributions %}
-            <tr>
-                <td>{{ contribution.member.user.full_name }}</td>
-                <td>Week {{ contribution.contribution_week.week_number }}</td>
-                <td>{{ contribution.category.name }}</td>
-                <td>{{ contribution.amount }}</td>
-                <td>{{ contribution.contribution_date }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="empty-state">
-                    No recent contributions found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div> {% endcomment %}
+            <tbody>
+                {% for item in category_performance %}
+                <tr>
+                    <td><strong>{{ item.category__name }}</strong></td>
+                    <td class="numeric-column">{{ item.total_target|floatformat:"0g" }}</td>
+                    <td class="numeric-column collected-value">{{ item.total_contributed|floatformat:"0g" }}</td>
+                    <td class="numeric-column">{{ item.total_remaining|floatformat:"0g" }}</td>
+                    <td class="completion-cell">
+                        <div class="completion-label">
+                            <strong>{{ item.completion_percentage|floatformat:"-2" }}%</strong>
+                            <span>complete</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-state dashboard-empty-state">
+                        <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i>
+                        <strong>No category performance yet</strong>
+                        <span>Add annual targets to begin tracking progress.</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
 {% endblock %}

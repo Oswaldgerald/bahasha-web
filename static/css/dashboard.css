@@ -1,34 +1,340 @@
+.dashboard-header {
+    align-items: center;
+}
+
+.dashboard-header h1 {
+    font-size: 28px;
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-top: 20px;
+    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.stat-card {
+.metric-card {
+    --metric-accent: #2d1b69;
+    --metric-soft: #eeeaf9;
     background: white;
-    padding: 22px;
+    border: 1px solid #ebeaf0;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 3px 12px rgba(33, 25, 57, 0.06);
+    box-sizing: border-box;
+    min-height: 168px;
+    overflow: hidden;
+    padding: 18px 20px 16px;
+    position: relative;
 }
 
-.stat-card h4 {
+.metric-card::before {
+    background: var(--metric-accent);
+    content: "";
+    height: 3px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.metric-card-heading {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.metric-icon {
+    align-items: center;
+    background: var(--metric-soft);
+    border-radius: 7px;
+    color: var(--metric-accent);
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+}
+
+.metric-icon svg {
+    height: 18px;
+    width: 18px;
+}
+
+.metric-label {
+    color: #5f5a68;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.metric-value {
+    color: #211653;
+    display: block;
+    font-size: 30px;
+    line-height: 1.1;
+    margin-top: 18px;
+    overflow-wrap: anywhere;
+}
+
+.metric-money {
+    font-size: 25px;
+}
+
+.metric-money small {
+    color: #716b7d;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.metric-context {
+    color: #7a7582;
+    display: block;
+    font-size: 12px;
+    margin-top: 9px;
+}
+
+.metric-card-blue {
+    --metric-accent: #2667a8;
+    --metric-soft: #e9f2fb;
+}
+
+.metric-card-violet {
+    --metric-accent: #6f4ab3;
+    --metric-soft: #f0ebf8;
+}
+
+.metric-card-green {
+    --metric-accent: #25805b;
+    --metric-soft: #e7f5ee;
+}
+
+.metric-card-amber {
+    --metric-accent: #a96818;
+    --metric-soft: #fbf1df;
+}
+
+.metric-card-indigo {
+    --metric-accent: #4d57a8;
+    --metric-soft: #eceefa;
+}
+
+.metric-card-emerald {
+    --metric-accent: #18765d;
+    --metric-soft: #e5f4ef;
+}
+
+.metric-card-cyan {
+    --metric-accent: #28798c;
+    --metric-soft: #e6f3f5;
+}
+
+.metric-card-purple {
+    --metric-accent: #7b3d8f;
+    --metric-soft: #f4eaf6;
+}
+
+.metric-progress {
+    color: #7a7582;
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+.metric-progress .progress-track {
+    margin: 0 0 6px;
+}
+
+.dashboard-period {
+    align-items: center;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(230px, 1fr) minmax(360px, 1.4fr) auto;
+    margin-top: 22px;
+    padding: 20px 22px;
+}
+
+.period-heading,
+.period-item {
+    align-items: center;
+    display: flex;
+}
+
+.period-heading {
+    gap: 12px;
+}
+
+.period-heading-icon {
+    align-items: center;
+    background: #eeeaf9;
+    border-radius: 8px;
+    color: #2d1b69;
+    display: inline-flex;
+    flex: 0 0 42px;
+    height: 42px;
+    justify-content: center;
+}
+
+.period-heading-icon svg {
+    height: 22px;
+    width: 22px;
+}
+
+.period-heading h2,
+.performance-heading h2 {
+    font-size: 19px;
     margin: 0;
-    color: #666;
+}
+
+.period-heading p,
+.performance-heading p {
+    color: #716c79;
+    font-size: 13px;
+    margin: 5px 0 0;
+}
+
+.period-details {
+    display: grid;
+    grid-template-columns: minmax(155px, 0.75fr) minmax(220px, 1.25fr);
+}
+
+.period-item {
+    border-left: 1px solid #e6e4eb;
+    gap: 10px;
+    min-width: 0;
+    padding: 3px 16px;
+}
+
+.period-item > svg {
+    color: #6f6791;
+    flex: 0 0 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.period-item span,
+.period-item small,
+.period-item strong {
+    display: block;
+    min-width: 0;
+}
+
+.period-item small {
+    color: #77717f;
+    font-size: 11px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.period-item strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.period-item:first-child strong {
+    white-space: nowrap;
+}
+
+.period-link,
+.section-link {
+    align-items: center;
+    color: #2d1b69;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.period-link svg,
+.section-link svg {
+    height: 16px;
+    width: 16px;
+}
+
+.period-link:hover,
+.section-link:hover {
+    text-decoration: underline;
+}
+
+.dashboard-performance {
+    margin-top: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.performance-heading {
+    align-items: center;
+    border-bottom: 1px solid #ebeaf0;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    padding: 20px 22px;
+}
+
+.dashboard-table-wrap {
+    overflow-x: auto;
+}
+
+.dashboard-table {
+    min-width: 780px;
+}
+
+.dashboard-table.is-empty {
+    min-width: 0;
+}
+
+.dashboard-table.is-empty thead {
+    display: none;
+}
+
+.dashboard-table th {
+    background: #f7f7f9;
+    color: #625d69;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.dashboard-table td {
     font-size: 14px;
 }
 
-.stat-card h2 {
-    margin: 12px 0 0;
-    color: #2d1b69;
-    font-size: 32px;
+.dashboard-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.numeric-column {
+    font-variant-numeric: tabular-nums;
+    text-align: right !important;
+}
+
+.collected-value {
+    color: #18765d;
+    font-weight: 700;
+}
+
+.completion-cell {
+    min-width: 180px;
+}
+
+.completion-label {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.completion-label span {
+    color: #7a7582;
+    font-size: 11px;
 }
 
 .progress-track {
-    background: #e7e7ea;
+    background: #e8e7eb;
     border-radius: 8px;
-    height: 8px;
-    margin-top: 6px;
+    height: 7px;
+    margin-top: 7px;
     overflow: hidden;
 }
 
@@ -39,13 +345,131 @@
     width: 0;
 }
 
-@media (max-width: 1100px) {
+.dashboard-empty-state {
+    padding: 42px 20px !important;
+}
+
+.dashboard-empty-state svg,
+.dashboard-empty-state strong,
+.dashboard-empty-state span {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dashboard-empty-state svg {
+    color: #8f8998;
+    height: 28px;
+    margin-bottom: 10px;
+    width: 28px;
+}
+
+.dashboard-empty-state span {
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+@media (max-width: 1240px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .dashboard-period {
+        grid-template-columns: 1fr auto;
+    }
+
+    .period-details {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .period-item:first-child {
+        border-left: 0;
+        padding-left: 0;
+    }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
+    .dashboard-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .dashboard-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashboard-period {
+        align-items: start;
+        grid-template-columns: 1fr;
+    }
+
+    .period-details {
+        gap: 18px;
+        grid-column: auto;
+        grid-row: auto;
+        grid-template-columns: 1fr;
+    }
+
+    .period-item,
+    .period-item:first-child {
+        border-left: 0;
+        border-top: 1px solid #e6e4eb;
+        padding: 16px 0 0;
+    }
+
+    .performance-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboard-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-card {
+        min-height: 148px;
+        padding: 15px 14px 14px;
+    }
+
+    .metric-card-heading {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .metric-icon {
+        flex-basis: 30px;
+        height: 30px;
+    }
+
+    .metric-icon svg {
+        height: 16px;
+        width: 16px;
+    }
+
+    .metric-label {
+        font-size: 11px;
+        padding-top: 3px;
+    }
+
+    .metric-value {
+        font-size: 26px;
+        margin-top: 14px;
+    }
+
+    .metric-money {
+        font-size: 18px;
+    }
+
+    .metric-context {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 360px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }

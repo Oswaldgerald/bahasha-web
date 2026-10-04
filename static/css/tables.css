@@ -1,11 +1,88 @@
+.list-toolbar {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.list-toolbar p {
+    color: #67616f;
+    margin: 0;
+}
+
+.list-toolbar-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .table-card {
+    overflow-x: auto;
     padding: 18px;
+}
+
+.list-table-card {
+    overflow: hidden;
+    padding: 0;
+}
+
+.table-scroll {
     overflow-x: auto;
 }
 
 .data-table {
-    width: 100%;
     border-collapse: collapse;
+    width: 100%;
+}
+
+.list-table {
+    min-width: var(--table-min-width, 760px);
+}
+
+.list-table.is-wide {
+    --table-min-width: 880px;
+}
+
+.list-table.is-wider {
+    --table-min-width: 1040px;
+}
+
+.list-table.is-widest {
+    --table-min-width: 1280px;
+}
+
+.list-table.is-empty {
+    min-width: 0;
+}
+
+.data-table th {
+    background: #f4f5f8;
+    color: #625d69;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 13px 14px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.data-table td {
+    border-bottom: 1px solid #eeecf1;
+    padding: 14px;
+    vertical-align: middle;
+}
+
+.data-table tbody tr {
+    transition: background-color 140ms ease;
+}
+
+.data-table tbody tr:hover {
+    background: #faf9fc;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: 0;
 }
 
 .data-table-compact th,
@@ -17,43 +94,63 @@
     max-width: 520px;
 }
 
-.data-table th {
-    background: #f4f6f9;
-    padding: 14px;
-    text-align: left;
-    font-size: 14px;
+.table-primary strong,
+.table-primary small {
+    display: block;
 }
 
-.data-table td {
-    padding: 14px;
-    border-bottom: 1px solid #eee;
-    vertical-align: middle;
-}
-
-.data-table tr:hover {
-    background: #fafafa;
-}
-
-.empty-state {
-    color: #666;
-    padding: 20px !important;
-    text-align: center;
-}
-
-.badge-success {
-    background: #e8f7ee;
-    color: #18804b;
-    padding: 5px 10px;
-    border-radius: 20px;
+.table-primary strong {
+    color: #282331;
     font-size: 13px;
 }
 
+.table-primary small,
+.table-muted {
+    color: #756f7c;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+.status-badge,
+.badge-success,
 .badge-danger {
-    background: #fde8e8;
-    color: #b42318;
-    padding: 5px 10px;
+    align-items: center;
     border-radius: 20px;
-    font-size: 13px;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+    padding: 5px 9px;
+}
+
+.status-badge::before {
+    background: currentColor;
+    border-radius: 50%;
+    content: "";
+    height: 6px;
+    width: 6px;
+}
+
+.status-badge.is-success,
+.badge-success {
+    background: #e7f5ee;
+    color: #19724f;
+}
+
+.status-badge.is-danger,
+.badge-danger {
+    background: #f8e8e7;
+    color: #9c2d25;
+}
+
+.status-badge.is-info {
+    background: #eeeaf9;
+    color: #2d1b69;
+}
+
+.status-badge.is-neutral {
+    background: #f0eff2;
+    color: #6d6776;
 }
 
 .status-text {
@@ -72,14 +169,174 @@
     color: #b42318;
 }
 
+.table-actions {
+    align-items: center;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.table-actions-heading {
+    text-align: right !important;
+}
+
+.icon-action {
+    align-items: center;
+    background: #f0edf9;
+    border: 0;
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: #2d1b69;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 32px;
+    height: 32px;
+    justify-content: center;
+    padding: 0;
+    text-decoration: none;
+    transition: background-color 140ms ease, color 140ms ease;
+    width: 32px;
+}
+
+.icon-action:hover {
+    background: #e4def5;
+}
+
+.icon-action.is-danger {
+    background: #f8e8e7;
+    color: #9c2d25;
+}
+
+.icon-action.is-success {
+    background: #e7f5ee;
+    color: #19724f;
+}
+
+.icon-action svg {
+    height: 15px;
+    width: 15px;
+}
+
 .action-link {
     color: #2d1b69;
-    font-weight: 600;
-    text-decoration: none;
-    margin-left: 10px;
     display: inline-block;
+    font-weight: 600;
+    margin-left: 10px;
+    text-decoration: none;
 }
 
 .action-link.danger {
     color: #b42318;
+}
+
+.empty-state {
+    color: #6d6776;
+    padding: 20px !important;
+    text-align: center;
+}
+
+.table-empty {
+    color: #6d6776;
+    padding: 42px 20px !important;
+    text-align: center;
+}
+
+.table-empty svg,
+.table-empty strong,
+.table-empty span {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table-empty svg {
+    height: 28px;
+    margin-bottom: 10px;
+    width: 28px;
+}
+
+.table-empty strong {
+    color: #302a3a;
+}
+
+.table-empty span {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+@media (max-width: 620px) {
+    .list-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .list-toolbar-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .list-toolbar .btn-primary,
+    .list-toolbar .btn-secondary {
+        width: 100%;
+    }
+
+    .responsive-table {
+        min-width: 0;
+    }
+
+    .responsive-table thead {
+        display: none;
+    }
+
+    .responsive-table,
+    .responsive-table tbody,
+    .responsive-table tr,
+    .responsive-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .responsive-table tr {
+        border-bottom: 8px solid #f4f6f9;
+        padding: 8px 0;
+    }
+
+    .responsive-table tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .responsive-table td {
+        border-bottom: 1px solid #f0eef4;
+        box-sizing: border-box;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 86px minmax(0, 1fr);
+        overflow-wrap: anywhere;
+        padding: 10px 14px;
+    }
+
+    .responsive-table td::before {
+        color: #7a7481;
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 700;
+        padding-top: 3px;
+        text-transform: uppercase;
+    }
+
+    .responsive-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .responsive-table .table-actions {
+        justify-content: flex-start;
+    }
+
+    .responsive-table .table-empty {
+        display: block !important;
+    }
+
+    .responsive-table .table-empty::before {
+        content: none !important;
+    }
 }

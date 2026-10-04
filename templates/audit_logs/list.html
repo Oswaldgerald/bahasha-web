@@ -1,64 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="list-toolbar">
+    <p>Track important system activities and financial actions.</p>
+</div>
 
-<div class="page-header">
-    <div>
-        <h1>Audit Logs</h1>
-        <p>Track important system activities and financial actions.</p>
+<section class="card list-table-card" aria-label="Audit logs">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not logs %} is-empty{% endif %}">
+            <thead><tr><th>Activity</th><th>User</th><th>Church</th><th>Entity</th><th>Description</th></tr></thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td data-label="Activity" class="table-primary"><strong>{{ log.get_action_display }}</strong><small>{{ log.created_at }}</small></td>
+                    <td data-label="User">{% if log.user %}{{ log.user.full_name }}{% else %}System{% endif %}</td>
+                    <td data-label="Church">{% if log.church %}{{ log.church.church_name }}{% else %}Not assigned{% endif %}</td>
+                    <td data-label="Entity">{% if log.entity_type %}{{ log.entity_type }} #{{ log.entity_id }}{% else %}Not recorded{% endif %}</td>
+                    <td data-label="Description">{{ log.description }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="table-empty"><i data-lucide="scroll-text" aria-hidden="true"></i><strong>No audit activity</strong><span>Recorded system actions will appear here.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-</div>
-
-<div class="card table-card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Date/Time</th>
-                <th>Action</th>
-                <th>User</th>
-                <th>Church</th>
-                <th>Entity</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for log in logs %}
-            <tr>
-                <td>{{ log.created_at }}</td>
-                <td>{{ log.get_action_display }}</td>
-                <td>
-                    {% if log.user %}
-                        {{ log.user.full_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if log.church %}
-                        {{ log.church.church_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if log.entity_type %}
-                        {{ log.entity_type }} #{{ log.entity_id }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ log.description }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No audit logs recorded yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
+</section>
 {% endblock %}

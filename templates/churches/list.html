@@ -1,62 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="list-toolbar">
+    <p>Manage registered churches and their unique church codes.</p>
+    <a href="{% url 'web_church_create' %}" class="btn-primary"><i data-lucide="landmark" aria-hidden="true"></i><span>Add Church</span></a>
+</div>
 
-<div class="page-header">
-    <div>
-        <h1>Church Management</h1>
-        <p>Manage registered churches and their unique church codes.</p>
+<section class="card list-table-card" aria-label="Registered churches">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not churches %} is-empty{% endif %}">
+            <thead><tr><th>Church</th><th>Parish</th><th>District</th><th>Location</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for church in churches %}
+                <tr>
+                    <td data-label="Church" class="table-primary"><strong>{{ church.church_name }}</strong><small>{{ church.church_code }}</small></td>
+                    <td data-label="Parish">{{ church.parish|default:"Not assigned" }}</td>
+                    <td data-label="District">{{ church.district|default:"Not assigned" }}</td>
+                    <td data-label="Location">{{ church.location|default:"Not provided" }}</td>
+                    <td data-label="Status"><span class="status-badge {% if church.is_active %}is-success{% else %}is-neutral{% endif %}">{% if church.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_church_edit' church.id %}" class="icon-action" title="Edit church" aria-label="Edit {{ church.church_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="table-empty"><i data-lucide="landmark" aria-hidden="true"></i><strong>No churches registered</strong><span>Add a church to begin organizing members and contributions.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <a href="{% url 'web_church_create' %}" class="btn-primary">
-        + Add Church
-    </a>
-</div>
-
-<div class="card table-card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Church Code</th>
-                <th>Church Name</th>
-                <th>Parish</th>
-                <th>District</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th class="text-right">Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for church in churches %}
-            <tr>
-                <td>{{ church.church_code }}</td>
-                <td>{{ church.church_name }}</td>
-                <td>{{ church.parish|default:"-" }}</td>
-                <td>{{ church.district|default:"-" }}</td>
-                <td>{{ church.location|default:"-" }}</td>
-                <td>
-                    {% if church.is_active %}
-                        <span class="badge-success">Active</span>
-                    {% else %}
-                        <span class="badge-danger">Inactive</span>
-                    {% endif %}
-                </td>
-                <td class="text-right">
-                    <a href="{% url 'web_church_edit' church.id %}" class="action-link">
-                        Edit
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No churches registered yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
+</section>
 {% endblock %}

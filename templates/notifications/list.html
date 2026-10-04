@@ -1,70 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="list-toolbar">
+    <p>Review announcements, reminders, and system messages.</p>
+    <a href="{% url 'web_notification_create' %}" class="btn-primary"><i data-lucide="send" aria-hidden="true"></i><span>Send Notification</span></a>
+</div>
 
-<div class="page-header">
-    <div>
-        <h1>Notifications</h1>
-        <p>View sent announcements, reminders, and system messages.</p>
+<section class="card list-table-card" aria-label="Notifications">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not notifications %} is-empty{% endif %}">
+            <thead><tr><th>Notification</th><th>Church</th><th>Type</th><th>Audience</th><th>Status</th><th>Created By</th><th>Sent At</th></tr></thead>
+            <tbody>
+                {% for notification in notifications %}
+                <tr>
+                    <td data-label="Notification" class="table-primary"><strong>{{ notification.title }}</strong></td>
+                    <td data-label="Church">{{ notification.church.church_name }}</td>
+                    <td data-label="Type">{{ notification.get_notification_type_display }}</td>
+                    <td data-label="Audience">{{ notification.target_role|default:"All users" }}</td>
+                    <td data-label="Status"><span class="status-badge {% if notification.status == 'SENT' %}is-success{% else %}is-neutral{% endif %}">{% if notification.status == 'SENT' %}Sent{% else %}Draft{% endif %}</span></td>
+                    <td data-label="Created By">{% if notification.created_by %}{{ notification.created_by.full_name }}{% else %}System{% endif %}</td>
+                    <td data-label="Sent At">{{ notification.sent_at|default:"Not sent" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="table-empty"><i data-lucide="bell" aria-hidden="true"></i><strong>No notifications</strong><span>Sent and draft notifications will appear here.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <a href="{% url 'web_notification_create' %}" class="btn-primary">
-        + Send Notification
-    </a>
-</div>
-
-<div class="card table-card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Church</th>
-                <th>Type</th>
-                <th>Target</th>
-                <th>Status</th>
-                <th>Created By</th>
-                <th>Sent At</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for notification in notifications %}
-            <tr>
-                <td>{{ notification.title }}</td>
-                <td>{{ notification.church.church_name }}</td>
-                <td>{{ notification.get_notification_type_display }}</td>
-                <td>
-                    {% if notification.target_role %}
-                        {{ notification.target_role }}
-                    {% else %}
-                        All Users
-                    {% endif %}
-                </td>
-                <td>
-                    {% if notification.status == "SENT" %}
-                        <span class="badge-success">Sent</span>
-                    {% else %}
-                        <span class="badge-danger">Draft</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if notification.created_by %}
-                        {{ notification.created_by.full_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ notification.sent_at|default:"-" }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No notifications found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
+</section>
 {% endblock %}

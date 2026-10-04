@@ -1,49 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Financial Years</h1>
-<p>Manage active church financial years.</p>
-
-<a href="{% url 'web_financial_year_create' %}" class="btn-primary">
-    + Add Financial Year
-</a>
-
-<br><br>
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Church</th>
-                <th>Year</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Active</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for financial_year in financial_years %}
-            <tr>
-                <td>{{ financial_year.church.church_name }}</td>
-                <td>{{ financial_year.year }}</td>
-                <td>{{ financial_year.start_date }}</td>
-                <td>{{ financial_year.end_date }}</td>
-                <td>
-                    {% if financial_year.is_active %}Yes{% else %}No{% endif %}
-                </td>
-                <td class="text-center">
-                    <a href="{% url 'web_financial_year_edit' financial_year.id %}" class= "action-link" class="text-center">Edit</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No financial years added yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Manage church financial periods and identify the currently active year.</p>
+    <a href="{% url 'web_financial_year_create' %}" class="btn-primary"><i data-lucide="calendar-plus" aria-hidden="true"></i><span>Add Financial Year</span></a>
 </div>
+
+<section class="card list-table-card" aria-label="Financial years">
+    <div class="table-scroll">
+        <table class="data-table list-table responsive-table{% if not financial_years %} is-empty{% endif %}">
+            <thead><tr><th>Financial Year</th><th>Church</th><th>Start Date</th><th>End Date</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for financial_year in financial_years %}
+                <tr>
+                    <td data-label="Financial Year" class="table-primary"><strong>{{ financial_year.year }}</strong></td>
+                    <td data-label="Church">{{ financial_year.church.church_name }}</td>
+                    <td data-label="Start Date">{{ financial_year.start_date }}</td>
+                    <td data-label="End Date">{{ financial_year.end_date }}</td>
+                    <td data-label="Status"><span class="status-badge {% if financial_year.is_active %}is-success{% else %}is-neutral{% endif %}">{% if financial_year.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_financial_year_edit' financial_year.id %}" class="icon-action" title="Edit financial year" aria-label="Edit financial year {{ financial_year.year }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="table-empty"><i data-lucide="calendar-range" aria-hidden="true"></i><strong>No financial years</strong><span>Add a financial year before configuring contribution periods.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

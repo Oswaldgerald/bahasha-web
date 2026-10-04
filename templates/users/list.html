@@ -2,10 +2,8 @@
 {% load static %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/users.css' %}">{% endblock %}
-{% block extra_js %}<script src="{% static 'js/users.js' %}" defer></script>{% endblock %}
-
 {% block content %}
-<div class="user-list-toolbar">
+<div class="list-toolbar">
     <p>Manage account access, church assignments, and system responsibilities.</p>
     <a href="{% url 'web_user_create' %}" class="btn-primary"><i data-lucide="user-plus" aria-hidden="true"></i><span>Add User</span></a>
 </div>
@@ -35,10 +33,10 @@
     {% if filters.q or filters.role or filters.account_status %}<a href="{% url 'web_users' %}" class="user-clear-filter">Clear</a>{% endif %}
 </form>
 
-<section class="card user-table-card" aria-label="System user accounts">
-    <div class="user-table-wrap">
-        <table class="data-table user-table{% if not users %} is-empty{% endif %}">
-            <thead><tr><th>User</th><th>Contact</th><th>Church</th><th>Role</th><th>Status</th><th class="user-actions-heading">Actions</th></tr></thead>
+<section class="card list-table-card" aria-label="System user accounts">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not users %} is-empty{% endif %}">
+            <thead><tr><th>User</th><th>Contact</th><th>Church</th><th>Role</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
             <tbody>
                 {% for user in users %}
                 <tr>
@@ -48,14 +46,14 @@
                     <td data-label="Role"><span class="user-role role-{{ user.role|lower }}">{{ user.get_role_display }}</span></td>
                     <td data-label="Status"><span class="user-account-state {% if user.is_active %}is-active{% else %}is-inactive{% endif %}"><span aria-hidden="true"></span>{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></td>
                     <td data-label="Actions">
-                        <div class="user-actions">
-                            <a href="{% url 'web_user_edit' user.id %}" class="user-icon-action" title="Edit user" aria-label="Edit {{ user.full_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a>
-                            <form method="post" action="{% url 'web_user_reset_password' user.id %}" class="inline-form" data-confirm-user-action="Reset the password for {{ user.full_name }}?">{% csrf_token %}<button type="submit" class="user-icon-action" title="Reset password" aria-label="Reset password for {{ user.full_name }}"><i data-lucide="key-round" aria-hidden="true"></i></button></form>
+                        <div class="table-actions">
+                            <a href="{% url 'web_user_edit' user.id %}" class="icon-action" title="Edit user" aria-label="Edit {{ user.full_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a>
+                            <form method="post" action="{% url 'web_user_reset_password' user.id %}" class="inline-form" data-confirm-action="Reset the password for {{ user.full_name }}?">{% csrf_token %}<button type="submit" class="icon-action" title="Reset password" aria-label="Reset password for {{ user.full_name }}"><i data-lucide="key-round" aria-hidden="true"></i></button></form>
                             {% if user != request.user %}
                                 {% if user.is_active %}
-                                <form method="post" action="{% url 'web_user_deactivate' user.id %}" class="inline-form" data-confirm-user-action="Deactivate {{ user.full_name }}? They will no longer be able to sign in.">{% csrf_token %}<button type="submit" class="user-icon-action is-danger" title="Deactivate user" aria-label="Deactivate {{ user.full_name }}"><i data-lucide="user-x" aria-hidden="true"></i></button></form>
+                                <form method="post" action="{% url 'web_user_deactivate' user.id %}" class="inline-form" data-confirm-action="Deactivate {{ user.full_name }}? They will no longer be able to sign in.">{% csrf_token %}<button type="submit" class="icon-action is-danger" title="Deactivate user" aria-label="Deactivate {{ user.full_name }}"><i data-lucide="user-x" aria-hidden="true"></i></button></form>
                                 {% else %}
-                                <form method="post" action="{% url 'web_user_activate' user.id %}" class="inline-form">{% csrf_token %}<button type="submit" class="user-icon-action is-success" title="Activate user" aria-label="Activate {{ user.full_name }}"><i data-lucide="user-check" aria-hidden="true"></i></button></form>
+                                <form method="post" action="{% url 'web_user_activate' user.id %}" class="inline-form">{% csrf_token %}<button type="submit" class="icon-action is-success" title="Activate user" aria-label="Activate {{ user.full_name }}"><i data-lucide="user-check" aria-hidden="true"></i></button></form>
                                 {% endif %}
                             {% else %}
                                 <span class="user-current-account">You</span>
@@ -64,7 +62,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="6" class="empty-state user-empty-state"><i data-lucide="users-round" aria-hidden="true"></i><strong>No users found</strong><span>Adjust the filters or create a user account.</span></td></tr>
+                <tr><td colspan="6" class="table-empty"><i data-lucide="users-round" aria-hidden="true"></i><strong>No users found</strong><span>Adjust the filters or create a user account.</span></td></tr>
                 {% endfor %}
             </tbody>
         </table>

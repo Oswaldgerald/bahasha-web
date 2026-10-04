@@ -1,66 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Contribution Weeks</h1>
-<p>Manage weekly Sunday contribution periods.</p>
-
-
-{# Button to add a new contribution week #}
-<a href="{% url 'web_contribution_week_create' %}" class="btn-primary">+ Add Week</a>
-<a href="{% url 'web_contribution_week_generate' %}" class="btn-secondary">Generate Weeks</a>
-
-
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Church</th>
-                <th>Financial Year</th>
-                <th>Week</th>
-                <th>Sunday Date</th>
-                <th>Active</th>
-                <th>Closed</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for week in weeks %}
-            <tr>
-                <td>{{ week.church.church_name }}</td>
-                <td>{{ week.financial_year.year }}</td>
-                <td>Week {{ week.week_number }}</td>
-                <td>{{ week.sunday_date }}</td>
-                <td>
-                    {% if week.is_active %}Yes{% else %}No{% endif %}
-                </td>
-                <td>
-                    {% if week.is_closed %}Yes{% else %}No{% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'web_contribution_week_edit' week.id %}">Edit</a>
-                    <form method="post" action="{% url 'web_contribution_week_activate' week.id %}" class="inline-form">
-                        {% csrf_token %}
-                        <button type="submit" class="action-button">Activate</button>
-                    </form>
-                    <form method="post" action="{% url 'web_contribution_week_close' week.id %}" class="inline-form">
-                        {% csrf_token %}
-                        <button type="submit" class="action-button danger">Close</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No contribution weeks added yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Manage weekly Sunday contribution periods and their collection state.</p>
+    <div class="list-toolbar-actions">
+        <a href="{% url 'web_contribution_week_generate' %}" class="btn-secondary"><i data-lucide="calendar-plus" aria-hidden="true"></i><span>Generate Weeks</span></a>
+        <a href="{% url 'web_contribution_week_create' %}" class="btn-primary"><i data-lucide="plus" aria-hidden="true"></i><span>Add Week</span></a>
+    </div>
 </div>
 
+<section class="card list-table-card" aria-label="Contribution weeks">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not weeks %} is-empty{% endif %}">
+            <thead><tr><th>Period</th><th>Church</th><th>Financial Year</th><th>Sunday Date</th><th>Availability</th><th>Collection</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for week in weeks %}
+                <tr>
+                    <td data-label="Period" class="table-primary"><strong>Week {{ week.week_number }}</strong></td>
+                    <td data-label="Church">{{ week.church.church_name }}</td>
+                    <td data-label="Financial Year">{{ week.financial_year.year }}</td>
+                    <td data-label="Sunday Date">{{ week.sunday_date }}</td>
+                    <td data-label="Availability"><span class="status-badge {% if week.is_active %}is-success{% else %}is-neutral{% endif %}">{% if week.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Collection"><span class="status-badge {% if week.is_closed %}is-neutral{% else %}is-info{% endif %}">{% if week.is_closed %}Closed{% else %}Open{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions">
+                        <a href="{% url 'web_contribution_week_edit' week.id %}" class="icon-action" title="Edit week" aria-label="Edit week {{ week.week_number }}"><i data-lucide="square-pen" aria-hidden="true"></i></a>
+                        <form method="post" action="{% url 'web_contribution_week_activate' week.id %}" class="inline-form" data-confirm-action="Make week {{ week.week_number }} the active contribution week?">{% csrf_token %}<button type="submit" class="icon-action is-success" title="Activate week" aria-label="Activate week {{ week.week_number }}"><i data-lucide="circle-check" aria-hidden="true"></i></button></form>
+                        <form method="post" action="{% url 'web_contribution_week_close' week.id %}" class="inline-form" data-confirm-action="Close week {{ week.week_number }} for further contributions?">{% csrf_token %}<button type="submit" class="icon-action is-danger" title="Close week" aria-label="Close week {{ week.week_number }}"><i data-lucide="lock-keyhole" aria-hidden="true"></i></button></form>
+                    </div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="table-empty"><i data-lucide="calendar-days" aria-hidden="true"></i><strong>No contribution weeks</strong><span>Generate a financial year's weeks or add one manually.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

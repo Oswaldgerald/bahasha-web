@@ -1,82 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Excel Upload History</h1>
-<p>View all uploaded Bahasha contribution files and their validation status.</p>
-
-<a href="{% url 'web_excel_upload_create' %}" class="btn-primary">
-    + Upload New Excel
-</a>
-
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Reference</th>
-                <th>Church</th>
-                <th>Year</th>
-                <th>Week</th>
-                <th>Category</th>
-                <th>Uploaded By</th>
-                <th>Uploaded At</th>
-                <th>Rows</th>
-                <th>Valid</th>
-                <th>Failed</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for upload in uploads %}
-            <tr>
-                <td>{{ upload.upload_reference }}</td>
-                <td>{{ upload.church.church_name }}</td>
-                <td>{{ upload.financial_year.year }}</td>
-                <td>Week {{ upload.contribution_week.week_number }}</td>
-                <td>{{ upload.selected_category.name }}</td>
-                <td>
-                    {% if upload.uploaded_by %}
-                        {{ upload.uploaded_by.full_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ upload.uploaded_at }}</td>
-                <td>{{ upload.total_rows }}</td>
-                <td>{{ upload.valid_rows }}</td>
-                <td>{{ upload.failed_rows }}</td>
-                <td>{{ upload.total_amount }}</td>
-                <td>
-                    {% if upload.status == "POSTED" %}
-                        <span class="status-text success">POSTED</span>
-                    {% elif upload.status == "VALIDATED" %}
-                        <span class="status-text info">VALIDATED</span>
-                    {% elif upload.status == "FAILED" %}
-                        <span class="status-text danger">FAILED</span>
-                    {% else %}
-                        {{ upload.status }}
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'web_excel_upload_detail' upload.id %}">
-                        View
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="13" class="empty-state">
-                    No Excel uploads have been recorded yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Review uploaded contribution files and their validation results.</p>
+    <a href="{% url 'web_excel_upload_create' %}" class="btn-primary"><i data-lucide="file-up" aria-hidden="true"></i><span>Upload Excel</span></a>
 </div>
 
+<section class="card list-table-card" aria-label="Excel upload history">
+    <div class="table-scroll">
+        <table class="data-table list-table is-widest responsive-table{% if not uploads %} is-empty{% endif %}">
+            <thead><tr><th>Upload</th><th>Church</th><th>Period</th><th>Category</th><th>Uploaded By</th><th>Rows</th><th>Valid</th><th>Failed</th><th>Amount</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for upload in uploads %}
+                <tr>
+                    <td data-label="Upload" class="table-primary"><strong>{{ upload.upload_reference }}</strong><small>{{ upload.uploaded_at }}</small></td>
+                    <td data-label="Church">{{ upload.church.church_name }}</td>
+                    <td data-label="Period" class="table-primary"><strong>{{ upload.financial_year.year }}</strong><small>Week {{ upload.contribution_week.week_number }}</small></td>
+                    <td data-label="Category">{{ upload.selected_category.name }}</td>
+                    <td data-label="Uploaded By">{% if upload.uploaded_by %}{{ upload.uploaded_by.full_name }}{% else %}System{% endif %}</td>
+                    <td data-label="Rows">{{ upload.total_rows }}</td>
+                    <td data-label="Valid">{{ upload.valid_rows }}</td>
+                    <td data-label="Failed">{{ upload.failed_rows }}</td>
+                    <td data-label="Amount">{{ upload.total_amount }}</td>
+                    <td data-label="Status"><span class="status-badge {% if upload.status == 'POSTED' %}is-success{% elif upload.status == 'FAILED' %}is-danger{% elif upload.status == 'VALIDATED' %}is-info{% else %}is-neutral{% endif %}">{{ upload.status }}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_excel_upload_detail' upload.id %}" class="icon-action" title="View upload" aria-label="View upload {{ upload.upload_reference }}"><i data-lucide="eye" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="11" class="table-empty"><i data-lucide="file-spreadsheet" aria-hidden="true"></i><strong>No Excel uploads</strong><span>Upload a contribution file to begin validation.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

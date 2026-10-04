@@ -1,60 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Annual Targets</h1>
-<p>Manage yearly contribution commitments for each church member.</p>
-
-<a href="{% url 'web_annual_target_create' %}" class="btn-primary">
-    + Add Annual Target
-</a>
-
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Member</th>
-                <th>Bahasha No.</th>
-                <th>Church</th>
-                <th>Year</th>
-                <th>Category</th>
-                <th>Target</th>
-                <th>Contributed</th>
-                <th>Remaining</th>
-                <th>Completion</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for target in targets %}
-            <tr>
-                <td>{{ target.member.user.full_name }}</td>
-                <td>{{ target.member.bahasha_number }}</td>
-                <td>{{ target.church.church_name }}</td>
-                <td>{{ target.financial_year.year }}</td>
-                <td>{{ target.category.name }}</td>
-                <td>{{ target.target_amount }}</td>
-                <td>{{ target.contributed_amount }}</td>
-                <td>{{ target.remaining_amount }}</td>
-                <td>{{ target.completion_percentage }}%</td>
-                <td>
-                    <a href="{% url 'web_annual_target_edit' target.id %}">
-                        Edit
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="10" class="empty-state">
-                    No annual targets configured yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Manage yearly contribution commitments and monitor member progress.</p>
+    <a href="{% url 'web_annual_target_create' %}" class="btn-primary"><i data-lucide="target" aria-hidden="true"></i><span>Add Annual Target</span></a>
 </div>
 
+<section class="card list-table-card" aria-label="Annual contribution targets">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wider responsive-table{% if not targets %} is-empty{% endif %}">
+            <thead><tr><th>Member</th><th>Church</th><th>Year</th><th>Category</th><th>Target</th><th>Contributed</th><th>Remaining</th><th>Completion</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for target in targets %}
+                <tr>
+                    <td data-label="Member" class="table-primary"><strong>{{ target.member.user.full_name }}</strong><small>{{ target.member.bahasha_number }}</small></td>
+                    <td data-label="Church">{{ target.church.church_name }}</td>
+                    <td data-label="Year">{{ target.financial_year.year }}</td>
+                    <td data-label="Category">{{ target.category.name }}</td>
+                    <td data-label="Target">{{ target.target_amount }}</td>
+                    <td data-label="Contributed">{{ target.contributed_amount }}</td>
+                    <td data-label="Remaining">{{ target.remaining_amount }}</td>
+                    <td data-label="Completion"><span class="status-badge is-info">{{ target.completion_percentage }}%</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_annual_target_edit' target.id %}" class="icon-action" title="Edit annual target" aria-label="Edit target for {{ target.member.user.full_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="table-empty"><i data-lucide="target" aria-hidden="true"></i><strong>No annual targets configured</strong><span>Add a member commitment for the current financial year.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

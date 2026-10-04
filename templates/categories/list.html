@@ -1,56 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Contribution Categories</h1>
-<p>Manage Bahasha offering categories such as Ahadi, Jengo, Uwakili, Jumuiya and Mavuno.</p>
-
-<a href="{% url 'web_category_create' %}" class="btn-primary">
-    + Add Category
-</a>
-
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Order</th>
-                <th>Name</th>
-                <th>Code</th>
-                <th>Frequency</th>
-                <th>Annual</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for category in categories %}
-            <tr>
-                <td>{{ category.display_order }}</td>
-                <td>{{ category.name }}</td>
-                <td>{{ category.code }}</td>
-                <td>{{ category.frequency }}</td>
-                <td>
-                    {% if category.is_annual %}Yes{% else %}No{% endif %}
-                </td>
-                <td>
-                    {% if category.is_active %}Active{% else %}Inactive{% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'web_category_edit' category.id %}">Edit</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No categories added yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Manage offering categories such as Ahadi, Jengo, Uwakili, Jumuiya, and Mavuno.</p>
+    <a href="{% url 'web_category_create' %}" class="btn-primary"><i data-lucide="plus" aria-hidden="true"></i><span>Add Category</span></a>
 </div>
 
+<section class="card list-table-card" aria-label="Contribution categories">
+    <div class="table-scroll">
+        <table class="data-table list-table responsive-table{% if not categories %} is-empty{% endif %}">
+            <thead><tr><th>Order</th><th>Category</th><th>Code</th><th>Frequency</th><th>Annual</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td data-label="Order">{{ category.display_order }}</td>
+                    <td data-label="Category" class="table-primary"><strong>{{ category.name }}</strong></td>
+                    <td data-label="Code">{{ category.code }}</td>
+                    <td data-label="Frequency">{{ category.frequency }}</td>
+                    <td data-label="Annual"><span class="status-badge {% if category.is_annual %}is-info{% else %}is-neutral{% endif %}">{% if category.is_annual %}Annual{% else %}Recurring{% endif %}</span></td>
+                    <td data-label="Status"><span class="status-badge {% if category.is_active %}is-success{% else %}is-neutral{% endif %}">{% if category.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_category_edit' category.id %}" class="icon-action" title="Edit category" aria-label="Edit {{ category.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="table-empty"><i data-lucide="tags" aria-hidden="true"></i><strong>No categories yet</strong><span>Add a contribution category to get started.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

@@ -1,4 +1,3 @@
-.user-list-toolbar,
 .user-form-intro {
     align-items: center;
     display: flex;
@@ -7,7 +6,6 @@
     margin-bottom: 18px;
 }
 
-.user-list-toolbar p,
 .user-form-intro p {
     color: #67616f;
     margin: 0;
@@ -123,34 +121,6 @@
     text-decoration: none;
 }
 
-.user-table-card {
-    margin-top: 18px;
-    overflow: hidden;
-    padding: 0;
-}
-
-.user-table-wrap {
-    overflow-x: auto;
-}
-
-.user-table {
-    min-width: 880px;
-}
-
-.user-table.is-empty {
-    min-width: 0;
-}
-
-.user-table th {
-    color: #625d69;
-    font-size: 11px;
-    text-transform: uppercase;
-}
-
-.user-table tbody tr:last-child td {
-    border-bottom: 0;
-}
-
 .user-identity {
     align-items: center;
     display: flex;
@@ -233,52 +203,6 @@
     color: #8a858e;
 }
 
-.user-actions {
-    align-items: center;
-    display: flex;
-    gap: 6px;
-    justify-content: flex-end;
-}
-
-.user-actions-heading {
-    text-align: right !important;
-}
-
-.user-icon-action {
-    align-items: center;
-    background: #f0edf9;
-    border: 0;
-    border-radius: 6px;
-    box-sizing: border-box;
-    color: #2d1b69;
-    cursor: pointer;
-    display: inline-flex;
-    height: 32px;
-    justify-content: center;
-    padding: 0;
-    text-decoration: none;
-    width: 32px;
-}
-
-.user-icon-action:hover {
-    background: #e4def5;
-}
-
-.user-icon-action.is-danger {
-    background: #f8e8e7;
-    color: #9c2d25;
-}
-
-.user-icon-action.is-success {
-    background: #e7f5ee;
-    color: #19724f;
-}
-
-.user-icon-action svg {
-    height: 15px;
-    width: 15px;
-}
-
 .user-current-account {
     background: #f2f0f6;
     border-radius: 20px;
@@ -287,29 +211,6 @@
     font-weight: 700;
     padding: 5px 8px;
     text-transform: uppercase;
-}
-
-.user-empty-state {
-    padding: 44px 20px !important;
-}
-
-.user-empty-state svg,
-.user-empty-state strong,
-.user-empty-state span {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.user-empty-state svg {
-    height: 28px;
-    margin-bottom: 10px;
-    width: 28px;
-}
-
-.user-empty-state span {
-    font-size: 12px;
-    margin-top: 4px;
 }
 
 .user-form {
@@ -419,14 +320,9 @@
 }
 
 @media (max-width: 620px) {
-    .user-list-toolbar,
     .user-form-intro {
         align-items: stretch;
         flex-direction: column;
-    }
-
-    .user-list-toolbar .btn-primary {
-        width: 100%;
     }
 
     .user-summary,
@@ -446,62 +342,4 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .user-table {
-        min-width: 0;
-    }
-
-    .user-table thead {
-        display: none;
-    }
-
-    .user-table,
-    .user-table tbody,
-    .user-table tr,
-    .user-table td {
-        display: block;
-        width: 100%;
-    }
-
-    .user-table tr {
-        border-bottom: 8px solid #f4f6f9;
-        padding: 8px 0;
-    }
-
-    .user-table tbody tr:last-child {
-        border-bottom: 0;
-    }
-
-    .user-table td {
-        border-bottom: 1px solid #f0eef4;
-        box-sizing: border-box;
-        display: grid;
-        gap: 12px;
-        grid-template-columns: 76px minmax(0, 1fr);
-        padding: 10px 14px;
-    }
-
-    .user-table td::before {
-        color: #7a7481;
-        content: attr(data-label);
-        font-size: 10px;
-        font-weight: 700;
-        padding-top: 3px;
-        text-transform: uppercase;
-    }
-
-    .user-table td:last-child {
-        border-bottom: 0;
-    }
-
-    .user-actions {
-        justify-content: flex-start;
-    }
-
-    .user-empty-state {
-        display: block !important;
-    }
-
-    .user-empty-state::before {
-        content: none !important;
-    }
 }

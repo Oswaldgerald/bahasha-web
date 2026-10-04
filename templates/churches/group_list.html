@@ -4,7 +4,7 @@
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/church-groups.css' %}">{% endblock %}
 
 {% block content %}
-<div class="church-group-toolbar">
+<div class="list-toolbar">
     <p>Maintain ministries and service groups available when registering members.</p>
     <a href="{% url 'web_church_group_create' %}" class="btn-primary">
         <i data-lucide="plus" aria-hidden="true"></i>
@@ -12,21 +12,21 @@
     </a>
 </div>
 
-<section class="card church-group-card">
-    <div class="church-group-table-wrap">
-        <table class="data-table church-group-table{% if not church_groups %} is-empty{% endif %}">
-            <thead><tr><th>Group</th><th>Church</th><th>Members</th><th>Status</th><th>Actions</th></tr></thead>
+<section class="card list-table-card">
+    <div class="table-scroll">
+        <table class="data-table list-table responsive-table{% if not church_groups %} is-empty{% endif %}">
+            <thead><tr><th>Group</th><th>Church</th><th>Members</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
             <tbody>
                 {% for group in church_groups %}
                 <tr>
-                    <td><strong>{{ group.name }}</strong><small>{{ group.description|default:"No description"|truncatechars:80 }}</small></td>
-                    <td>{{ group.church.church_name }}</td>
-                    <td>{{ group.member_count }}</td>
-                    <td><span class="group-status {% if group.is_active %}is-active{% else %}is-inactive{% endif %}">{% if group.is_active %}Active{% else %}Inactive{% endif %}</span></td>
-                    <td><a href="{% url 'web_church_group_edit' group.id %}" class="group-edit" aria-label="Edit {{ group.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></td>
+                    <td data-label="Group" class="table-primary"><strong>{{ group.name }}</strong><small>{{ group.description|default:"No description"|truncatechars:80 }}</small></td>
+                    <td data-label="Church">{{ group.church.church_name }}</td>
+                    <td data-label="Members">{{ group.member_count }}</td>
+                    <td data-label="Status"><span class="status-badge {% if group.is_active %}is-success{% else %}is-neutral{% endif %}">{% if group.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_church_group_edit' group.id %}" class="icon-action" title="Edit group" aria-label="Edit {{ group.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" class="empty-state group-empty"><i data-lucide="users-round" aria-hidden="true"></i><strong>No church groups yet</strong><span>Add groups such as Choir, ICT, Youth, or Women Ministry.</span></td></tr>
+                <tr><td colspan="5" class="table-empty"><i data-lucide="users-round" aria-hidden="true"></i><strong>No church groups yet</strong><span>Add groups such as Choir, ICT, Youth, or Women Ministry.</span></td></tr>
                 {% endfor %}
             </tbody>
         </table>

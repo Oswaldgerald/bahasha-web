@@ -1,62 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Jumuiya Management</h1>
-<p>Manage church communities/groups used for member classification.</p>
-
-<a href="{% url 'web_jumuiya_create' %}" class="btn-primary">
-    + Add Jumuiya
-</a>
-
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Church</th>
-                <th>Jumuiya Name</th>
-                <th>Leader</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in jumuiya_list %}
-            <tr>
-                <td>{{ item.church.church_name }}</td>
-                <td>{{ item.name }}</td>
-                <td>
-                    {% if item.leader_name %}
-                        {{ item.leader_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if item.is_active %}
-                        Active
-                    {% else %}
-                        Inactive
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'web_jumuiya_edit' item.id %}">
-                        Edit
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="empty-state">
-                    No Jumuiya records found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="list-toolbar">
+    <p>Manage church communities used to organize and support members.</p>
+    <a href="{% url 'web_jumuiya_create' %}" class="btn-primary"><i data-lucide="users-round" aria-hidden="true"></i><span>Add Jumuiya</span></a>
 </div>
 
+<section class="card list-table-card" aria-label="Jumuiya records">
+    <div class="table-scroll">
+        <table class="data-table list-table responsive-table{% if not jumuiya_list %} is-empty{% endif %}">
+            <thead><tr><th>Jumuiya</th><th>Church</th><th>Leader</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for item in jumuiya_list %}
+                <tr>
+                    <td data-label="Jumuiya" class="table-primary"><strong>{{ item.name }}</strong></td>
+                    <td data-label="Church">{{ item.church.church_name }}</td>
+                    <td data-label="Leader">{{ item.leader_name|default:"Not assigned" }}</td>
+                    <td data-label="Status"><span class="status-badge {% if item.is_active %}is-success{% else %}is-neutral{% endif %}">{% if item.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_jumuiya_edit' item.id %}" class="icon-action" title="Edit Jumuiya" aria-label="Edit {{ item.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="table-empty"><i data-lucide="users-round" aria-hidden="true"></i><strong>No Jumuiya records</strong><span>Add a Jumuiya to organize church communities.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

@@ -3,6 +3,11 @@ from django.utils import timezone
 from django.db.models import Sum
 from django.shortcuts import render
 from members.models import Member
+from members.services import (
+    approve_member as approve_member_record,
+    reject_member as reject_member_record,
+)
+from django.core.paginator import Paginator
 from churches.models import Church
 from .forms import ChurchForm
 from members.models import Member
@@ -50,7 +55,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.http import require_POST
 from .forms import ProfileUpdateForm
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 import mimetypes
 
 
@@ -247,18 +252,78 @@ def member_list(request):
         "user",
         "church",
         "jumuiya"
-    ).all()
-    return render(request, "members/member_list.html", {"members": members})
+    )
+    if request.user.church_id and not request.user.is_superuser:
+        members = members.filter(church_id=request.user.church_id)
+
+    summary = members.aggregate(
+        total=models.Count("id"),
+        approved=models.Count("id", filter=models.Q(approval_status="APPROVED")),
+        pending=models.Count("id", filter=models.Q(approval_status="PENDING")),
+        inactive=models.Count("id", filter=models.Q(is_active=False)),
+    )
+
+    query = request.GET.get("q", "").strip()
+    approval_status = request.GET.get("approval_status", "").strip()
+    activity_status = request.GET.get("activity_status", "").strip()
+
+    if query:
+        members = members.filter(
+            models.Q(user__full_name__icontains=query)
+            | models.Q(user__phone_number__icontains=query)
+            | models.Q(user__username__icontains=query)
+            | models.Q(bahasha_number__icontains=query)
+        )
+    if approval_status in dict(Member.APPROVAL_STATUS):
+        members = members.filter(approval_status=approval_status)
+    if activity_status == "active":
+        members = members.filter(is_active=True)
+    elif activity_status == "inactive":
+        members = members.filter(is_active=False)
+
+    paginator = Paginator(members, 25)
+    page = paginator.get_page(request.GET.get("page"))
+
+    return render(request, "members/member_list.html", {
+        "members": page,
+        "summary": summary,
+        "filters": {
+            "q": query,
+            "approval_status": approval_status,
+            "activity_status": activity_status,
+        },
+    })
+
+
+def member_queryset_for_user(user):
+    queryset = Member.objects.select_related("user", "church", "jumuiya")
+    if user.church_id and not user.is_superuser:
+        queryset = queryset.filter(church_id=user.church_id)
+    return queryset
+
+
+@login_required(login_url="login")
+def member_jumuiya_options(request):
+    church_id = request.GET.get("church_id")
+    if not church_id or not church_id.isdigit():
+        return JsonResponse({"options": []})
+
+    jumuiya = Jumuiya.objects.filter(church_id=church_id, is_active=True)
+    if request.user.church_id and not request.user.is_superuser:
+        jumuiya = jumuiya.filter(church_id=request.user.church_id)
+
+    return JsonResponse({
+        "options": [
+            {"value": item.id, "label": item.name}
+            for item in jumuiya.order_by("name")
+        ]
+    })
 
 @login_required(login_url="login")
 @require_POST
 def approve_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-
-    member.approval_status = "APPROVED"
-    member.approved_at = timezone.now()
-    member.is_active = True
-    member.save()
+    member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
+    approve_member_record(member)
     create_audit_log(
     user=request.user,
     church=member.church,
@@ -267,29 +332,35 @@ def approve_member(request, member_id):
     entity_type="Member",
     entity_id=member.id,
     request=request,
-)
+    )
+
+    messages.success(request, f"{member.user.full_name} approved successfully.")
 
     return redirect("web_members")
 
 @login_required(login_url="login")
 @require_POST
 def reject_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
+    member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
+    reject_member_record(member)
+    create_audit_log(
+        user=request.user,
+        church=member.church,
+        action="MEMBER_REJECTED",
+        description=f"Rejected member {member.user.full_name}.",
+        entity_type="Member",
+        entity_id=member.id,
+        request=request,
+    )
 
-    member.approval_status = "REJECTED"
-    member.is_active = False
-    member.save()
+    messages.success(request, f"{member.user.full_name} rejected.")
 
     return redirect("web_members")
 
 @login_required(login_url="login")
 def member_detail(request, member_id):
     member = get_object_or_404(
-        Member.objects.select_related(
-            "user",
-            "church",
-            "jumuiya"
-        ),
+        member_queryset_for_user(request.user),
         id=member_id
     )
 
@@ -300,23 +371,32 @@ def member_detail(request, member_id):
         "financial_year"
     )
 
-    contributions = Contribution.objects.filter(
-        member=member
+    posted_contributions = Contribution.objects.filter(
+        member=member,
+        status="POSTED",
     ).select_related(
         "category",
         "contribution_week"
-    ).order_by("-contribution_date")[:20]
-
-    total_contributed = sum(
-        contribution.amount
-        for contribution in contributions
     )
+
+    total_contributed = posted_contributions.aggregate(
+        total=models.Sum("amount")
+    )["total"] or 0
+    contribution_count = posted_contributions.count()
+    target_summary = targets.aggregate(
+        total=models.Sum("target_amount"),
+        contributed=models.Sum("contributed_amount"),
+        remaining=models.Sum("remaining_amount"),
+    )
+    contributions = posted_contributions.order_by("-contribution_date", "-created_at")[:20]
 
     context = {
         "member": member,
         "targets": targets,
         "contributions": contributions,
+        "contribution_count": contribution_count,
         "total_contributed": total_contributed,
+        "target_summary": target_summary,
     }
 
     return render(
@@ -328,7 +408,7 @@ def member_detail(request, member_id):
 @login_required(login_url="login")
 def member_create(request):
     if request.method == "POST":
-        form = MemberCreateForm(request.POST)
+        form = MemberCreateForm(request.POST, request_user=request.user)
 
         if form.is_valid():
             member = form.save()
@@ -344,7 +424,7 @@ def member_create(request):
             messages.success(request, "Member created successfully.")
             return redirect("web_members")
     else:
-        form = MemberCreateForm()
+        form = MemberCreateForm(request_user=request.user)
 
     return render(request, "members/create.html", {
         "form": form
@@ -353,19 +433,28 @@ def member_create(request):
 @login_required(login_url="login")
 def member_edit(request, member_id):
     member = get_object_or_404(
-        Member.objects.select_related("user", "church", "jumuiya"),
+        member_queryset_for_user(request.user),
         id=member_id
     )
 
     if request.method == "POST":
-        form = MemberEditForm(request.POST, member=member)
+        form = MemberEditForm(request.POST, member=member, request_user=request.user)
 
         if form.is_valid():
-            form.save()
+            member = form.save()
+            create_audit_log(
+                user=request.user,
+                church=member.church,
+                action="MEMBER_UPDATED",
+                description=f"Updated member {member.user.full_name}.",
+                entity_type="Member",
+                entity_id=member.id,
+                request=request,
+            )
             messages.success(request, "Member updated successfully.")
             return redirect("web_members")
     else:
-        form = MemberEditForm(member=member)
+        form = MemberEditForm(member=member, request_user=request.user)
 
     return render(request, "members/edit.html", {
         "form": form,

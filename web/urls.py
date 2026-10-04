@@ -10,6 +10,7 @@ urlpatterns = [
     # Member Management
     path("members/", views.member_list, name="web_members"),
     path("members/create/", views.member_create, name="web_member_create"),
+    path("members/jumuiya-options/", views.member_jumuiya_options, name="web_member_jumuiya_options"),
     path("members/<int:member_id>/edit/", views.member_edit, name="web_member_edit"),
     path("members/<int:member_id>/approve/", views.approve_member, name="web_member_approve"),
     path("members/<int:member_id>/reject/", views.reject_member, name="web_member_reject"),

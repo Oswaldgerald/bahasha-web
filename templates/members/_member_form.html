@@ -1,0 +1,59 @@
+<form method="post" class="member-form" autocomplete="off" data-jumuiya-url="{% url 'web_member_jumuiya_options' %}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <section class="card member-form-section">
+        <div class="member-section-heading">
+            <span class="member-form-section-icon"><i data-lucide="contact-round" aria-hidden="true"></i></span>
+            <div><h2>Personal Details</h2><p>Member identity and contact information</p></div>
+        </div>
+        <div class="form-grid member-form-grid">
+            <div><label for="{{ form.full_name.id_for_label }}">Full Name</label>{{ form.full_name }}{{ form.full_name.errors }}</div>
+            <div><label for="{{ form.phone_number.id_for_label }}">Phone Number</label>{{ form.phone_number }}{{ form.phone_number.errors }}</div>
+            <div><label for="{{ form.email.id_for_label }}">Email <span class="member-optional">Optional</span></label>{{ form.email }}{{ form.email.errors }}</div>
+            <div><label for="{{ form.gender.id_for_label }}">Gender <span class="member-optional">Optional</span></label>{{ form.gender }}{{ form.gender.errors }}</div>
+        </div>
+    </section>
+
+    <section class="card member-form-section">
+        <div class="member-section-heading">
+            <span class="member-form-section-icon"><i data-lucide="key-round" aria-hidden="true"></i></span>
+            <div><h2>Login Account</h2><p>Credentials used to access member services</p></div>
+        </div>
+        <div class="form-grid member-form-grid">
+            <div><label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}{{ form.username.errors }}</div>
+            {% if form.password %}
+            <div><label for="{{ form.password.id_for_label }}">Temporary Password</label>{{ form.password }}{{ form.password.errors }}</div>
+            {% endif %}
+            <div><label for="{{ form.approval_status.id_for_label }}">Approval Status</label>{{ form.approval_status }}{{ form.approval_status.errors }}</div>
+            {% if form.is_active %}
+            <div class="member-checkbox-field">
+                {{ form.is_active }}
+                <label for="{{ form.is_active.id_for_label }}">Active member account</label>
+                {{ form.is_active.errors }}
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="card member-form-section">
+        <div class="member-section-heading">
+            <span class="member-form-section-icon"><i data-lucide="landmark" aria-hidden="true"></i></span>
+            <div><h2>Church Placement</h2><p>Congregation, Jumuiya, and contribution identity</p></div>
+        </div>
+        <div class="form-grid member-form-grid">
+            <div><label for="{{ form.church.id_for_label }}">Church</label>{{ form.church }}{{ form.church.errors }}</div>
+            <div><label for="{{ form.jumuiya.id_for_label }}">Jumuiya <span class="member-optional">Optional</span></label>{{ form.jumuiya }}{{ form.jumuiya.errors }}</div>
+            <div><label for="{{ form.bahasha_number.id_for_label }}">Bahasha Number</label>{{ form.bahasha_number }}{{ form.bahasha_number.errors }}</div>
+            <div class="member-demographics-field"><label for="{{ form.demographics.id_for_label }}">Demographics <span class="member-optional">Optional</span></label>{{ form.demographics }}{{ form.demographics.errors }}</div>
+        </div>
+    </section>
+
+    <div class="member-form-actions">
+        <a href="{% url 'web_members' %}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary">
+            <i data-lucide="save" aria-hidden="true"></i>
+            <span>{{ submit_label }}</span>
+        </button>
+    </div>
+</form>

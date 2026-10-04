@@ -1,88 +1,16 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/members.css' %}">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/members.js' %}" defer></script>{% endblock %}
 
 {% block content %}
-
-<h1>Edit Member</h1>
-<p>Update member details, Bahasha number, Jumuiya, and status.</p>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Username</label>
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-
-            <div>
-                <label>Full Name</label>
-                {{ form.full_name }}
-                {{ form.full_name.errors }}
-            </div>
-
-            <div>
-                <label>Phone Number</label>
-                {{ form.phone_number }}
-                {{ form.phone_number.errors }}
-            </div>
-
-            <div>
-                <label>Email</label>
-                {{ form.email }}
-                {{ form.email.errors }}
-            </div>
-
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
-            </div>
-
-            <div>
-                <label>Jumuiya</label>
-                {{ form.jumuiya }}
-                {{ form.jumuiya.errors }}
-            </div>
-
-            <div>
-                <label>Bahasha Number</label>
-                {{ form.bahasha_number }}
-                {{ form.bahasha_number.errors }}
-            </div>
-
-            <div>
-                <label>Gender</label>
-                {{ form.gender }}
-                {{ form.gender.errors }}
-            </div>
-
-            <div>
-                <label>Approval Status</label>
-                {{ form.approval_status }}
-                {{ form.approval_status.errors }}
-            </div>
-
-            <div>
-                <label>Status</label>
-                <br>
-                {{ form.is_active }} Active
-                {{ form.is_active.errors }}
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <label>Demographics</label>
-            {{ form.demographics }}
-            {{ form.demographics.errors }}
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Update Member</button>
-        <a href="{% url 'web_members' %}" class="btn-secondary">Cancel</a>
-    </form>
+<div class="member-form-intro">
+    <p>Update {{ member.user.full_name }}'s account, church placement, and approval state.</p>
+    <a href="{% url 'web_member_detail' member.id %}" class="btn-secondary">
+        <i data-lucide="eye" aria-hidden="true"></i>
+        <span>View Profile</span>
+    </a>
 </div>
-
+{% include "members/_member_form.html" with submit_label="Update Member" %}
 {% endblock %}

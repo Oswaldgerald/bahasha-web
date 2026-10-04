@@ -1,79 +1,182 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/members.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/members.js' %}" defer></script>
+{% endblock %}
 
 {% block content %}
 
-<h1>Members Management</h1>
-<p>Manage church members, approval status, Bahasha numbers, and Jumuiya allocation.</p>
-
-<a href="{% url 'web_member_create' %}" class="btn-primary">
-    + Add Member
-</a>
-<br><br>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-
-            <tr>
-                <th>Bahasha No.</th>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>Church</th>
-                <th>Jumuiya</th>
-                <th>Approval</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-            {% for member in members %}
-            <tr>
-                <td>{{ member.bahasha_number }}</td>
-                <td>{{ member.user.full_name }}</td>
-                <td>{{ member.user.phone_number }}</td>
-                <td>{{ member.church.church_name }}</td>
-                <td>
-                    {% if member.jumuiya %}
-                        {{ member.jumuiya.name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ member.approval_status }}</td>
-                <td>
-                    {% if member.is_active %}
-                        Active
-                    {% else %}
-                        Inactive
-                    {% endif %}
-                </td>
-                <td>
-                    {% if member.approval_status == "PENDING" %}
-                        <form method="post" action="{% url 'web_member_approve' member.id %}" class="inline-form">
-                            {% csrf_token %}
-                            <button type="submit" class="action-button success">Approve</button>
-                        </form>
-                        <form method="post" action="{% url 'web_member_reject' member.id %}" class="inline-form">
-                            {% csrf_token %}
-                            <button type="submit" class="action-button danger">Reject</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'web_member_detail' member.id %}" class="action-link">View</a> |
-                        <a href="{% url 'web_member_edit' member.id %}" class="action-link" >Edit</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8" class="empty-state">
-                    No members registered yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="member-list-toolbar">
+    <p>Manage member identity, approval, church placement, and Bahasha allocation.</p>
+    <a href="{% url 'web_member_create' %}" class="btn-primary">
+        <i data-lucide="plus" aria-hidden="true"></i>
+        <span>Add Member</span>
+    </a>
 </div>
+
+<section class="member-summary" aria-label="Member summary">
+    <div class="member-summary-item">
+        <span class="member-summary-icon summary-total"><i data-lucide="users-round" aria-hidden="true"></i></span>
+        <span><small>Total Members</small><strong>{{ summary.total }}</strong></span>
+    </div>
+    <div class="member-summary-item">
+        <span class="member-summary-icon summary-approved"><i data-lucide="user-check" aria-hidden="true"></i></span>
+        <span><small>Approved</small><strong>{{ summary.approved }}</strong></span>
+    </div>
+    <div class="member-summary-item">
+        <span class="member-summary-icon summary-pending"><i data-lucide="clock" aria-hidden="true"></i></span>
+        <span><small>Pending Review</small><strong>{{ summary.pending }}</strong></span>
+    </div>
+    <div class="member-summary-item">
+        <span class="member-summary-icon summary-inactive"><i data-lucide="user-x" aria-hidden="true"></i></span>
+        <span><small>Inactive</small><strong>{{ summary.inactive }}</strong></span>
+    </div>
+</section>
+
+<form method="get" class="member-filters" role="search">
+    <div class="member-search-field">
+        <i data-lucide="search" aria-hidden="true"></i>
+        <label for="member-search" class="sr-only">Search members</label>
+        <input
+            id="member-search"
+            type="search"
+            name="q"
+            value="{{ filters.q }}"
+            placeholder="Search name, phone, username, or Bahasha number"
+        >
+    </div>
+
+    <div>
+        <label for="approval-filter" class="sr-only">Approval status</label>
+        <select id="approval-filter" name="approval_status">
+            <option value="">All approval states</option>
+            <option value="PENDING"{% if filters.approval_status == "PENDING" %} selected{% endif %}>Pending</option>
+            <option value="APPROVED"{% if filters.approval_status == "APPROVED" %} selected{% endif %}>Approved</option>
+            <option value="REJECTED"{% if filters.approval_status == "REJECTED" %} selected{% endif %}>Rejected</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="activity-filter" class="sr-only">Account status</label>
+        <select id="activity-filter" name="activity_status">
+            <option value="">All account states</option>
+            <option value="active"{% if filters.activity_status == "active" %} selected{% endif %}>Active</option>
+            <option value="inactive"{% if filters.activity_status == "inactive" %} selected{% endif %}>Inactive</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn-primary member-filter-button">
+        <i data-lucide="list-filter" aria-hidden="true"></i>
+        <span>Filter</span>
+    </button>
+
+    {% if filters.q or filters.approval_status or filters.activity_status %}
+        <a href="{% url 'web_members' %}" class="member-clear-filter">Clear</a>
+    {% endif %}
+</form>
+
+<section class="card member-table-card" aria-label="Member records">
+    <div class="member-table-wrap">
+        <table class="data-table member-table{% if not members %} is-empty{% endif %}">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Bahasha No.</th>
+                    <th>Church / Jumuiya</th>
+                    <th>Approval</th>
+                    <th>Account</th>
+                    <th class="member-actions-heading">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>
+                        <a href="{% url 'web_member_detail' member.id %}" class="member-identity">
+                            <span class="member-initial" aria-hidden="true">{{ member.user.full_name|default:member.user.username|slice:":1"|upper }}</span>
+                            <span>
+                                <strong>{{ member.user.full_name }}</strong>
+                                <small>{{ member.user.phone_number }}</small>
+                            </span>
+                        </a>
+                    </td>
+                    <td><span class="bahasha-number">{{ member.bahasha_number }}</span></td>
+                    <td>
+                        <span class="member-placement">
+                            <strong>{{ member.church.church_name }}</strong>
+                            <small>{% if member.jumuiya %}{{ member.jumuiya.name }}{% else %}No Jumuiya assigned{% endif %}</small>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="member-badge approval-{{ member.approval_status|lower }}">
+                            {{ member.get_approval_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="member-account-state {% if member.is_active %}is-active{% else %}is-inactive{% endif %}">
+                            <span aria-hidden="true"></span>
+                            {% if member.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="member-actions">
+                            {% if member.approval_status == "PENDING" %}
+                                <form method="post" action="{% url 'web_member_approve' member.id %}" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="member-action member-action-approve" title="Approve member">
+                                        <i data-lucide="check" aria-hidden="true"></i>
+                                        <span>Approve</span>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'web_member_reject' member.id %}" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="member-action member-action-reject" title="Reject member" data-confirm-rejection="{{ member.user.full_name }}">
+                                        <i data-lucide="x" aria-hidden="true"></i>
+                                        <span>Reject</span>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <a href="{% url 'web_member_detail' member.id %}" class="member-icon-action" title="View member" aria-label="View {{ member.user.full_name }}">
+                                    <i data-lucide="eye" aria-hidden="true"></i>
+                                </a>
+                                <a href="{% url 'web_member_edit' member.id %}" class="member-icon-action" title="Edit member" aria-label="Edit {{ member.user.full_name }}">
+                                    <i data-lucide="square-pen" aria-hidden="true"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state member-empty-state">
+                        <i data-lucide="users-round" aria-hidden="true"></i>
+                        <strong>No members found</strong>
+                        <span>Try changing the filters or add the first member.</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if members.paginator.num_pages > 1 %}
+    <nav class="member-pagination" aria-label="Member pages">
+        <span>Page {{ members.number }} of {{ members.paginator.num_pages }}</span>
+        <div>
+            {% if members.has_previous %}
+                <a href="?q={{ filters.q|urlencode }}&approval_status={{ filters.approval_status }}&activity_status={{ filters.activity_status }}&page={{ members.previous_page_number }}" class="btn-secondary">Previous</a>
+            {% endif %}
+            {% if members.has_next %}
+                <a href="?q={{ filters.q|urlencode }}&approval_status={{ filters.approval_status }}&activity_status={{ filters.activity_status }}&page={{ members.next_page_number }}" class="btn-secondary">Next</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</section>
 
 {% endblock %}

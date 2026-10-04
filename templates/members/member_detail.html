@@ -1,149 +1,141 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/members.css' %}">
+{% endblock %}
 
 {% block content %}
+<section class="member-profile-header">
+    <div class="member-profile-identity">
+        <span class="member-profile-initial" aria-hidden="true">{{ member.user.full_name|default:member.user.username|slice:":1"|upper }}</span>
+        <div>
+            <div class="member-profile-name-row">
+                <h1>{{ member.user.full_name }}</h1>
+                <span class="member-badge approval-{{ member.approval_status|lower }}">{{ member.get_approval_status_display }}</span>
+            </div>
+            <p>{{ member.bahasha_number }} · {{ member.church.church_name }}</p>
+        </div>
+    </div>
+    <div class="member-profile-actions">
+        <a href="{% url 'web_members' %}" class="btn-secondary">
+            <i data-lucide="arrow-left" aria-hidden="true"></i>
+            <span>Members</span>
+        </a>
+        <a href="{% url 'web_member_edit' member.id %}" class="btn-primary">
+            <i data-lucide="square-pen" aria-hidden="true"></i>
+            <span>Edit Member</span>
+        </a>
+    </div>
+</section>
 
-<h1>Member Profile</h1>
+<section class="member-profile-stats" aria-label="Member contribution summary">
+    <div>
+        <span>Total Contributed</span>
+        <strong>TZS {{ total_contributed|floatformat:2 }}</strong>
+        <small>{{ contribution_count }} posted contribution{{ contribution_count|pluralize }}</small>
+    </div>
+    <div>
+        <span>Annual Targets</span>
+        <strong>TZS {{ target_summary.total|default:0|floatformat:2 }}</strong>
+        <small>Across {{ targets|length }} categor{{ targets|length|pluralize:"y,ies" }}</small>
+    </div>
+    <div>
+        <span>Remaining Target</span>
+        <strong>TZS {{ target_summary.remaining|default:0|floatformat:2 }}</strong>
+        <small>Current target balance</small>
+    </div>
+</section>
 
-<div class="card">
-
-    <h2>{{ member.user.full_name }}</h2>
-
-    <p><strong>Bahasha Number:</strong> {{ member.bahasha_number }}</p>
-
-    <p><strong>Phone:</strong> {{ member.user.phone_number }}</p>
-
-    <p><strong>Church:</strong> {{ member.church.church_name }}</p>
-
-    <p><strong>Jumuiya:</strong>
-        {% if member.jumuiya %}
-            {{ member.jumuiya.name }}
-        {% else %}
-            -
+<div class="member-profile-layout">
+    <section class="card member-details-card">
+        <div class="member-section-heading">
+            <div>
+                <h2>Member Details</h2>
+                <p>Identity and church placement</p>
+            </div>
+            <span class="member-account-state {% if member.is_active %}is-active{% else %}is-inactive{% endif %}">
+                <span aria-hidden="true"></span>
+                {% if member.is_active %}Active account{% else %}Inactive account{% endif %}
+            </span>
+        </div>
+        <dl class="member-details-grid">
+            <div><dt>Username</dt><dd>{{ member.user.username }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ member.user.phone_number }}</dd></div>
+            <div><dt>Email</dt><dd>{{ member.user.email|default:"Not provided" }}</dd></div>
+            <div><dt>Gender</dt><dd>{{ member.get_gender_display|default:"Not provided" }}</dd></div>
+            <div><dt>Church</dt><dd>{{ member.church.church_name }}</dd></div>
+            <div><dt>Jumuiya</dt><dd>{{ member.jumuiya.name|default:"Not assigned" }}</dd></div>
+        </dl>
+        {% if member.demographics %}
+        <div class="member-demographics">
+            <span>Demographics</span>
+            <p>{{ member.demographics|linebreaksbr }}</p>
+        </div>
         {% endif %}
-    </p>
+    </section>
 
-    <p><strong>Approval Status:</strong> {{ member.approval_status }}</p>
-
+    <section class="card member-approval-card">
+        <h2>Account Status</h2>
+        <div class="member-status-line">
+            <span class="member-status-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+            <div><small>Approval</small><strong>{{ member.get_approval_status_display }}</strong></div>
+        </div>
+        <div class="member-status-line">
+            <span class="member-status-icon"><i data-lucide="calendar-check" aria-hidden="true"></i></span>
+            <div><small>Approved on</small><strong>{{ member.approved_at|date:"d M Y"|default:"Not yet approved" }}</strong></div>
+        </div>
+        <div class="member-status-line">
+            <span class="member-status-icon"><i data-lucide="calendar-plus" aria-hidden="true"></i></span>
+            <div><small>Member since</small><strong>{{ member.created_at|date:"d M Y" }}</strong></div>
+        </div>
+    </section>
 </div>
 
-<div class="card">
+<section class="card member-data-card">
+    <div class="member-section-heading">
+        <div><h2>Annual Targets</h2><p>Contribution commitments by category</p></div>
+    </div>
+    <div class="member-table-wrap">
+        <table class="data-table member-history-table{% if not targets %} is-empty{% endif %}">
+            <thead><tr><th>Category</th><th>Target</th><th>Contributed</th><th>Remaining</th><th>Completion</th></tr></thead>
+            <tbody>
+                {% for target in targets %}
+                <tr>
+                    <td><strong>{{ target.category.name }}</strong><small>{{ target.financial_year.year }}</small></td>
+                    <td>TZS {{ target.target_amount|floatformat:2 }}</td>
+                    <td>TZS {{ target.contributed_amount|floatformat:2 }}</td>
+                    <td>TZS {{ target.remaining_amount|floatformat:2 }}</td>
+                    <td><strong>{{ target.completion_percentage|floatformat:2 }}%</strong></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="empty-state member-empty-state"><strong>No annual targets</strong><span>No targets have been assigned to this member yet.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <h2>Annual Targets</h2>
-
-    <table class="data-table">
-
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Target</th>
-                <th>Contributed</th>
-                <th>Remaining</th>
-                <th>Completion</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            {% for target in targets %}
-
-            <tr>
-
-                <td>
-                    {{ target.category.name }}
-                </td>
-
-                <td>
-                    {{ target.target_amount }}
-                </td>
-
-                <td>
-                    {{ target.contributed_amount }}
-                </td>
-
-                <td>
-                    {{ target.remaining_amount }}
-                </td>
-
-                <td>
-                    {{ target.completion_percentage }}%
-                </td>
-
-            </tr>
-
-            {% empty %}
-
-            <tr>
-                <td colspan="5" class="empty-state">
-                    No annual targets found.
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-</div>
-
-<div class="card">
-
-    <h2>Recent Contributions</h2>
-
-    <p>
-        <strong>Total Contributed:</strong>
-        {{ total_contributed }}
-    </p>
-
-    <table class="data-table">
-
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Week</th>
-                <th>Category</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            {% for contribution in contributions %}
-
-            <tr>
-
-                <td>
-                    {{ contribution.contribution_date }}
-                </td>
-
-                <td>
-                    Week {{ contribution.contribution_week.week_number }}
-                </td>
-
-                <td>
-                    {{ contribution.category.name }}
-                </td>
-
-                <td>
-                    {{ contribution.amount }}
-                </td>
-
-            </tr>
-
-            {% empty %}
-
-            <tr>
-                <td colspan="4" class="empty-state">
-                    No contributions found.
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-</div>
-
+<section class="card member-data-card">
+    <div class="member-section-heading">
+        <div><h2>Recent Contributions</h2><p>The latest 20 posted transactions</p></div>
+    </div>
+    <div class="member-table-wrap">
+        <table class="data-table member-history-table{% if not contributions %} is-empty{% endif %}">
+            <thead><tr><th>Date</th><th>Week</th><th>Category</th><th>Amount</th></tr></thead>
+            <tbody>
+                {% for contribution in contributions %}
+                <tr>
+                    <td>{{ contribution.contribution_date|date:"d M Y" }}</td>
+                    <td>Week {{ contribution.contribution_week.week_number }}</td>
+                    <td>{{ contribution.category.name }}</td>
+                    <td><strong>TZS {{ contribution.amount|floatformat:2 }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="empty-state member-empty-state"><strong>No posted contributions</strong><span>This member does not have any posted transactions yet.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

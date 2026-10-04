@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const hasManyOptions = select.options.length > 7;
 
-        new window.Choices(select, {
+        select.choicesInstance = new window.Choices(select, {
             allowHTML: false,
             itemSelectText: "",
             noChoicesText: "No options available",

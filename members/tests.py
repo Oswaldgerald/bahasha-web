@@ -3,11 +3,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from churches.models import Church
+from churches.models import Church, ChurchGroup
 from jumuiya.models import Jumuiya
 from users.models import User
-from web.forms import MemberCreateForm
 
+from .forms import MemberCreateForm
 from .models import Member
 from .services import approve_member, create_member, reject_member
 
@@ -30,6 +30,11 @@ class MemberServiceTests(TestCase):
             church=self.other_church,
             name="St Peter",
         )
+        self.choir = ChurchGroup.objects.create(church=self.church, name="Choir")
+        self.other_group = ChurchGroup.objects.create(
+            church=self.other_church,
+            name="ICT",
+        )
 
     def member_data(self, **overrides):
         data = {
@@ -42,6 +47,8 @@ class MemberServiceTests(TestCase):
             "jumuiya": self.jumuiya,
             "bahasha_number": "MEM-B-001",
             "gender": "FEMALE",
+            "marital_status": "MARRIED",
+            "church_groups": [self.choir],
             "demographics": "Adult",
             "approval_status": "PENDING",
         }
@@ -54,6 +61,18 @@ class MemberServiceTests(TestCase):
 
         self.assertFalse(User.objects.filter(username="new-member").exists())
         self.assertFalse(Member.objects.filter(bahasha_number="MEM-B-001").exists())
+
+    def test_create_member_rejects_group_from_another_church(self):
+        with self.assertRaises(ValidationError):
+            create_member(self.member_data(church_groups=[self.other_group]))
+
+        self.assertFalse(User.objects.filter(username="new-member").exists())
+
+    def test_create_member_saves_marital_status_and_groups(self):
+        member = create_member(self.member_data())
+
+        self.assertEqual(member.marital_status, "MARRIED")
+        self.assertQuerySetEqual(member.church_groups.all(), [self.choir])
 
     def test_approval_and_rejection_keep_login_state_in_sync(self):
         member = create_member(self.member_data())
@@ -92,6 +111,11 @@ class MemberFormTests(TestCase):
             church=self.other_church,
             name="St Mark",
         )
+        self.choir = ChurchGroup.objects.create(church=self.church, name="Choir")
+        self.other_group = ChurchGroup.objects.create(
+            church=self.other_church,
+            name="ICT",
+        )
         self.admin = User.objects.create_user(
             username="member-admin",
             password="Strong-Test-Password-2026",
@@ -112,6 +136,8 @@ class MemberFormTests(TestCase):
             "jumuiya": str(self.jumuiya.id),
             "bahasha_number": "form-b-001",
             "gender": "MALE",
+            "marital_status": "SINGLE",
+            "church_groups": [str(self.choir.id)],
             "demographics": "Youth",
             "approval_status": "APPROVED",
         }
@@ -123,6 +149,7 @@ class MemberFormTests(TestCase):
 
         self.assertQuerySetEqual(form.fields["church"].queryset, [self.church])
         self.assertQuerySetEqual(form.fields["jumuiya"].queryset, [self.jumuiya])
+        self.assertQuerySetEqual(form.fields["church_groups"].queryset, [self.choir])
 
     def test_create_form_rejects_cross_church_jumuiya(self):
         form = MemberCreateForm(
@@ -157,6 +184,11 @@ class MemberViewTests(TestCase):
         self.other_jumuiya = Jumuiya.objects.create(
             church=self.other_church,
             name="St Paul",
+        )
+        self.group = ChurchGroup.objects.create(church=self.church, name="Choir")
+        self.other_group = ChurchGroup.objects.create(
+            church=self.other_church,
+            name="ICT",
         )
         self.admin = User.objects.create_user(
             username="view-admin",
@@ -203,6 +235,9 @@ class MemberViewTests(TestCase):
 
         self.assertEqual(
             own_response.json(),
-            {"options": [{"value": self.jumuiya.id, "label": self.jumuiya.name}]},
+            {
+                "options": [{"value": self.jumuiya.id, "label": self.jumuiya.name}],
+                "groups": [{"value": self.group.id, "label": self.group.name}],
+            },
         )
-        self.assertEqual(other_response.json(), {"options": []})
+        self.assertEqual(other_response.json(), {"options": [], "groups": []})

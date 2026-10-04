@@ -201,6 +201,21 @@ urlpatterns = [
         church_views.church_edit,
         name="web_church_edit",
     ),
+    path(
+        "church-groups/",
+        church_views.church_group_list,
+        name="web_church_groups",
+    ),
+    path(
+        "church-groups/create/",
+        church_views.church_group_create,
+        name="web_church_group_create",
+    ),
+    path(
+        "church-groups/<int:group_id>/edit/",
+        church_views.church_group_edit,
+        name="web_church_group_edit",
+    ),
     path("audit-logs/", audit_log_views.audit_log_list, name="web_audit_logs"),
     # Notifications
     path(

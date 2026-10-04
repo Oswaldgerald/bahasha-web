@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from users.models import User
-from churches.models import Church
+from churches.models import Church, ChurchGroup
 from jumuiya.models import Jumuiya
 
 
@@ -17,53 +17,54 @@ class Member(models.Model):
         ("FEMALE", "Female"),
     ]
 
+    MARITAL_STATUS_CHOICES = [
+        ("SINGLE", "Single"),
+        ("MARRIED", "Married"),
+        ("SEPARATED", "Separated"),
+        ("DIVORCED", "Divorced"),
+        ("WIDOWED", "Widowed"),
+    ]
+
     user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="member_profile"
+        User, on_delete=models.CASCADE, related_name="member_profile"
     )
 
-    church = models.ForeignKey(
-        Church,
-        on_delete=models.CASCADE,
-        related_name="members"
-    )
+    church = models.ForeignKey(Church, on_delete=models.CASCADE, related_name="members")
 
     jumuiya = models.ForeignKey(
         Jumuiya,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="members"
+        related_name="members",
     )
 
-    bahasha_number = models.CharField(
-        max_length=100,
-        unique=True
-    )
+    bahasha_number = models.CharField(max_length=100, unique=True)
 
     gender = models.CharField(
-        max_length=20,
-        choices=GENDER_CHOICES,
-        blank=True,
-        null=True
+        max_length=20, choices=GENDER_CHOICES, blank=True, null=True
     )
 
-    demographics = models.TextField(
+    marital_status = models.CharField(
+        max_length=20,
+        choices=MARITAL_STATUS_CHOICES,
         blank=True,
-        null=True
+        null=True,
     )
+
+    church_groups = models.ManyToManyField(
+        ChurchGroup,
+        blank=True,
+        related_name="members",
+    )
+
+    demographics = models.TextField(blank=True, null=True)
 
     approval_status = models.CharField(
-        max_length=20,
-        choices=APPROVAL_STATUS,
-        default="PENDING"
+        max_length=20, choices=APPROVAL_STATUS, default="PENDING"
     )
 
-    approved_at = models.DateTimeField(
-        blank=True,
-        null=True
-    )
+    approved_at = models.DateTimeField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
 
@@ -83,7 +84,11 @@ class Member(models.Model):
         if self.user_id and self.church_id and self.user.church_id != self.church_id:
             errors["church"] = "Member and user account must belong to the same church."
 
-        if self.jumuiya_id and self.church_id and self.jumuiya.church_id != self.church_id:
+        if (
+            self.jumuiya_id
+            and self.church_id
+            and self.jumuiya.church_id != self.church_id
+        ):
             errors["jumuiya"] = "Jumuiya must belong to the selected church."
 
         if errors:

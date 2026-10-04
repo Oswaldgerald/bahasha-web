@@ -12,6 +12,7 @@
             <div><label for="{{ form.phone_number.id_for_label }}">Phone Number</label>{{ form.phone_number }}{{ form.phone_number.errors }}</div>
             <div><label for="{{ form.email.id_for_label }}">Email <span class="member-optional">Optional</span></label>{{ form.email }}{{ form.email.errors }}</div>
             <div><label for="{{ form.gender.id_for_label }}">Gender <span class="member-optional">Optional</span></label>{{ form.gender }}{{ form.gender.errors }}</div>
+            <div><label for="{{ form.marital_status.id_for_label }}">Marital Status <span class="member-optional">Optional</span></label>{{ form.marital_status }}{{ form.marital_status.errors }}</div>
         </div>
     </section>
 
@@ -45,6 +46,12 @@
             <div><label for="{{ form.church.id_for_label }}">Church</label>{{ form.church }}{{ form.church.errors }}</div>
             <div><label for="{{ form.jumuiya.id_for_label }}">Jumuiya <span class="member-optional">Optional</span></label>{{ form.jumuiya }}{{ form.jumuiya.errors }}</div>
             <div><label for="{{ form.bahasha_number.id_for_label }}">Bahasha Number</label>{{ form.bahasha_number }}{{ form.bahasha_number.errors }}</div>
+            <div class="member-groups-field">
+                <label for="{{ form.church_groups.id_for_label }}">Church Groups <span class="member-optional">Optional</span></label>
+                {{ form.church_groups }}
+                {{ form.church_groups.errors }}
+                <small>Select all ministries or service groups this member belongs to. <a href="{% url 'web_church_groups' %}">Manage groups</a></small>
+            </div>
             <div class="member-demographics-field"><label for="{{ form.demographics.id_for_label }}">Demographics <span class="member-optional">Optional</span></label>{{ form.demographics }}{{ form.demographics.errors }}</div>
         </div>
     </section>

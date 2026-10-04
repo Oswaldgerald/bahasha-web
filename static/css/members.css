@@ -498,6 +498,41 @@
     padding-top: 16px;
 }
 
+.member-group-memberships {
+    border-top: 1px solid #eceaf0;
+    margin-top: 20px;
+    padding-top: 16px;
+}
+
+.member-group-memberships > span {
+    color: #7a7480;
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.member-group-memberships > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.member-group-chip {
+    background: #eeeaf9;
+    border-radius: 20px;
+    color: #2d1b69;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 9px;
+}
+
+.member-no-groups {
+    color: #7a7480;
+    font-size: 12px;
+}
+
 .member-demographics p {
     color: #57515d;
     font-size: 13px;
@@ -615,6 +650,22 @@
     grid-column: 1 / -1;
 }
 
+.member-groups-field {
+    grid-column: 1 / -1;
+}
+
+.member-groups-field > small {
+    color: #746e79;
+    display: block;
+    font-size: 11px;
+    margin-top: 6px;
+}
+
+.member-groups-field > small a {
+    color: #2d1b69;
+    font-weight: 700;
+}
+
 .member-checkbox-field {
     align-items: center;
     align-self: end;
@@ -719,6 +770,10 @@
     }
 
     .member-demographics-field {
+        grid-column: auto;
+    }
+
+    .member-groups-field {
         grid-column: auto;
     }
 

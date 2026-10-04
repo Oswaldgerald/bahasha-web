@@ -20,8 +20,9 @@ is the routing table only; it must not contain business or presentation logic.
 - `reports/views.py` - contribution and member reports
 - Each remaining feature uses its own `<app>/views.py` module
 
-When adding a page, place its view in the owning app and reference that module
-explicitly from `web/urls.py`. Shared web forms currently live in `web/forms.py`.
+When adding a page, place its view and domain-specific forms in the owning app,
+then reference its view module explicitly from `web/urls.py`. Forms shared across
+multiple features remain in `web/forms.py`.
 
 ## Quick Start
 

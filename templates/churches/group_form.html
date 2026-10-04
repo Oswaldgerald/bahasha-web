@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/church-groups.css' %}">{% endblock %}
+
+{% block content %}
+<div class="church-group-form-intro"><p>Create a reusable group that can be assigned to any number of members.</p></div>
+<form method="post" class="card church-group-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+        <div><label for="{{ form.church.id_for_label }}">Church</label>{{ form.church }}{{ form.church.errors }}</div>
+        <div><label for="{{ form.name.id_for_label }}">Group Name</label>{{ form.name }}{{ form.name.errors }}</div>
+        <div class="group-description"><label for="{{ form.description.id_for_label }}">Description <span>Optional</span></label>{{ form.description }}{{ form.description.errors }}</div>
+        <div class="group-active">{{ form.is_active }}<label for="{{ form.is_active.id_for_label }}">Active group</label>{{ form.is_active.errors }}</div>
+    </div>
+    <div class="group-form-actions">
+        <a href="{% url 'web_church_groups' %}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary"><i data-lucide="save" aria-hidden="true"></i><span>{{ submit_label }}</span></button>
+    </div>
+</form>
+{% endblock %}

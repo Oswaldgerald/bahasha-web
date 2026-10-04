@@ -12,14 +12,14 @@ from django.views.decorators.http import require_POST
 
 from annual_targets.models import MemberAnnualTarget
 from audit_logs.services import create_audit_log
+from churches.models import ChurchGroup
 from contributions.models import Contribution
 from jumuiya.models import Jumuiya
 from members.services import (
     approve_member as approve_member_record,
     reject_member as reject_member_record,
 )
-from web.forms import MemberCreateForm
-from web.forms import MemberEditForm
+from .forms import MemberCreateForm, MemberEditForm
 
 
 @login_required(login_url="login")
@@ -33,7 +33,9 @@ def member_card(request, member_id):
 
 @login_required(login_url="login")
 def member_list(request):
-    members = Member.objects.select_related("user", "church", "jumuiya")
+    members = Member.objects.select_related(
+        "user", "church", "jumuiya"
+    ).prefetch_related("church_groups")
     if request.user.church_id and not request.user.is_superuser:
         members = members.filter(church_id=request.user.church_id)
 
@@ -81,7 +83,9 @@ def member_list(request):
 
 
 def member_queryset_for_user(user):
-    queryset = Member.objects.select_related("user", "church", "jumuiya")
+    queryset = Member.objects.select_related(
+        "user", "church", "jumuiya"
+    ).prefetch_related("church_groups")
     if user.church_id and not user.is_superuser:
         queryset = queryset.filter(church_id=user.church_id)
     return queryset
@@ -91,18 +95,24 @@ def member_queryset_for_user(user):
 def member_jumuiya_options(request):
     church_id = request.GET.get("church_id")
     if not church_id or not church_id.isdigit():
-        return JsonResponse({"options": []})
+        return JsonResponse({"options": [], "groups": []})
 
     jumuiya = Jumuiya.objects.filter(church_id=church_id, is_active=True)
+    church_groups = ChurchGroup.objects.filter(church_id=church_id, is_active=True)
     if request.user.church_id and not request.user.is_superuser:
         jumuiya = jumuiya.filter(church_id=request.user.church_id)
+        church_groups = church_groups.filter(church_id=request.user.church_id)
 
     return JsonResponse(
         {
             "options": [
                 {"value": item.id, "label": item.name}
                 for item in jumuiya.order_by("name")
-            ]
+            ],
+            "groups": [
+                {"value": group.id, "label": group.name}
+                for group in church_groups.order_by("name")
+            ],
         }
     )
 

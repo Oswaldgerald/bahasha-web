@@ -64,9 +64,20 @@
             <div><dt>Phone</dt><dd>{{ member.user.phone_number }}</dd></div>
             <div><dt>Email</dt><dd>{{ member.user.email|default:"Not provided" }}</dd></div>
             <div><dt>Gender</dt><dd>{{ member.get_gender_display|default:"Not provided" }}</dd></div>
+            <div><dt>Marital Status</dt><dd>{{ member.get_marital_status_display|default:"Not provided" }}</dd></div>
             <div><dt>Church</dt><dd>{{ member.church.church_name }}</dd></div>
             <div><dt>Jumuiya</dt><dd>{{ member.jumuiya.name|default:"Not assigned" }}</dd></div>
         </dl>
+        <div class="member-group-memberships">
+            <span>Church Groups</span>
+            <div>
+                {% for group in member.church_groups.all %}
+                    <span class="member-group-chip">{{ group.name }}</span>
+                {% empty %}
+                    <span class="member-no-groups">No groups assigned</span>
+                {% endfor %}
+            </div>
+        </div>
         {% if member.demographics %}
         <div class="member-demographics">
             <span>Demographics</span>

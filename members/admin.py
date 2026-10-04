@@ -9,6 +9,7 @@ class MemberAdmin(admin.ModelAdmin):
         "user",
         "church",
         "jumuiya",
+        "marital_status",
         "approval_status",
         "is_active",
         "created_at",
@@ -24,6 +25,8 @@ class MemberAdmin(admin.ModelAdmin):
         "approval_status",
         "church",
         "jumuiya",
+        "marital_status",
+        "church_groups",
         "is_active",
     )
 

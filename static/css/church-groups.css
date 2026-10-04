@@ -1,0 +1,140 @@
+.church-group-toolbar,
+.church-group-form-intro {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.church-group-toolbar p,
+.church-group-form-intro p {
+    color: #68626f;
+    margin: 0;
+}
+
+.church-group-card {
+    overflow: hidden;
+    padding: 0;
+}
+
+.church-group-table-wrap {
+    overflow-x: auto;
+}
+
+.church-group-table {
+    min-width: 720px;
+}
+
+.church-group-table.is-empty {
+    min-width: 0;
+}
+
+.church-group-table td strong,
+.church-group-table td small,
+.group-empty strong,
+.group-empty span {
+    display: block;
+}
+
+.church-group-table td small,
+.group-empty span {
+    color: #756f7c;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.group-status {
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 9px;
+}
+
+.group-status.is-active {
+    background: #e7f5ee;
+    color: #19724f;
+}
+
+.group-status.is-inactive {
+    background: #f2f0f3;
+    color: #716b76;
+}
+
+.group-edit {
+    align-items: center;
+    background: #f0edf9;
+    border-radius: 6px;
+    color: #2d1b69;
+    display: inline-flex;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+}
+
+.group-edit svg,
+.group-empty svg {
+    height: 17px;
+    width: 17px;
+}
+
+.group-empty {
+    padding: 42px 20px !important;
+}
+
+.church-group-form {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 860px;
+}
+
+.group-description {
+    grid-column: 1 / -1;
+}
+
+.group-description label span {
+    color: #88828d;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.group-active {
+    align-items: center;
+    display: flex;
+    gap: 9px;
+}
+
+.group-active input {
+    height: 18px;
+    margin: 0;
+    min-height: 0;
+    width: 18px;
+}
+
+.group-form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+@media (max-width: 620px) {
+    .church-group-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .church-group-toolbar .btn-primary {
+        width: 100%;
+    }
+
+    .group-description {
+        grid-column: auto;
+    }
+
+    .group-form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}

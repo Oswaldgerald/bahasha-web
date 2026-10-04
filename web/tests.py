@@ -188,6 +188,7 @@ class ViewModuleOwnershipTests(TestCase):
             "web_jumuiya": "jumuiya.views",
             "web_users": "users.views",
             "web_churches": "churches.views",
+            "web_church_groups": "churches.views",
             "web_audit_logs": "audit_logs.views",
             "web_notifications": "notifications.views",
             "web_profile": "users.views",

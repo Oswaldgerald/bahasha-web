@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 
@@ -6,8 +7,20 @@ from users.models import User
 from .models import Member
 
 
+def validate_church_groups(church, church_groups):
+    invalid_groups = [
+        group.name for group in church_groups if group.church_id != church.id
+    ]
+    if invalid_groups:
+        raise ValidationError(
+            {"church_groups": "All church groups must belong to the selected church."}
+        )
+
+
 @transaction.atomic
 def create_member(data):
+    church_groups = list(data.get("church_groups") or [])
+    validate_church_groups(data["church"], church_groups)
     is_approved = data["approval_status"] == "APPROVED"
     user = User(
         username=data["username"],
@@ -28,6 +41,7 @@ def create_member(data):
         jumuiya=data.get("jumuiya"),
         bahasha_number=data["bahasha_number"],
         gender=data.get("gender") or None,
+        marital_status=data.get("marital_status") or None,
         demographics=data.get("demographics") or "",
         approval_status=data["approval_status"],
         approved_at=timezone.now() if is_approved else None,
@@ -35,11 +49,14 @@ def create_member(data):
     )
     member.full_clean()
     member.save()
+    member.church_groups.set(church_groups)
     return member
 
 
 @transaction.atomic
 def update_member(member, data):
+    church_groups = list(data.get("church_groups") or [])
+    validate_church_groups(data["church"], church_groups)
     user = member.user
     user.username = data["username"]
     user.full_name = data["full_name"]
@@ -53,6 +70,7 @@ def update_member(member, data):
     member.jumuiya = data.get("jumuiya")
     member.bahasha_number = data["bahasha_number"]
     member.gender = data.get("gender") or None
+    member.marital_status = data.get("marital_status") or None
     member.demographics = data.get("demographics") or ""
     member.approval_status = data["approval_status"]
     member.is_active = data["is_active"] and is_approved
@@ -70,6 +88,7 @@ def update_member(member, data):
     member.full_clean()
     user.save()
     member.save()
+    member.church_groups.set(church_groups)
     return member
 
 
@@ -80,7 +99,9 @@ def approve_member(member):
     member.is_active = True
     member.user.is_active = True
     member.user.save(update_fields=["is_active", "updated_at"])
-    member.save(update_fields=["approval_status", "approved_at", "is_active", "updated_at"])
+    member.save(
+        update_fields=["approval_status", "approved_at", "is_active", "updated_at"]
+    )
     return member
 
 
@@ -91,5 +112,7 @@ def reject_member(member):
     member.is_active = False
     member.user.is_active = False
     member.user.save(update_fields=["is_active", "updated_at"])
-    member.save(update_fields=["approval_status", "approved_at", "is_active", "updated_at"])
+    member.save(
+        update_fields=["approval_status", "approved_at", "is_active", "updated_at"]
+    )
     return member

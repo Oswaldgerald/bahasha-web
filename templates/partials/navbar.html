@@ -1,7 +1,20 @@
 <header class="topbar">
-    <div class="topbar-title">
-        <h2>Bahasha Admin Dashboard</h2>
-        <p>Church Contribution Management System</p>
+    <div class="topbar-context">
+        <span class="topbar-context-icon" aria-hidden="true">
+            <i data-lucide="landmark"></i>
+        </span>
+        <div>
+            <span class="topbar-eyebrow">
+                {% if request.user.church %}Church workspace{% else %}System workspace{% endif %}
+            </span>
+            <strong>
+                {% if request.user.church %}
+                    {{ request.user.church.church_name }}
+                {% else %}
+                    All churches
+                {% endif %}
+            </strong>
+        </div>
     </div>
 
     <div class="account-menu" data-dropdown>

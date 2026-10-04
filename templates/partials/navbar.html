@@ -1,10 +1,10 @@
 <header class="topbar">
-    <a href="{% url 'web_dashboard' %}" class="topbar-dashboard-link"{% if request.resolver_match.url_name == 'web_dashboard' %} aria-current="page"{% endif %}>
+    <div class="topbar-page-title" data-page-title="{{ current_page.title }}">
         <span class="topbar-context-icon" aria-hidden="true">
-            <i data-lucide="layout-dashboard"></i>
+            <i data-lucide="{{ current_page.icon }}"></i>
         </span>
-        <strong>Dashboard</strong>
-    </a>
+        <strong>{{ current_page.title }}</strong>
+    </div>
 
     <div class="account-menu" data-dropdown>
         <button

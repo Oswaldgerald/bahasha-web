@@ -292,7 +292,7 @@
     padding: 9px 12px 9px 14px;
 }
 
-.topbar-dashboard-link {
+.topbar-page-title {
     align-items: center;
     color: #292431;
     display: flex;
@@ -317,13 +317,9 @@
     width: 20px;
 }
 
-.topbar-dashboard-link strong {
+.topbar-page-title strong {
     font-size: 17px;
     white-space: nowrap;
-}
-
-.topbar-dashboard-link:hover {
-    color: #2d1b69;
 }
 
 .account-menu {
@@ -670,7 +666,7 @@
         height: 34px;
     }
 
-    .topbar-dashboard-link strong {
+    .topbar-page-title strong {
         font-size: 15px;
     }
 

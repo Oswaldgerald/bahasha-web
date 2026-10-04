@@ -144,4 +144,28 @@ class ExcelApprovalTests(TestCase):
             ).exists()
         )
 
-# Create your tests here.
+
+class CurrentPageHeaderTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="navigation-admin",
+            password="strong-test-password",
+            full_name="Navigation Administrator",
+            phone_number="255700000030",
+            role="ADMIN",
+        )
+        self.client.force_login(self.user)
+
+    def test_topbar_reflects_the_current_page(self):
+        pages = [
+            ("web_dashboard", "Dashboard"),
+            ("web_categories", "Contribution Categories"),
+            ("web_contributions", "Contributions"),
+            ("web_profile", "My Profile"),
+        ]
+
+        for route_name, title in pages:
+            with self.subTest(route_name=route_name):
+                response = self.client.get(reverse(route_name))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, f'data-page-title="{title}"')

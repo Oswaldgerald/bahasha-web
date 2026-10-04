@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from churches.models import Church
 from members.models import Member
 from financial_years.models import FinancialYear
@@ -94,6 +96,54 @@ class Contribution(models.Model):
         verbose_name = "Contribution"
         verbose_name_plural = "Contributions"
         ordering = ["-contribution_date", "-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(amount__gt=0),
+                name="contribution_amount_positive",
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+        errors = {}
+
+        if self.amount is not None and self.amount <= 0:
+            errors["amount"] = "Contribution amount must be greater than zero."
+
+        if self.member_id and self.church_id:
+            if self.member.church_id != self.church_id:
+                errors["member"] = "Member must belong to the selected church."
+            elif self._state.adding and (
+                not self.member.is_active or self.member.approval_status != "APPROVED"
+            ):
+                errors["member"] = "Member must be active and approved."
+
+        if self.financial_year_id and self.church_id:
+            if self.financial_year.church_id != self.church_id:
+                errors["financial_year"] = "Financial year must belong to the selected church."
+
+        if self.contribution_week_id:
+            if self.church_id and self.contribution_week.church_id != self.church_id:
+                errors["contribution_week"] = "Contribution week must belong to the selected church."
+            elif (
+                self.financial_year_id
+                and self.contribution_week.financial_year_id != self.financial_year_id
+            ):
+                errors["contribution_week"] = "Contribution week must belong to the selected financial year."
+
+        if self.category_id and self._state.adding and not self.category.is_active:
+            errors["category"] = "Contribution category must be active."
+
+        if self.contribution_date and self.financial_year_id:
+            if not (
+                self.financial_year.start_date
+                <= self.contribution_date
+                <= self.financial_year.end_date
+            ):
+                errors["contribution_date"] = "Contribution date must fall within the financial year."
+
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return (

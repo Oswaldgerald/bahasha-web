@@ -1,12 +1,11 @@
 from decimal import Decimal, InvalidOperation
 
 from django.db import transaction
-from django.db.models import Sum
 from django.utils import timezone
 from openpyxl import load_workbook
 
-from annual_targets.models import MemberAnnualTarget
 from contributions.models import Contribution
+from contributions.services import save_contributions
 from members.models import Member
 
 from .models import ExcelUpload, ExcelUploadRow
@@ -107,28 +106,6 @@ def process_excel_upload(upload: ExcelUpload):
 
     return upload
 
-def recalculate_member_target(member, financial_year, category):
-    target = MemberAnnualTarget.objects.filter(
-        member=member,
-        financial_year=financial_year,
-        category=category,
-    ).first()
-
-    if not target:
-        return
-
-    total = Contribution.objects.filter(
-        member=member,
-        financial_year=financial_year,
-        category=category,
-        status="POSTED",
-    ).aggregate(
-        total_amount=Sum("amount")
-    )["total_amount"] or 0
-
-    target.contributed_amount = total
-    target.save()
-
 @transaction.atomic
 def approve_excel_upload(upload: ExcelUpload, approved_by):
     upload = ExcelUpload.objects.select_for_update().get(pk=upload.pk)
@@ -136,8 +113,9 @@ def approve_excel_upload(upload: ExcelUpload, approved_by):
         raise ValueError("Only validated uploads can be approved.")
     valid_rows = upload.rows.filter(validation_status="VALID")
 
+    contributions = []
     for row in valid_rows:
-        Contribution.objects.create(
+        contributions.append(Contribution(
             church=upload.church,
             member=row.resolved_member,
             bahasha_number=row.bahasha_number,
@@ -150,13 +128,9 @@ def approve_excel_upload(upload: ExcelUpload, approved_by):
             status="POSTED",
             reference_number=f"EXCEL-{upload.id}-{row.id}",
             posted_by=approved_by,
-        )
+        ))
 
-        recalculate_member_target(
-            row.resolved_member,
-            upload.financial_year,
-            upload.selected_category,
-        )
+    save_contributions(contributions)
 
     upload.status = "POSTED"
     upload.approved_by = approved_by

@@ -87,6 +87,10 @@ Profile pictures are stored in the persistent Docker media volume and served thr
 
 Use `{% block extra_css %}` and `{% block extra_js %}` in page templates when a feature needs isolated assets. Avoid inline styles and event handlers so browser issues remain easy to trace.
 
+## Contribution Integrity
+
+All contribution write paths must use `contributions.services.save_contribution` or `save_contributions`. The service validates domain relationships, derives the member's Bahasha number, saves atomically, and recalculates annual target totals from posted contributions. Web forms, Excel imports, future mobile APIs, and payment callbacks must not update cached target totals directly.
+
 ## Environment
 
 `.env` contains secrets and machine-specific values and must never be committed. `.env.example` documents all supported settings.

@@ -284,13 +284,11 @@ class ContributionForm(forms.ModelForm):
         fields = [
             "church",
             "member",
-            "bahasha_number",
             "financial_year",
             "contribution_week",
             "category",
             "amount",
             "contribution_date",
-            "source",
             "status",
             "remarks",
         ]

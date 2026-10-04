@@ -7,6 +7,7 @@ from churches.models import Church
 from .forms import ChurchForm
 from members.models import Member
 from contributions.models import Contribution
+from contributions.services import contribution_target_key, save_contribution
 from excel_uploads.models import ExcelUpload
 from financial_years.models import FinancialYear
 from contribution_weeks.models import ContributionWeek
@@ -655,10 +656,9 @@ def contribution_create(request):
             if not contribution.reference_number:
                 contribution.reference_number = f"MANUAL-{uuid.uuid4().hex[:10].upper()}"
 
+            contribution.source = "MANUAL_ENTRY"
             contribution.posted_by = request.user
-            contribution.save()
-
-            update_member_target(contribution)
+            save_contribution(contribution)
 
             messages.success(request, "Contribution recorded successfully.")
             return redirect("web_contributions")
@@ -673,25 +673,14 @@ def contribution_create(request):
 @login_required(login_url="login")
 def contribution_edit(request, contribution_id):
     contribution = get_object_or_404(Contribution, id=contribution_id)
-
-    old_amount = contribution.amount
-    old_category = contribution.category
-    old_member = contribution.member
-    old_year = contribution.financial_year
+    previous_target_key = contribution_target_key(contribution)
 
     if request.method == "POST":
         form = ContributionForm(request.POST, instance=contribution)
 
         if form.is_valid():
-            updated_contribution = form.save()
-
-            recalculate_member_targets(
-                old_member,
-                old_year,
-                old_category
-            )
-
-            update_member_target(updated_contribution)
+            updated_contribution = form.save(commit=False)
+            save_contribution(updated_contribution, previous_target_key)
 
             messages.success(request, "Contribution updated successfully.")
             return redirect("web_contributions")
@@ -702,44 +691,6 @@ def contribution_edit(request, contribution_id):
         "form": form,
         "contribution": contribution
     })
-
-@login_required(login_url="login")
-def update_member_target(contribution):
-    target, created = MemberAnnualTarget.objects.get_or_create(
-        member=contribution.member,
-        church=contribution.church,
-        financial_year=contribution.financial_year,
-        category=contribution.category,
-        defaults={
-            "target_amount": 0,
-            "contributed_amount": 0,
-        }
-    )
-
-    target.contributed_amount += contribution.amount
-    target.save()
-
-
-@login_required(login_url="login")
-def recalculate_member_targets(member, financial_year, category):
-    target = MemberAnnualTarget.objects.filter(
-        member=member,
-        financial_year=financial_year,
-        category=category,
-    ).first()
-
-    if target:
-        total = Contribution.objects.filter(
-            member=member,
-            financial_year=financial_year,
-            category=category,
-            status="POSTED",
-        ).exclude(status="REVERSED").aggregate(
-            total=models.Sum("amount")
-        )["total"] or 0
-
-        target.contributed_amount = total
-        target.save()
 
 # Excel Uploads Management
 @login_required(login_url="login")

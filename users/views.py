@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.db import models
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
@@ -40,15 +41,58 @@ def logout_view(request):
 
 @login_required(login_url="login")
 def user_list(request):
-    users = User.objects.select_related("church").order_by("full_name")
+    users = user_queryset_for_user(request.user)
+    summary = users.aggregate(
+        total=models.Count("id"),
+        active=models.Count("id", filter=models.Q(is_active=True)),
+        administrators=models.Count("id", filter=models.Q(role="ADMIN")),
+        members=models.Count("id", filter=models.Q(role="MEMBER")),
+    )
 
-    return render(request, "users/list.html", {"users": users})
+    query = request.GET.get("q", "").strip()
+    role = request.GET.get("role", "").strip()
+    account_status = request.GET.get("account_status", "").strip()
+    if query:
+        users = users.filter(
+            models.Q(full_name__icontains=query)
+            | models.Q(username__icontains=query)
+            | models.Q(phone_number__icontains=query)
+            | models.Q(email__icontains=query)
+        )
+    if role in dict(User.ROLE_CHOICES):
+        users = users.filter(role=role)
+    if account_status == "active":
+        users = users.filter(is_active=True)
+    elif account_status == "inactive":
+        users = users.filter(is_active=False)
+
+    return render(
+        request,
+        "users/list.html",
+        {
+            "users": users,
+            "summary": summary,
+            "role_choices": User.ROLE_CHOICES,
+            "filters": {
+                "q": query,
+                "role": role,
+                "account_status": account_status,
+            },
+        },
+    )
+
+
+def user_queryset_for_user(user):
+    users = User.objects.select_related("church").order_by("full_name")
+    if user.church_id and not user.is_superuser:
+        users = users.filter(church_id=user.church_id)
+    return users
 
 
 @login_required(login_url="login")
 def user_create(request):
     if request.method == "POST":
-        form = UserForm(request.POST)
+        form = UserForm(request.POST, request_user=request.user)
 
         if form.is_valid():
             user = form.save(commit=False)
@@ -63,17 +107,17 @@ def user_create(request):
             return redirect("web_users")
 
     else:
-        form = UserForm()
+        form = UserForm(request_user=request.user)
 
     return render(request, "users/create.html", {"form": form})
 
 
 @login_required(login_url="login")
 def user_edit(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user)
+        form = UserForm(request.POST, instance=user, request_user=request.user)
 
         if form.is_valid():
             form.save()
@@ -83,14 +127,15 @@ def user_edit(request, user_id):
             return redirect("web_users")
 
     else:
-        form = UserForm(instance=user)
+        form = UserForm(instance=user, request_user=request.user)
 
     return render(request, "users/edit.html", {"form": form, "user_obj": user})
 
 
 @login_required(login_url="login")
+@require_POST
 def user_reset_password(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
     user.set_password("Password123")
     user.save()
@@ -112,7 +157,7 @@ def user_reset_password(request, user_id):
 @login_required(login_url="login")
 @require_POST
 def user_activate(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
     user.is_active = True
     user.save()
 
@@ -124,7 +169,7 @@ def user_activate(request, user_id):
 @login_required(login_url="login")
 @require_POST
 def user_deactivate(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
     if user == request.user:
         messages.error(request, "You cannot deactivate your own account.")

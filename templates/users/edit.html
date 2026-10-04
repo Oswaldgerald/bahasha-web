@@ -1,26 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/users.css' %}">{% endblock %}
 
 {% block content %}
-
-<h1>Edit User</h1>
-
-<div class="card">
-
-    <form method="post">
-        {% csrf_token %}
-
-        {{ form.as_p }}
-
-        <button type="submit" class="btn-primary">
-            Update User
-        </button>
-
-        <a href="{% url 'web_users' %}" class="btn-secondary">
-            Cancel
-        </a>
-
-    </form>
-
-</div>
-
+<div class="user-form-intro"><p>Update {{ user_obj.full_name }}'s identity, church assignment, and access level.</p></div>
+{% include "users/_user_form.html" with submit_label="Update User" %}
 {% endblock %}

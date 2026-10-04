@@ -1,5 +1,7 @@
 from django import forms
 
+from churches.models import Church
+
 from .models import User
 from .phone_numbers import country_code_field, normalize_phone_number, split_phone_number
 from .profile_pictures import validate_profile_picture
@@ -34,8 +36,14 @@ class UserForm(PhoneNumberFormMixin, forms.ModelForm):
     phone_country_code = country_code_field()
 
     def __init__(self, *args, **kwargs):
+        request_user = kwargs.pop("request_user", None)
         super().__init__(*args, **kwargs)
         self._set_phone_initial()
+        churches = Church.objects.filter(is_active=True)
+        if request_user and request_user.church_id and not request_user.is_superuser:
+            churches = churches.filter(pk=request_user.church_id)
+            self.fields["church"].initial = request_user.church_id
+        self.fields["church"].queryset = churches
 
     class Meta:
         model = User

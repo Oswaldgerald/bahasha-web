@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.test import override_settings
 from django.urls import reverse
 
+from churches.models import Church
 from users.models import User
 
 
@@ -131,3 +132,64 @@ class ProfilePictureTests(TestCase):
         self.assertFalse(self.user.profile_picture)
         self.assertFalse(storage.exists(stored_name))
         self.assertEqual(self.client.get(reverse("web_profile_picture")).status_code, 404)
+
+
+class UserManagementTests(TestCase):
+    def setUp(self):
+        self.church = Church.objects.create(
+            church_code="USR-001",
+            church_name="User Test Church",
+        )
+        self.other_church = Church.objects.create(
+            church_code="USR-002",
+            church_name="Other User Church",
+        )
+        self.admin = User.objects.create_user(
+            username="user-admin",
+            password="strong-test-password",
+            full_name="User Administrator",
+            phone_number="255700000110",
+            role="ADMIN",
+            church=self.church,
+        )
+        self.member = User.objects.create_user(
+            username="managed-member",
+            password="strong-test-password",
+            full_name="Managed Member",
+            phone_number="255700000111",
+            role="MEMBER",
+            church=self.church,
+        )
+        self.other_user = User.objects.create_user(
+            username="other-user",
+            password="strong-test-password",
+            full_name="Other User",
+            phone_number="255700000112",
+            role="MEMBER",
+            church=self.other_church,
+        )
+        self.client.force_login(self.admin)
+
+    def test_user_list_has_status_column_and_is_scoped_to_church(self):
+        response = self.client.get(reverse("web_users"))
+
+        self.assertContains(response, "Status")
+        self.assertContains(response, self.member.full_name)
+        self.assertNotContains(response, self.other_user.full_name)
+
+    def test_user_filters_by_role_and_account_state(self):
+        self.member.is_active = False
+        self.member.save(update_fields=["is_active"])
+
+        response = self.client.get(
+            reverse("web_users"),
+            {"role": "MEMBER", "account_status": "inactive"},
+        )
+
+        self.assertQuerySetEqual(response.context["users"], [self.member])
+
+    def test_password_reset_requires_post(self):
+        url = reverse("web_user_reset_password", args=[self.member.id])
+
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertRedirects(self.client.post(url), reverse("web_users"))

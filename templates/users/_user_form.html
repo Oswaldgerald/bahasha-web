@@ -1,0 +1,21 @@
+<form method="post" class="user-form" autocomplete="off">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <section class="card user-form-section">
+        <div class="user-section-heading"><span><i data-lucide="contact-round" aria-hidden="true"></i></span><div><h2>Account Identity</h2><p>Personal and sign-in information</p></div></div>
+        <div class="form-grid user-form-grid">
+            <div><label for="{{ form.full_name.id_for_label }}">Full Name</label>{{ form.full_name }}{{ form.full_name.errors }}</div>
+            <div><label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}{{ form.username.errors }}</div>
+            <div class="user-phone-field"><label for="{{ form.phone_number.id_for_label }}">Phone Number</label><div class="user-phone-inputs"><div>{{ form.phone_country_code }}</div><div>{{ form.phone_number }}</div></div>{{ form.phone_country_code.errors }}{{ form.phone_number.errors }}<small>Select a country code, then enter the number without the leading zero.</small></div>
+        </div>
+    </section>
+    <section class="card user-form-section">
+        <div class="user-section-heading"><span><i data-lucide="shield-check" aria-hidden="true"></i></span><div><h2>Access &amp; Responsibility</h2><p>Church scope, role, and account availability</p></div></div>
+        <div class="form-grid user-form-grid">
+            <div><label for="{{ form.church.id_for_label }}">Church <span class="user-optional">Optional</span></label>{{ form.church }}{{ form.church.errors }}</div>
+            <div><label for="{{ form.role.id_for_label }}">System Role</label>{{ form.role }}{{ form.role.errors }}</div>
+            <div class="user-active-field">{{ form.is_active }}<label for="{{ form.is_active.id_for_label }}">Allow this user to sign in</label>{{ form.is_active.errors }}</div>
+        </div>
+    </section>
+    <div class="user-form-actions"><a href="{% url 'web_users' %}" class="btn-secondary">Cancel</a><button type="submit" class="btn-primary"><i data-lucide="save" aria-hidden="true"></i><span>{{ submit_label }}</span></button></div>
+</form>

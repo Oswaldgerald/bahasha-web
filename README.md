@@ -90,6 +90,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/css/forms.css` and `static/css/tables.css` - reusable form and table patterns
 - `static/css/dashboard.css`, `reports.css`, `notifications.css`, and `profile.css` - feature styles
 - `static/css/members.css` - member list, form, and profile styles
+- `static/css/users.css` - user account list, filters, responsive rows, and form styles
 - `static/css/member-card.css` - member card styles loaded only by that page
 - `static/css/printing.css` - print-only behavior
 - `static/js/app.js` - icons, printing, and progress bars
@@ -98,6 +99,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/js/forms.js` - progressive enhancement for Django select fields
 - `static/js/profile.js` - profile picture preview and removal behavior
 - `static/js/members.js` - member workflow confirmation and dependent selectors
+- `static/js/users.js` - user account action confirmations
 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 

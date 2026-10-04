@@ -1,9 +1,7 @@
-.dashboard-header {
-    align-items: center;
-}
-
-.dashboard-header h1 {
-    font-size: 28px;
+.dashboard-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
 }
 
 .dashboard-actions {
@@ -390,14 +388,10 @@
 }
 
 @media (max-width: 700px) {
-    .dashboard-header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
     .dashboard-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        width: 100%;
     }
 
     .dashboard-period {

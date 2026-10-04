@@ -1,21 +1,10 @@
 <header class="topbar">
-    <div class="topbar-context">
+    <a href="{% url 'web_dashboard' %}" class="topbar-dashboard-link"{% if request.resolver_match.url_name == 'web_dashboard' %} aria-current="page"{% endif %}>
         <span class="topbar-context-icon" aria-hidden="true">
-            <i data-lucide="landmark"></i>
+            <i data-lucide="layout-dashboard"></i>
         </span>
-        <div>
-            <span class="topbar-eyebrow">
-                {% if request.user.church %}Church workspace{% else %}System workspace{% endif %}
-            </span>
-            <strong>
-                {% if request.user.church %}
-                    {{ request.user.church.church_name }}
-                {% else %}
-                    All churches
-                {% endif %}
-            </strong>
-        </div>
-    </div>
+        <strong>Dashboard</strong>
+    </a>
 
     <div class="account-menu" data-dropdown>
         <button

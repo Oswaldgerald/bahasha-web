@@ -1,4 +1,57 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const photoInput = document.querySelector("[data-member-photo-input]");
+    const photoImage = document.querySelector("[data-member-photo-image]");
+    const photoFallback = document.querySelector("[data-member-photo-fallback]");
+    const removePhoto = document.querySelector('[name="remove_picture"]');
+    let photoObjectUrl = null;
+
+    const showPhotoFallback = () => {
+        if (photoImage && photoFallback) {
+            photoImage.hidden = true;
+            photoFallback.hidden = false;
+        }
+    };
+
+    const showPhoto = (source) => {
+        if (photoImage && photoFallback) {
+            photoImage.src = source;
+            photoImage.hidden = false;
+            photoFallback.hidden = true;
+        }
+    };
+
+    photoInput?.addEventListener("change", () => {
+        const [file] = photoInput.files;
+        if (!file?.type.startsWith("image/")) {
+            const originalSource = photoImage?.dataset.originalSrc;
+            originalSource ? showPhoto(originalSource) : showPhotoFallback();
+            return;
+        }
+        if (photoObjectUrl) {
+            URL.revokeObjectURL(photoObjectUrl);
+        }
+        photoObjectUrl = URL.createObjectURL(file);
+        showPhoto(photoObjectUrl);
+        if (removePhoto) {
+            removePhoto.checked = false;
+        }
+    });
+
+    removePhoto?.addEventListener("change", () => {
+        if (removePhoto.checked) {
+            photoInput.value = "";
+            showPhotoFallback();
+        } else if (photoImage?.dataset.originalSrc) {
+            showPhoto(photoImage.dataset.originalSrc);
+        }
+    });
+
+    window.addEventListener("beforeunload", () => {
+        if (photoObjectUrl) {
+            URL.revokeObjectURL(photoObjectUrl);
+        }
+    });
+
     document.querySelectorAll("[data-confirm-rejection]").forEach((button) => {
         button.addEventListener("click", (event) => {
             const memberName = button.dataset.confirmRejection;

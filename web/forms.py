@@ -1,5 +1,4 @@
 from django import forms
-from users.models import User
 from churches.models import Church
 from jumuiya.models import Jumuiya
 from categories.models import ContributionCategory
@@ -9,20 +8,7 @@ from annual_targets.models import MemberAnnualTarget
 from contributions.models import Contribution
 from excel_uploads.models import ExcelUpload
 from notifications.models import Notification
-
-
-# User Management Forms
-class UserForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = [
-            "username",
-            "full_name",
-            "phone_number",
-            "church",
-            "role",
-            "is_active",
-        ]
+from users.models import User
 
 
 # Jumuiya Management Forms
@@ -181,69 +167,4 @@ class NotificationForm(forms.ModelForm):
 
         widgets = {
             "message": forms.Textarea(attrs={"rows": 5}),
-        }
-
-
-# Profile form
-class ProfileUpdateForm(forms.ModelForm):
-    remove_picture = forms.BooleanField(required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_picture_name = (
-            self.instance.profile_picture.name
-            if self.instance and self.instance.profile_picture
-            else ""
-        )
-
-    def clean_profile_picture(self):
-        picture = self.cleaned_data.get("profile_picture")
-        if not picture or picture == self.instance.profile_picture:
-            return picture
-
-        if picture.size > 5 * 1024 * 1024:
-            raise forms.ValidationError("Profile picture must be 5 MB or smaller.")
-
-        image_format = getattr(getattr(picture, "image", None), "format", "")
-        if image_format not in {"JPEG", "PNG", "WEBP"}:
-            raise forms.ValidationError("Upload a JPEG, PNG, or WebP image.")
-
-        if picture.image.width > 5000 or picture.image.height > 5000:
-            raise forms.ValidationError(
-                "Image dimensions must not exceed 5000 x 5000 pixels."
-            )
-
-        return picture
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        remove_picture = self.cleaned_data.get("remove_picture", False)
-        has_new_picture = "profile_picture" in self.files
-
-        if remove_picture:
-            user.profile_picture = None
-
-        if commit:
-            user.save()
-            if self._original_picture_name and (remove_picture or has_new_picture):
-                storage = self.instance._meta.get_field("profile_picture").storage
-                if self._original_picture_name != user.profile_picture.name:
-                    storage.delete(self._original_picture_name)
-
-        return user
-
-    class Meta:
-        model = User
-        fields = [
-            "profile_picture",
-            "full_name",
-            "phone_number",
-        ]
-        widgets = {
-            "profile_picture": forms.FileInput(
-                attrs={
-                    "accept": "image/jpeg,image/png,image/webp",
-                    "class": "profile-file-input",
-                }
-            ),
         }

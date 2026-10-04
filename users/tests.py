@@ -83,6 +83,7 @@ class ProfilePictureTests(TestCase):
 
         self.assertRedirects(response, reverse("web_profile"))
         self.user.refresh_from_db()
+        self.assertEqual(self.user.phone_number, "+255700000099")
         self.assertTrue(self.user.profile_picture.name.startswith("profile_pictures/user_"))
 
         picture_response = self.client.get(reverse("web_profile_picture"))

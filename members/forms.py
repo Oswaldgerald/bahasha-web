@@ -4,18 +4,39 @@ from django.contrib.auth.password_validation import validate_password
 from churches.models import Church, ChurchGroup
 from jumuiya.models import Jumuiya
 from users.models import User
+from users.phone_numbers import (
+    country_code_field,
+    normalize_phone_number,
+    split_phone_number,
+)
+from users.profile_pictures import validate_profile_picture
 
 from .models import Member
 from .services import create_member, update_member
 
 
 class MemberBaseForm(forms.Form):
+    profile_picture = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(
+            attrs={
+                "accept": "image/jpeg,image/png,image/webp",
+                "data-member-photo-input": "true",
+            }
+        ),
+    )
     username = forms.CharField(
         max_length=150,
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
     )
     full_name = forms.CharField(max_length=255)
-    phone_number = forms.CharField(max_length=20)
+    phone_country_code = country_code_field()
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(
+            attrs={"inputmode": "tel", "placeholder": "712 345 678"}
+        ),
+    )
     email = forms.EmailField(required=False)
     church = forms.ModelChoiceField(queryset=Church.objects.filter(is_active=True))
     jumuiya = forms.ModelChoiceField(
@@ -95,7 +116,9 @@ class MemberBaseForm(forms.Form):
 
         self.fields["username"].initial = self.member.user.username
         self.fields["full_name"].initial = self.member.user.full_name
-        self.fields["phone_number"].initial = self.member.user.phone_number
+        phone_code, local_number = split_phone_number(self.member.user.phone_number)
+        self.fields["phone_country_code"].initial = phone_code
+        self.fields["phone_number"].initial = local_number
         self.fields["email"].initial = self.member.user.email
         self.fields["church"].initial = self.member.church
         self.fields["jumuiya"].initial = self.member.jumuiya
@@ -116,13 +139,25 @@ class MemberBaseForm(forms.Form):
         return username
 
     def clean_phone_number(self):
-        phone_number = self.cleaned_data["phone_number"]
-        queryset = User.objects.filter(phone_number=phone_number)
+        phone_number = normalize_phone_number(
+            self.cleaned_data.get("phone_country_code"),
+            self.cleaned_data.get("phone_number"),
+        )
+        queryset = User.objects.filter(
+            phone_number__in=[phone_number, phone_number.removeprefix("+")]
+        )
         if self.member:
             queryset = queryset.exclude(id=self.member.user_id)
         if queryset.exists():
             raise forms.ValidationError("Phone number already exists.")
         return phone_number
+
+    def clean_profile_picture(self):
+        current_picture = self.member.user.profile_picture if self.member else None
+        return validate_profile_picture(
+            self.cleaned_data.get("profile_picture"),
+            current_picture,
+        )
 
     def clean_bahasha_number(self):
         bahasha_number = self.cleaned_data["bahasha_number"].strip().upper()
@@ -170,6 +205,7 @@ class MemberCreateForm(MemberBaseForm):
 
 
 class MemberEditForm(MemberBaseForm):
+    remove_picture = forms.BooleanField(required=False)
     is_active = forms.BooleanField(required=False)
 
     def _set_member_initial_values(self):

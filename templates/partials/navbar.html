@@ -3,7 +3,10 @@
         <span class="topbar-context-icon" aria-hidden="true">
             <i data-lucide="{{ current_page.icon }}"></i>
         </span>
-        <strong>{{ current_page.title }}</strong>
+        <span class="topbar-title-copy">
+            <small>Bahasha workspace</small>
+            <strong>{{ current_page.title }}</strong>
+        </span>
     </div>
 
     <div class="account-menu" data-dropdown>
@@ -15,6 +18,10 @@
             aria-expanded="false"
             aria-label="Open account menu"
         >
+            <span class="account-trigger-identity">
+                <strong>{{ request.user.full_name|default:request.user.username }}</strong>
+                <small>{{ request.user.get_role_display }}</small>
+            </span>
             <span class="user-avatar" aria-hidden="true">
                 {% if request.user.profile_picture %}
                     <img src="{% url 'web_profile_picture' %}" alt="">

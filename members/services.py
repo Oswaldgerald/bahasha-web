@@ -50,6 +50,9 @@ def create_member(data):
     member.full_clean()
     member.save()
     member.church_groups.set(church_groups)
+    if data.get("profile_picture"):
+        user.profile_picture = data["profile_picture"]
+        user.save(update_fields=["profile_picture", "updated_at"])
     return member
 
 
@@ -58,6 +61,9 @@ def update_member(member, data):
     church_groups = list(data.get("church_groups") or [])
     validate_church_groups(data["church"], church_groups)
     user = member.user
+    original_picture_name = user.profile_picture.name if user.profile_picture else ""
+    new_picture = data.get("profile_picture")
+    remove_picture = data.get("remove_picture", False)
     user.username = data["username"]
     user.full_name = data["full_name"]
     user.phone_number = data["phone_number"]
@@ -89,6 +95,12 @@ def update_member(member, data):
     user.save()
     member.save()
     member.church_groups.set(church_groups)
+    if remove_picture or new_picture:
+        user.profile_picture = new_picture if new_picture else None
+        user.save(update_fields=["profile_picture", "updated_at"])
+        if original_picture_name and original_picture_name != user.profile_picture.name:
+            storage = user._meta.get_field("profile_picture").storage
+            transaction.on_commit(lambda: storage.delete(original_picture_name))
     return member
 
 

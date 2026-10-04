@@ -1,5 +1,11 @@
+from io import BytesIO
+from tempfile import TemporaryDirectory
+
+from PIL import Image
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -98,6 +104,11 @@ class MemberServiceTests(TestCase):
 
 class MemberFormTests(TestCase):
     def setUp(self):
+        self.media_directory = TemporaryDirectory()
+        self.settings_override = override_settings(MEDIA_ROOT=self.media_directory.name)
+        self.settings_override.enable()
+        self.addCleanup(self.settings_override.disable)
+        self.addCleanup(self.media_directory.cleanup)
         self.church = Church.objects.create(
             church_code="FORM-001",
             church_name="Form Test Church",
@@ -129,7 +140,8 @@ class MemberFormTests(TestCase):
         data = {
             "username": "form-member",
             "full_name": "Form Member",
-            "phone_number": "255700100011",
+            "phone_country_code": "255",
+            "phone_number": "0700100011",
             "email": "form-member@example.com",
             "password": "Strong-Test-Password-2026",
             "church": str(self.church.id),
@@ -144,12 +156,26 @@ class MemberFormTests(TestCase):
         data.update(overrides)
         return data
 
+    @staticmethod
+    def profile_picture():
+        image_data = BytesIO()
+        Image.new("RGB", (64, 64), color=(45, 27, 105)).save(image_data, "PNG")
+        return SimpleUploadedFile(
+            "member.png",
+            image_data.getvalue(),
+            content_type="image/png",
+        )
+
     def test_create_form_scopes_church_and_jumuiya_to_administrator(self):
         form = MemberCreateForm(request_user=self.admin)
 
         self.assertQuerySetEqual(form.fields["church"].queryset, [self.church])
         self.assertQuerySetEqual(form.fields["jumuiya"].queryset, [self.jumuiya])
         self.assertQuerySetEqual(form.fields["church_groups"].queryset, [self.choir])
+        self.assertEqual(
+            form.fields["phone_country_code"].choices[0],
+            ("255", "Tanzania (+255)"),
+        )
 
     def test_create_form_rejects_cross_church_jumuiya(self):
         form = MemberCreateForm(
@@ -169,9 +195,26 @@ class MemberFormTests(TestCase):
         self.assertIsNotNone(member.approved_at)
         self.assertLessEqual(member.approved_at, timezone.now())
 
+    def test_create_form_saves_photo_and_normalizes_phone_number(self):
+        form = MemberCreateForm(
+            self.form_data(),
+            {"profile_picture": self.profile_picture()},
+            request_user=self.admin,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        member = form.save()
+        self.assertEqual(member.user.phone_number, "+255700100011")
+        self.assertTrue(member.user.profile_picture.name.startswith("profile_pictures/"))
+
 
 class MemberViewTests(TestCase):
     def setUp(self):
+        self.media_directory = TemporaryDirectory()
+        self.settings_override = override_settings(MEDIA_ROOT=self.media_directory.name)
+        self.settings_override.enable()
+        self.addCleanup(self.settings_override.disable)
+        self.addCleanup(self.media_directory.cleanup)
         self.church = Church.objects.create(
             church_code="VIEW-001",
             church_name="View Test Church",
@@ -197,6 +240,28 @@ class MemberViewTests(TestCase):
             phone_number="255700100020",
             role="ADMIN",
             church=self.church,
+        )
+        member_user = User.objects.create_user(
+            username="view-member",
+            password="Strong-Test-Password-2026",
+            full_name="View Member",
+            phone_number="255700100022",
+            role="MEMBER",
+            church=self.church,
+        )
+        image_data = BytesIO()
+        Image.new("RGB", (48, 48), color=(75, 59, 143)).save(image_data, "PNG")
+        member_user.profile_picture = SimpleUploadedFile(
+            "view-member.png",
+            image_data.getvalue(),
+            content_type="image/png",
+        )
+        member_user.save(update_fields=["profile_picture"])
+        self.member = Member.objects.create(
+            user=member_user,
+            church=self.church,
+            jumuiya=self.jumuiya,
+            bahasha_number="VIEW-B-002",
         )
         other_user = User.objects.create_user(
             username="other-member",
@@ -241,3 +306,16 @@ class MemberViewTests(TestCase):
             },
         )
         self.assertEqual(other_response.json(), {"options": [], "groups": []})
+
+    def test_member_picture_endpoint_respects_church_scope(self):
+        own_response = self.client.get(
+            reverse("web_member_profile_picture", args=[self.member.id])
+        )
+        other_response = self.client.get(
+            reverse("web_member_profile_picture", args=[self.other_member.id])
+        )
+
+        self.assertEqual(own_response.status_code, 200)
+        self.assertEqual(own_response["Content-Type"], "image/png")
+        own_response.close()
+        self.assertEqual(other_response.status_code, 404)

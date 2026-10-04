@@ -1,4 +1,4 @@
-<form method="post" class="member-form" autocomplete="off" data-jumuiya-url="{% url 'web_member_jumuiya_options' %}">
+<form method="post" enctype="multipart/form-data" class="member-form" autocomplete="off" data-jumuiya-url="{% url 'web_member_jumuiya_options' %}">
     {% csrf_token %}
     {{ form.non_field_errors }}
 
@@ -7,9 +7,40 @@
             <span class="member-form-section-icon"><i data-lucide="contact-round" aria-hidden="true"></i></span>
             <div><h2>Personal Details</h2><p>Member identity and contact information</p></div>
         </div>
+        <div class="member-photo-editor">
+            <div class="member-photo-preview" data-member-photo-preview>
+                <img
+                    src="{% if member and member.user.profile_picture %}{% url 'web_member_profile_picture' member.id %}{% endif %}"
+                    alt="Member photo preview"
+                    data-member-photo-image
+                    data-original-src="{% if member and member.user.profile_picture %}{% url 'web_member_profile_picture' member.id %}{% endif %}"
+                    {% if not member or not member.user.profile_picture %}hidden{% endif %}
+                >
+                <span data-member-photo-fallback{% if member and member.user.profile_picture %} hidden{% endif %}>
+                    <i data-lucide="user-round" aria-hidden="true"></i>
+                </span>
+            </div>
+            <div class="member-photo-controls">
+                <label for="{{ form.profile_picture.id_for_label }}">Member Photo <span class="member-optional">Optional</span></label>
+                {{ form.profile_picture }}
+                {{ form.profile_picture.errors }}
+                <small>JPEG, PNG, or WebP. Maximum size 5 MB.</small>
+                {% if form.remove_picture and member.user.profile_picture %}
+                    <label class="member-remove-photo">{{ form.remove_picture }} <span>Remove current photo</span></label>
+                {% endif %}
+            </div>
+        </div>
         <div class="form-grid member-form-grid">
             <div><label for="{{ form.full_name.id_for_label }}">Full Name</label>{{ form.full_name }}{{ form.full_name.errors }}</div>
-            <div><label for="{{ form.phone_number.id_for_label }}">Phone Number</label>{{ form.phone_number }}{{ form.phone_number.errors }}</div>
+            <div class="member-phone-field">
+                <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                <div class="member-phone-inputs">
+                    <div><span class="sr-only">Country code</span>{{ form.phone_country_code }}</div>
+                    <div>{{ form.phone_number }}</div>
+                </div>
+                {{ form.phone_country_code.errors }}{{ form.phone_number.errors }}
+                <small>Choose a country code, then enter the number without the leading zero.</small>
+            </div>
             <div><label for="{{ form.email.id_for_label }}">Email <span class="member-optional">Optional</span></label>{{ form.email }}{{ form.email.errors }}</div>
             <div><label for="{{ form.gender.id_for_label }}">Gender <span class="member-optional">Optional</span></label>{{ form.gender }}{{ form.gender.errors }}</div>
             <div><label for="{{ form.marital_status.id_for_label }}">Marital Status <span class="member-optional">Optional</span></label>{{ form.marital_status }}{{ form.marital_status.errors }}</div>

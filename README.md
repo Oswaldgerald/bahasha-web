@@ -15,6 +15,8 @@ is the routing table only; it must not contain business or presentation logic.
 
 - `dashboard/views.py` - dashboard aggregation
 - `members/views.py` and `members/services.py` - member workflows and state changes
+- `members/forms.py` - member account, photo, and church placement forms
+- `users/forms.py` - reusable user profile and international phone forms
 - `contributions/views.py` and `contributions/services.py` - contribution workflows
 - `excel_uploads/views.py` - web and API upload handlers
 - `reports/views.py` - contribution and member reports
@@ -100,6 +102,9 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 
 Profile pictures are stored in the persistent Docker media volume and served through an authenticated route. They are not exposed by a public media directory.
+
+Phone forms store normalized international numbers. Country selectors use the shared
+Choices.js enhancement, with Tanzania first and searchable country names and calling codes.
 
 Use `{% block extra_css %}` and `{% block extra_js %}` in page templates when a feature needs isolated assets. Avoid inline styles and event handlers so browser issues remain easy to trace.
 

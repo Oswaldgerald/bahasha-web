@@ -15,6 +15,7 @@ from audit_logs.services import create_audit_log
 from churches.models import ChurchGroup
 from contributions.models import Contribution
 from jumuiya.models import Jumuiya
+from users.profile_pictures import profile_picture_response
 from members.services import (
     approve_member as approve_member_record,
     reject_member as reject_member_record,
@@ -24,9 +25,7 @@ from .forms import MemberCreateForm, MemberEditForm
 
 @login_required(login_url="login")
 def member_card(request, member_id):
-    member = get_object_or_404(
-        Member.objects.select_related("user", "church", "jumuiya"), id=member_id
-    )
+    member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     return render(request, "members/card.html", {"member": member})
 
@@ -196,9 +195,19 @@ def member_detail(request, member_id):
 
 
 @login_required(login_url="login")
+def member_profile_picture(request, member_id):
+    member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
+    return profile_picture_response(member.user)
+
+
+@login_required(login_url="login")
 def member_create(request):
     if request.method == "POST":
-        form = MemberCreateForm(request.POST, request_user=request.user)
+        form = MemberCreateForm(
+            request.POST,
+            request.FILES,
+            request_user=request.user,
+        )
 
         if form.is_valid():
             member = form.save()
@@ -224,7 +233,12 @@ def member_edit(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     if request.method == "POST":
-        form = MemberEditForm(request.POST, member=member, request_user=request.user)
+        form = MemberEditForm(
+            request.POST,
+            request.FILES,
+            member=member,
+            request_user=request.user,
+        )
 
         if form.is_valid():
             member = form.save()

@@ -281,15 +281,16 @@
 .topbar {
     align-items: center;
     background: white;
-    border: 1px solid #ececf1;
+    border: 1px solid #e5e2ec;
+    border-top: 3px solid #4b3b8f;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     gap: 18px;
     justify-content: space-between;
     margin-bottom: 24px;
-    min-height: 62px;
-    padding: 9px 12px 9px 14px;
+    min-height: 66px;
+    padding: 8px 12px 8px 14px;
 }
 
 .topbar-page-title {
@@ -317,8 +318,23 @@
     width: 20px;
 }
 
+.topbar-title-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar-title-copy small {
+    color: #7a7482;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
 .topbar-page-title strong {
     font-size: 17px;
+    line-height: 1.35;
     white-space: nowrap;
 }
 
@@ -338,6 +354,31 @@
     gap: 7px;
     min-height: 48px;
     padding: 4px 9px 4px 5px;
+}
+
+.account-trigger-identity {
+    min-width: 0;
+    text-align: right;
+}
+
+.account-trigger-identity strong,
+.account-trigger-identity small {
+    display: block;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-trigger-identity strong {
+    color: #2e2935;
+    font-size: 13px;
+}
+
+.account-trigger-identity small {
+    color: #77717e;
+    font-size: 10px;
+    margin-top: 2px;
 }
 
 .account-menu-trigger:hover,
@@ -506,13 +547,15 @@
 
 .site-footer {
     align-items: center;
-    border-top: 1px solid #dddde4;
-    color: #686471;
+    background: #211747;
+    border: 1px solid #392b6d;
+    border-radius: 8px;
+    color: #d8d2eb;
     display: flex;
     gap: 24px;
     justify-content: space-between;
     margin-top: 36px;
-    padding: 22px 4px 4px;
+    padding: 18px 20px;
 }
 
 .footer-brand {
@@ -523,7 +566,7 @@
 
 .footer-mark {
     align-items: center;
-    background: #e9e5f7;
+    background: white;
     border-radius: 7px;
     color: #2d1b69;
     display: inline-flex;
@@ -543,7 +586,7 @@
 }
 
 .footer-brand strong {
-    color: #302b3b;
+    color: white;
     font-size: 14px;
 }
 
@@ -551,6 +594,28 @@
 .site-footer p {
     font-size: 12px;
     margin: 2px 0 0;
+}
+
+.footer-meta {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.footer-trust {
+    align-items: center;
+    color: #f0edf9;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 6px;
+}
+
+.footer-trust svg {
+    color: #75d1a0;
+    height: 15px;
+    width: 15px;
 }
 
 @media (max-width: 760px) {
@@ -670,6 +735,11 @@
         font-size: 15px;
     }
 
+    .topbar-title-copy small,
+    .account-trigger-identity {
+        display: none;
+    }
+
     .user-avatar {
         flex-basis: 34px;
         height: 34px;
@@ -683,6 +753,10 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 14px;
+    }
+
+    .footer-meta {
+        align-items: flex-start;
     }
 }
 

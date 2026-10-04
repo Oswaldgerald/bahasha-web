@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const hasManyOptions = select.options.length > 7;
+        const searchEnabled = select.dataset.searchable === "true" || hasManyOptions;
 
         select.choicesInstance = new window.Choices(select, {
             allowHTML: false,
@@ -16,8 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
             noChoicesText: "No options available",
             noResultsText: "No matching options",
             removeItemButton: select.multiple,
-            searchEnabled: hasManyOptions,
-            searchPlaceholderValue: "Search options",
+            searchEnabled,
+            searchPlaceholderValue: select.dataset.searchPlaceholder || "Search options",
             shouldSort: false,
         });
 

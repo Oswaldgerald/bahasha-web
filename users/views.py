@@ -1,19 +1,16 @@
-import mimetypes
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from audit_logs.services import create_audit_log
+from users.forms import ProfileUpdateForm, UserForm
 from users.models import User
-from web.forms import ProfileUpdateForm
-from web.forms import UserForm
+from users.profile_pictures import profile_picture_response
 
 
 def login_view(request):
@@ -158,19 +155,7 @@ def profile_view(request):
 
 @login_required(login_url="login")
 def profile_picture_view(request):
-    picture = request.user.profile_picture
-    if not picture:
-        raise Http404("Profile picture not found.")
-
-    try:
-        picture_file = picture.open("rb")
-    except FileNotFoundError as error:
-        raise Http404("Profile picture not found.") from error
-
-    content_type = mimetypes.guess_type(picture.name)[0] or "application/octet-stream"
-    response = FileResponse(picture_file, content_type=content_type)
-    response["Cache-Control"] = "private, no-store"
-    return response
+    return profile_picture_response(request.user)
 
 
 @login_required(login_url="login")

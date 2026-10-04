@@ -32,6 +32,11 @@ urlpatterns = [
         name="web_member_edit",
     ),
     path(
+        "members/<int:member_id>/picture/",
+        member_views.member_profile_picture,
+        name="web_member_profile_picture",
+    ),
+    path(
         "members/<int:member_id>/approve/",
         member_views.approve_member,
         name="web_member_approve",

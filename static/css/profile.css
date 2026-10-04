@@ -172,6 +172,12 @@
     margin-top: 4px;
 }
 
+.profile-phone-inputs {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(180px, 0.9fr) minmax(160px, 1.1fr);
+}
+
 .profile-actions {
     border-top: 1px solid #eceaf0;
     justify-content: flex-end;
@@ -205,5 +211,9 @@
 
     .profile-actions .btn-primary {
         width: 100%;
+    }
+
+    .profile-phone-inputs {
+        grid-template-columns: 1fr;
     }
 }

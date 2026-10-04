@@ -8,7 +8,13 @@
 {% block content %}
 <section class="member-profile-header">
     <div class="member-profile-identity">
-        <span class="member-profile-initial" aria-hidden="true">{{ member.user.full_name|default:member.user.username|slice:":1"|upper }}</span>
+        <span class="member-profile-initial" aria-hidden="true">
+            {% if member.user.profile_picture %}
+                <img src="{% url 'web_member_profile_picture' member.id %}" alt="">
+            {% else %}
+                {{ member.user.full_name|default:member.user.username|slice:":1"|upper }}
+            {% endif %}
+        </span>
         <div>
             <div class="member-profile-name-row">
                 <h1>{{ member.user.full_name }}</h1>

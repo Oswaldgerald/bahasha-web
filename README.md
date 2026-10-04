@@ -10,6 +10,19 @@ Bahasha is a Django application for church membership and contribution managemen
 - Docker Compose for local and production-like environments
 - SQLite in-memory database for isolated tests
 
+Web request handlers live with the Django app that owns the feature. `web/urls.py`
+is the routing table only; it must not contain business or presentation logic.
+
+- `dashboard/views.py` - dashboard aggregation
+- `members/views.py` and `members/services.py` - member workflows and state changes
+- `contributions/views.py` and `contributions/services.py` - contribution workflows
+- `excel_uploads/views.py` - web and API upload handlers
+- `reports/views.py` - contribution and member reports
+- Each remaining feature uses its own `<app>/views.py` module
+
+When adding a page, place its view in the owning app and reference that module
+explicitly from `web/urls.py`. Shared web forms currently live in `web/forms.py`.
+
 ## Quick Start
 
 Create the local environment file:
@@ -73,6 +86,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/css/layout.css` - collapsible sidebar, mobile drawer, top bar, and page headers
 - `static/css/forms.css` and `static/css/tables.css` - reusable form and table patterns
 - `static/css/dashboard.css`, `reports.css`, `notifications.css`, and `profile.css` - feature styles
+- `static/css/members.css` - member list, form, and profile styles
 - `static/css/member-card.css` - member card styles loaded only by that page
 - `static/css/printing.css` - print-only behavior
 - `static/js/app.js` - icons, printing, and progress bars
@@ -80,6 +94,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/js/dropdowns.js` - reusable accessible dropdown menus and dismissal behavior
 - `static/js/forms.js` - progressive enhancement for Django select fields
 - `static/js/profile.js` - profile picture preview and removal behavior
+- `static/js/members.js` - member workflow confirmation and dependent selectors
 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 

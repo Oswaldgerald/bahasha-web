@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import resolve, reverse
 
 from audit_logs.models import AuditLog
 from categories.models import ContributionCategory
@@ -169,3 +169,31 @@ class CurrentPageHeaderTests(TestCase):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, f'data-page-title="{title}"')
+
+
+class ViewModuleOwnershipTests(TestCase):
+    def test_web_routes_resolve_to_their_domain_modules(self):
+        route_modules = {
+            "web_dashboard": "dashboard.views",
+            "web_members": "members.views",
+            "web_categories": "categories.views",
+            "web_financial_years": "financial_years.views",
+            "web_contribution_weeks": "contribution_weeks.views",
+            "web_annual_targets": "annual_targets.views",
+            "web_contributions": "contributions.views",
+            "web_excel_uploads": "excel_uploads.views",
+            "web_contribution_summary_report": "reports.views",
+            "web_member_statement_report": "reports.views",
+            "web_weekly_collection_report": "reports.views",
+            "web_jumuiya": "jumuiya.views",
+            "web_users": "users.views",
+            "web_churches": "churches.views",
+            "web_audit_logs": "audit_logs.views",
+            "web_notifications": "notifications.views",
+            "web_profile": "users.views",
+        }
+
+        for route_name, expected_module in route_modules.items():
+            with self.subTest(route_name=route_name):
+                match = resolve(reverse(route_name))
+                self.assertEqual(match.func.__module__, expected_module)

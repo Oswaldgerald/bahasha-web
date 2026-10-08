@@ -70,7 +70,6 @@ def excel_upload_list(request):
 
     summary = uploads.aggregate(
         total=Count("id"),
-        rows=Sum("total_rows", default=0),
         valid=Sum("valid_rows", default=0),
         amount=Sum("total_amount", default=0),
     )

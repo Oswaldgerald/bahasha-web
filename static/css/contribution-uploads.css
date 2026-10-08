@@ -21,7 +21,7 @@
 .upload-summary {
     display: grid;
     gap: 14px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-bottom: 18px;
 }
 
@@ -53,7 +53,6 @@
     width: 19px;
 }
 
-.summary-rows { background: #e8f3f7; color: #28728b; }
 .summary-valid { background: #e7f5ee; color: #25805b; }
 .summary-amount { background: #fbf1df; color: #9a631d; }
 

@@ -13,10 +13,20 @@
 
 <div class="list-toolbar">
     <p>Manage member identity, approval, church placement, and Bahasha allocation.</p>
-    <a href="{% url 'web_member_create' %}" class="btn-primary">
-        <i data-lucide="plus" aria-hidden="true"></i>
-        <span>Add Member</span>
-    </a>
+    <div class="list-toolbar-actions">
+        <a href="{% url 'web_member_csv_export' %}" class="btn-secondary">
+            <i data-lucide="download" aria-hidden="true"></i>
+            <span>Export CSV</span>
+        </a>
+        <a href="{% url 'web_member_csv_import' %}" class="btn-secondary">
+            <i data-lucide="file-up" aria-hidden="true"></i>
+            <span>Import CSV</span>
+        </a>
+        <a href="{% url 'web_member_create' %}" class="btn-primary">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Member</span>
+        </a>
+    </div>
 </div>
 
 <section class="member-summary" aria-label="Member summary">

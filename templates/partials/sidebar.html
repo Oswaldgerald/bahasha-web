@@ -41,7 +41,7 @@
                 <i data-lucide="music" aria-hidden="true"></i>
                 <span class="nav-label">Church Groups</span>
             </a>
-            <a href="{% url 'web_members' %}" data-label="Members"{% if request.resolver_match.url_name == 'web_members' %} class="active" aria-current="page"{% endif %}>
+            <a href="{% url 'web_members' %}" data-label="Members"{% if request.resolver_match.url_name == 'web_members' or request.resolver_match.url_name == 'web_member_create' or request.resolver_match.url_name == 'web_member_edit' or request.resolver_match.url_name == 'web_member_detail' or request.resolver_match.url_name == 'web_member_csv_import' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="contact-round" aria-hidden="true"></i>
                 <span class="nav-label">Members</span>
             </a>

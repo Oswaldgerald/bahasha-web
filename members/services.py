@@ -22,6 +22,7 @@ def create_member(data):
     church_groups = list(data.get("church_groups") or [])
     validate_church_groups(data["church"], church_groups)
     is_approved = data["approval_status"] == "APPROVED"
+    is_active = is_approved and data.get("is_active", True)
     user = User(
         username=data["username"],
         full_name=data["full_name"],
@@ -29,9 +30,12 @@ def create_member(data):
         email=data.get("email", ""),
         church=data["church"],
         role="MEMBER",
-        is_active=is_approved,
+        is_active=is_active,
     )
-    user.set_password(data["password"])
+    if data.get("password"):
+        user.set_password(data["password"])
+    else:
+        user.set_unusable_password()
     user.full_clean()
     user.save()
 
@@ -45,7 +49,7 @@ def create_member(data):
         demographics=data.get("demographics") or "",
         approval_status=data["approval_status"],
         approved_at=timezone.now() if is_approved else None,
-        is_active=is_approved,
+        is_active=is_active,
     )
     member.full_clean()
     member.save()

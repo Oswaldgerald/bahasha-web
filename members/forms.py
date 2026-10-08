@@ -15,6 +15,22 @@ from .models import Member
 from .services import create_member, update_member
 
 
+class MemberCsvUploadForm(forms.Form):
+    file = forms.FileField(
+        label="CSV file",
+        widget=forms.FileInput(attrs={"accept": ".csv,text/csv"}),
+        help_text="UTF-8 CSV, up to 2 MB and 5,000 member rows.",
+    )
+
+    def clean_file(self):
+        uploaded_file = self.cleaned_data["file"]
+        if not uploaded_file.name.lower().endswith(".csv"):
+            raise forms.ValidationError("Upload a file with the .csv extension.")
+        if uploaded_file.size > 2 * 1024 * 1024:
+            raise forms.ValidationError("The CSV file must not exceed 2 MB.")
+        return uploaded_file
+
+
 class MemberBaseForm(forms.Form):
     profile_picture = forms.ImageField(
         required=False,

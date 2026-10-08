@@ -14,6 +14,7 @@ from jumuiya.models import Jumuiya
 from users.models import User
 
 from .forms import MemberCreateForm
+from .csv_io import MemberCsvImportError, import_members_csv
 from .models import Member
 from .services import approve_member, create_member, reject_member
 
@@ -319,3 +320,153 @@ class MemberViewTests(TestCase):
         self.assertEqual(own_response["Content-Type"], "image/png")
         own_response.close()
         self.assertEqual(other_response.status_code, 404)
+
+
+class MemberCsvTests(TestCase):
+    def setUp(self):
+        self.church = Church.objects.create(
+            church_code="CSV-001",
+            church_name="CSV Test Church",
+        )
+        self.other_church = Church.objects.create(
+            church_code="CSV-002",
+            church_name="Other CSV Church",
+        )
+        self.jumuiya = Jumuiya.objects.create(
+            church=self.church,
+            name="St CSV",
+        )
+        self.admin = User.objects.create_user(
+            username="csv-admin",
+            password="Strong-Test-Password-2026",
+            full_name="CSV Administrator",
+            phone_number="255700100030",
+            role="ADMIN",
+            church=self.church,
+        )
+        self.client.force_login(self.admin)
+
+    @staticmethod
+    def csv_file(rows, headers=None):
+        headers = headers or (
+            "full_name,phone_number,email,church_code,jumuiya,bahasha_number,"
+            "gender,marital_status,demographics,approval_status,is_active"
+        )
+        content = headers + "\n" + "\n".join(rows) + "\n"
+        return SimpleUploadedFile(
+            "members.csv",
+            content.encode("utf-8"),
+            content_type="text/csv",
+        )
+
+    def test_csv_import_generates_account_and_excludes_church_groups(self):
+        uploaded_file = self.csv_file(
+            [
+                "Imported Member,0712345678,imported@example.com,CSV-001,"
+                "St CSV,CSV-B-001,Female,Married,Adult,Approved,Yes"
+            ]
+        )
+
+        result = import_members_csv(uploaded_file, self.admin)
+
+        member = Member.objects.get(bahasha_number="CSV-B-001")
+        self.assertEqual(result.imported_count, 1)
+        self.assertEqual(member.user.full_name, "Imported Member")
+        self.assertEqual(member.user.phone_number, "+255712345678")
+        self.assertTrue(member.user.username.startswith("member_csv_b_001"))
+        self.assertFalse(member.user.has_usable_password())
+        self.assertEqual(member.jumuiya, self.jumuiya)
+        self.assertFalse(member.church_groups.exists())
+
+    def test_csv_import_rolls_back_every_row_when_one_row_is_invalid(self):
+        uploaded_file = self.csv_file(
+            [
+                "Valid Member,0712345678,,CSV-001,,CSV-B-010,Male,Single,,,Yes",
+                "Invalid Member,0712345678,,CSV-001,,CSV-B-011,Male,Single,,,Yes",
+            ]
+        )
+
+        with self.assertRaises(MemberCsvImportError) as context:
+            import_members_csv(uploaded_file, self.admin)
+
+        self.assertEqual(context.exception.errors[0]["row"], 3)
+        self.assertFalse(Member.objects.filter(bahasha_number="CSV-B-010").exists())
+        self.assertFalse(Member.objects.filter(bahasha_number="CSV-B-011").exists())
+
+    def test_csv_export_is_church_scoped_and_excludes_credentials_and_groups(self):
+        own_user = User.objects.create_user(
+            username="private-own-username",
+            password="Private-Password-2026",
+            full_name="Exported Member",
+            phone_number="255700100031",
+            role="MEMBER",
+            church=self.church,
+        )
+        Member.objects.create(
+            user=own_user,
+            church=self.church,
+            bahasha_number="CSV-B-020",
+        )
+        other_user = User.objects.create_user(
+            username="other-private-username",
+            password="Other-Password-2026",
+            full_name="Other Export Member",
+            phone_number="255700100032",
+            role="MEMBER",
+            church=self.other_church,
+        )
+        Member.objects.create(
+            user=other_user,
+            church=self.other_church,
+            bahasha_number="CSV-B-021",
+        )
+
+        response = self.client.get(reverse("web_member_csv_export"))
+        content = response.content.decode("utf-8-sig")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Exported Member", content)
+        self.assertNotIn("Other Export Member", content)
+        self.assertNotIn("username", content.splitlines()[0])
+        self.assertNotIn("password", content.splitlines()[0])
+        self.assertNotIn("church_groups", content.splitlines()[0])
+        self.assertNotIn("private-own-username", content)
+
+    def test_csv_template_contains_headers_only(self):
+        response = self.client.get(reverse("web_member_csv_template"))
+        lines = response.content.decode("utf-8-sig").splitlines()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(lines), 1)
+        self.assertIn("full_name", lines[0])
+        self.assertNotIn("username", lines[0])
+
+    def test_csv_upload_view_imports_valid_file(self):
+        uploaded_file = self.csv_file(
+            ["View Import,0712345680,,CSV-001,,CSV-B-030,Male,Single,,,Yes"]
+        )
+
+        response = self.client.post(
+            reverse("web_member_csv_import"),
+            {"file": uploaded_file},
+        )
+
+        self.assertRedirects(response, reverse("web_members"))
+        self.assertTrue(Member.objects.filter(bahasha_number="CSV-B-030").exists())
+
+    def test_member_role_cannot_import_or_export_bulk_member_data(self):
+        member_user = User.objects.create_user(
+            username="csv-member",
+            password="Strong-Test-Password-2026",
+            full_name="CSV Member",
+            phone_number="255700100033",
+            role="MEMBER",
+            church=self.church,
+        )
+        self.client.force_login(member_user)
+
+        export_response = self.client.get(reverse("web_member_csv_export"))
+        import_response = self.client.get(reverse("web_member_csv_import"))
+
+        self.assertEqual(export_response.status_code, 403)
+        self.assertEqual(import_response.status_code, 403)

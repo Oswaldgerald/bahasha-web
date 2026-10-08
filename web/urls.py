@@ -22,6 +22,21 @@ urlpatterns = [
     path("members/", member_views.member_list, name="web_members"),
     path("members/create/", member_views.member_create, name="web_member_create"),
     path(
+        "members/import-csv/",
+        member_views.member_csv_import,
+        name="web_member_csv_import",
+    ),
+    path(
+        "members/export-csv/",
+        member_views.member_csv_export,
+        name="web_member_csv_export",
+    ),
+    path(
+        "members/csv-template/",
+        member_views.member_csv_template,
+        name="web_member_csv_template",
+    ),
+    path(
         "members/jumuiya-options/",
         member_views.member_jumuiya_options,
         name="web_member_jumuiya_options",

@@ -2,9 +2,10 @@ from .models import Member
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import models
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -20,7 +21,21 @@ from members.services import (
     approve_member as approve_member_record,
     reject_member as reject_member_record,
 )
-from .forms import MemberCreateForm, MemberEditForm
+from .csv_io import (
+    MemberCsvError,
+    MemberCsvImportError,
+    import_members_csv,
+    write_members_csv,
+)
+from .forms import MemberCreateForm, MemberCsvUploadForm, MemberEditForm
+
+
+MEMBER_CSV_ROLES = {"ADMIN", "MAIN_PASTOR"}
+
+
+def require_member_csv_access(user):
+    if not user.is_superuser and user.role not in MEMBER_CSV_ROLES:
+        raise PermissionDenied("You do not have permission to exchange member data.")
 
 
 @login_required(login_url="login")
@@ -88,6 +103,64 @@ def member_queryset_for_user(user):
     if user.church_id and not user.is_superuser:
         queryset = queryset.filter(church_id=user.church_id)
     return queryset
+
+
+@login_required(login_url="login")
+def member_csv_import(request):
+    require_member_csv_access(request.user)
+    import_errors = []
+    if request.method == "POST":
+        form = MemberCsvUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                result = import_members_csv(form.cleaned_data["file"], request.user)
+            except MemberCsvImportError as error:
+                import_errors = error.errors
+            except MemberCsvError as error:
+                form.add_error("file", str(error))
+            else:
+                create_audit_log(
+                    user=request.user,
+                    church=request.user.church,
+                    action="OTHER",
+                    description=f"Imported {result.imported_count} members from CSV.",
+                    entity_type="Member CSV Import",
+                    request=request,
+                )
+                messages.success(
+                    request,
+                    f"{result.imported_count} members imported successfully.",
+                )
+                return redirect("web_members")
+    else:
+        form = MemberCsvUploadForm()
+
+    return render(
+        request,
+        "members/csv_import.html",
+        {"form": form, "import_errors": import_errors},
+    )
+
+
+@login_required(login_url="login")
+def member_csv_export(request):
+    require_member_csv_access(request.user)
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="bahasha-members.csv"'
+    response.write("\ufeff")
+    members = member_queryset_for_user(request.user).order_by("user__full_name")
+    write_members_csv(response, members)
+    return response
+
+
+@login_required(login_url="login")
+def member_csv_template(request):
+    require_member_csv_access(request.user)
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="member-import-template.csv"'
+    response.write("\ufeff")
+    write_members_csv(response, [])
+    return response
 
 
 @login_required(login_url="login")

@@ -117,6 +117,79 @@
     text-decoration: underline;
 }
 
+.member-import-panel {
+    border: 1px solid #ebeaf0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 880px;
+}
+
+.member-import-file small {
+    color: #756f7c;
+    display: block;
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+.member-import-actions {
+    justify-content: flex-end;
+}
+
+.member-import-errors {
+    border: 1px solid #efc5c1;
+    margin-top: 24px;
+}
+
+.member-import-error-heading {
+    background: #fff7f6;
+    padding: 18px;
+}
+
+.member-import-error-heading h2,
+.member-import-error-heading p,
+.member-import-guide h2,
+.member-import-guide p {
+    margin: 0;
+}
+
+.member-import-error-heading h2,
+.member-import-guide h2 {
+    font-size: 18px;
+}
+
+.member-import-error-heading p,
+.member-import-guide > div:first-child p {
+    color: #756f7c;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.member-import-guide {
+    margin-top: 30px;
+}
+
+.member-import-guide > .table-scroll {
+    background: white;
+    border: 1px solid #ebeaf0;
+    border-radius: 8px;
+    margin-top: 14px;
+}
+
+.member-import-note {
+    align-items: flex-start;
+    color: #564e65;
+    display: flex;
+    font-size: 12px;
+    gap: 8px;
+    margin-top: 12px !important;
+}
+
+.member-import-note svg {
+    flex: 0 0 17px;
+    height: 17px;
+    width: 17px;
+}
+
 .member-identity {
     align-items: center;
     color: #28232f;

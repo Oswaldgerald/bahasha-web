@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/members.css' %}">{% endblock %}
+
+{% block content %}
+<div class="list-toolbar">
+    <p>Upload members in one transaction. Invalid rows are reported without saving a partial import.</p>
+    <a href="{% url 'web_member_csv_template' %}" class="btn-secondary">
+        <i data-lucide="file-down" aria-hidden="true"></i>
+        <span>Download Template</span>
+    </a>
+</div>
+
+<section class="card member-import-panel">
+    <div class="member-section-heading">
+        <span class="member-form-section-icon"><i data-lucide="file-up" aria-hidden="true"></i></span>
+        <div><h2>Member CSV</h2><p>Select a completed UTF-8 CSV file for validation and import.</p></div>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="member-import-file">
+            <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+            {{ form.file }}
+            {{ form.file.errors }}
+            <small>{{ form.file.help_text }}</small>
+        </div>
+        <div class="form-actions member-import-actions">
+            <a href="{% url 'web_members' %}" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary"><i data-lucide="upload" aria-hidden="true"></i><span>Validate and Import</span></button>
+        </div>
+    </form>
+</section>
+
+{% if import_errors %}
+<section class="card list-table-card member-import-errors" aria-labelledby="import-errors-title">
+    <div class="member-import-error-heading">
+        <h2 id="import-errors-title">Import needs correction</h2>
+        <p>No members were saved. Correct these rows and upload the file again.</p>
+    </div>
+    <div class="table-scroll">
+        <table class="data-table list-table responsive-table">
+            <thead><tr><th>Row</th><th>Member</th><th>Issue</th></tr></thead>
+            <tbody>
+                {% for error in import_errors %}
+                <tr>
+                    <td data-label="Row">{{ error.row }}</td>
+                    <td data-label="Member">{{ error.member }}</td>
+                    <td data-label="Issue">{{ error.messages|join:" " }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<section class="member-import-guide" aria-labelledby="csv-columns-title">
+    <div>
+        <h2 id="csv-columns-title">CSV columns</h2>
+        <p>Required columns are marked below. Column names are not case-sensitive.</p>
+    </div>
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table">
+            <thead><tr><th>Column</th><th>Required</th><th>Accepted value</th></tr></thead>
+            <tbody>
+                <tr><td data-label="Column"><strong>full_name</strong></td><td data-label="Required">Yes</td><td data-label="Accepted value">Member's complete name</td></tr>
+                <tr><td data-label="Column"><strong>phone_number</strong></td><td data-label="Required">Yes</td><td data-label="Accepted value">International number or Tanzanian local number</td></tr>
+                <tr><td data-label="Column"><strong>bahasha_number</strong></td><td data-label="Required">Yes</td><td data-label="Accepted value">Unique contribution envelope number</td></tr>
+                <tr><td data-label="Column"><strong>email</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Valid email address</td></tr>
+                <tr><td data-label="Column"><strong>church_code</strong></td><td data-label="Required">System administrators</td><td data-label="Accepted value">Active church code; church administrators use their assigned church</td></tr>
+                <tr><td data-label="Column"><strong>jumuiya</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Existing active Jumuiya name in the selected church</td></tr>
+                <tr><td data-label="Column"><strong>gender</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Male or Female</td></tr>
+                <tr><td data-label="Column"><strong>marital_status</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Single, Married, Separated, Divorced, or Widowed</td></tr>
+                <tr><td data-label="Column"><strong>demographics</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Free-text member classification</td></tr>
+                <tr><td data-label="Column"><strong>approval_status</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Approved, Pending, or Rejected; defaults to Approved</td></tr>
+                <tr><td data-label="Column"><strong>is_active</strong></td><td data-label="Required">No</td><td data-label="Accepted value">Yes or No; defaults to Yes</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="member-import-note"><i data-lucide="info" aria-hidden="true"></i><span>Usernames are generated internally and no login password is created during import. Church-group memberships such as Choir or ICT are not imported or exported.</span></p>
+</section>
+{% endblock %}

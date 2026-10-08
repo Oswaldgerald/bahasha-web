@@ -119,6 +119,11 @@ Profile pictures are stored in the persistent Docker media volume and served thr
 Phone forms store normalized international numbers. Country selectors use the shared
 Choices.js enhancement, with Tanzania first and searchable country names and calling codes.
 
+Member Management supports transactional CSV import and church-scoped CSV export.
+CSV files deliberately exclude usernames, passwords, profile photos, and church-group
+memberships. Imported accounts receive an internal username and an unusable password
+until an administrator explicitly sets one.
+
 Use `{% block extra_css %}` and `{% block extra_js %}` in page templates when a feature needs isolated assets. Avoid inline styles and event handlers so browser issues remain easy to trace.
 
 ## Contribution Integrity

@@ -129,10 +129,198 @@
     grid-column: 1 / -1;
 }
 
-.upload-file-field p {
+.upload-file-heading {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 9px;
+}
+
+.upload-file-heading label {
+    color: #28232f;
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.upload-file-heading small {
     color: #756f7c;
     font-size: 11px;
-    margin: 7px 0 0;
+    font-weight: 650;
+}
+
+.contribution-file-dropzone {
+    align-items: center;
+    background: #fafafe;
+    border: 1.5px dashed #b7b0c9;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 235px;
+    padding: 28px 20px;
+    position: relative;
+    text-align: center;
+    transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.contribution-file-dropzone:hover,
+.contribution-file-dropzone:focus-within,
+.upload-file-field.is-dragging .contribution-file-dropzone {
+    background: #f6f3ff;
+    border-color: #563ca0;
+    box-shadow: 0 0 0 3px rgba(86, 60, 160, 0.1);
+}
+
+.contribution-file-dropzone input[type="file"] {
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.contribution-file-dropzone-icon {
+    align-items: center;
+    background: #ebe6fa;
+    border-radius: 8px;
+    color: #382477;
+    display: inline-flex;
+    height: 48px;
+    justify-content: center;
+    margin-bottom: 13px;
+    width: 48px;
+}
+
+.contribution-file-dropzone-icon svg {
+    height: 23px;
+    width: 23px;
+}
+
+.contribution-file-dropzone-copy strong,
+.contribution-file-dropzone-copy small {
+    display: block;
+}
+
+.contribution-file-dropzone-copy strong {
+    color: #28232f;
+    font-size: 15px;
+}
+
+.contribution-file-dropzone-copy small {
+    color: #756f7c;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.contribution-file-browse {
+    align-items: center;
+    background: #2d1b69;
+    border-radius: 6px;
+    color: white;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 750;
+    gap: 7px;
+    margin-top: 17px;
+    min-height: 36px;
+    padding: 8px 13px;
+}
+
+.contribution-file-browse svg {
+    height: 15px;
+    width: 15px;
+}
+
+.contribution-file-limits {
+    color: #817a89;
+    font-size: 10px;
+    margin-top: 13px;
+}
+
+.contribution-file-selection {
+    align-items: center;
+    background: #f4faf7;
+    border: 1px solid #cce4d7;
+    border-radius: 8px;
+    display: flex;
+    gap: 11px;
+    margin-top: 10px;
+    padding: 10px 12px;
+}
+
+.contribution-file-selection[hidden] {
+    display: none;
+}
+
+.contribution-file-selection-icon {
+    align-items: center;
+    background: #dff1e7;
+    border-radius: 6px;
+    color: #19724f;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+}
+
+.contribution-file-selection-icon svg,
+.contribution-file-remove svg {
+    height: 17px;
+    width: 17px;
+}
+
+.contribution-file-selection-copy {
+    min-width: 0;
+}
+
+.contribution-file-selection-copy strong,
+.contribution-file-selection-copy small {
+    display: block;
+}
+
+.contribution-file-selection-copy strong {
+    color: #28232f;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.contribution-file-selection-copy small {
+    color: #587064;
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.contribution-file-remove {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: #6f6876;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+}
+
+.contribution-file-remove:hover,
+.contribution-file-remove:focus-visible {
+    background: #e5ede9;
+    color: #28232f;
+}
+
+.contribution-file-help {
+    color: #756f7c;
+    font-size: 11px;
+    margin: 8px 0 0;
 }
 
 .contribution-upload-actions {
@@ -325,5 +513,10 @@
     .contribution-upload-actions .btn-primary,
     .contribution-upload-actions .btn-secondary {
         width: 100%;
+    }
+
+    .contribution-file-dropzone {
+        min-height: 210px;
+        padding: 24px 14px;
     }
 }

@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/contribution-uploads.css' %}">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/contribution-uploads.js' %}" defer></script>{% endblock %}
 
 {% block content %}
 <div class="list-toolbar contribution-upload-toolbar">
@@ -23,7 +24,41 @@
             <div><label for="{{ form.financial_year.id_for_label }}">Financial Year <small>Mwaka wa fedha</small></label>{{ form.financial_year }}{{ form.financial_year.errors }}</div>
             <div><label for="{{ form.contribution_week.id_for_label }}">Contribution Week <small>Wiki ya sadaka</small></label>{{ form.contribution_week }}{{ form.contribution_week.errors }}</div>
             <div><label for="{{ form.selected_category.id_for_label }}">Contribution Category <small>Aina ya sadaka</small></label>{{ form.selected_category }}{{ form.selected_category.errors }}</div>
-            <div class="upload-file-field"><label for="{{ form.file.id_for_label }}">Excel File <small>Faili la sadaka</small></label>{{ form.file }}{{ form.file.errors }}<p>Use an .xlsx file containing Bahasha Number and Amount.</p></div>
+            <div class="upload-file-field" data-contribution-file-dropzone>
+                <div class="upload-file-heading">
+                    <label for="{{ form.file.id_for_label }}">Contribution Excel File</label>
+                    <small>Faili la sadaka</small>
+                </div>
+                <label class="contribution-file-dropzone" for="{{ form.file.id_for_label }}">
+                    {{ form.file }}
+                    <span class="contribution-file-dropzone-icon" aria-hidden="true">
+                        <i data-lucide="file-spreadsheet"></i>
+                    </span>
+                    <span class="contribution-file-dropzone-copy">
+                        <strong>Drop your Excel file here</strong>
+                        <small>Buruta faili hapa au chagua kutoka kwenye kifaa chako</small>
+                    </span>
+                    <span class="contribution-file-browse">
+                        <i data-lucide="folder-open" aria-hidden="true"></i>
+                        Choose Excel File
+                    </span>
+                    <span class="contribution-file-limits">XLSX &middot; Maximum 5 MB &middot; Bahasha Number and Amount</span>
+                </label>
+                <div class="contribution-file-selection" data-contribution-file-selection hidden aria-live="polite">
+                    <span class="contribution-file-selection-icon" aria-hidden="true">
+                        <i data-lucide="file-check"></i>
+                    </span>
+                    <span class="contribution-file-selection-copy">
+                        <strong data-contribution-file-name></strong>
+                        <small data-contribution-file-size></small>
+                    </span>
+                    <button type="button" class="contribution-file-remove" data-contribution-file-remove aria-label="Remove selected contribution file" title="Remove selected file">
+                        <i data-lucide="x" aria-hidden="true"></i>
+                    </button>
+                </div>
+                {{ form.file.errors }}
+                <p class="contribution-file-help">Use the required Excel format shown below. Tumia muundo wa Excel ulioonyeshwa hapa chini.</p>
+            </div>
         </div>
         <div class="form-actions contribution-upload-actions">
             <a href="{% url 'web_excel_uploads' %}" class="btn-secondary"><span class="upload-button-copy"><strong>Cancel</strong><small>Ghairi</small></span></a>

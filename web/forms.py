@@ -133,6 +133,22 @@ class ExcelUploadForm(forms.ModelForm):
             "selected_category",
             "file",
         ]
+        widgets = {
+            "file": forms.FileInput(
+                attrs={
+                    "accept": ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "data-contribution-file-input": "true",
+                }
+            )
+        }
+
+    def clean_file(self):
+        uploaded_file = self.cleaned_data["file"]
+        if not uploaded_file.name.lower().endswith(".xlsx"):
+            raise forms.ValidationError("Upload an Excel file with the .xlsx extension.")
+        if uploaded_file.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("The contribution file must not exceed 5 MB.")
+        return uploaded_file
 
 
 # Church Management Form

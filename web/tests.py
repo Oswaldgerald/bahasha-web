@@ -14,6 +14,7 @@ from excel_uploads.models import ExcelUpload, ExcelUploadRow
 from financial_years.models import FinancialYear
 from members.models import Member
 from users.models import User
+from web.forms import ExcelUploadForm
 
 
 class StateChangingViewTests(TestCase):
@@ -143,6 +144,35 @@ class ExcelApprovalTests(TestCase):
                 entity_id=str(self.upload.id),
             ).exists()
         )
+
+    def test_contribution_upload_view_uses_custom_bilingual_file_control(self):
+        response = self.client.get(reverse("web_excel_upload_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-contribution-file-input="true"')
+        self.assertContains(response, "Drop your Excel file here")
+        self.assertContains(response, "Buruta faili hapa")
+        self.assertContains(response, "Maximum 5 MB")
+
+    def test_contribution_upload_form_rejects_non_xlsx_file(self):
+        form = ExcelUploadForm(
+            data={
+                "church": self.church.id,
+                "financial_year": self.financial_year.id,
+                "contribution_week": self.week.id,
+                "selected_category": self.category.id,
+            },
+            files={
+                "file": SimpleUploadedFile(
+                    "contributions.csv",
+                    b"Bahasha Number,Amount\nB-003,100\n",
+                    content_type="text/csv",
+                )
+            },
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(".xlsx extension", form.errors["file"][0])
 
 
 class CurrentPageHeaderTests(TestCase):

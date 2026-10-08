@@ -1,74 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/contributions.css' %}">{% endblock %}
 
 {% block content %}
-
-<h1>Edit Contribution</h1>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
-            </div>
-
-            <div>
-                <label>Member</label>
-                {{ form.member }}
-                {{ form.member.errors }}
-            </div>
-
-            <div>
-                <label>Financial Year</label>
-                {{ form.financial_year }}
-                {{ form.financial_year.errors }}
-            </div>
-
-            <div>
-                <label>Contribution Week</label>
-                {{ form.contribution_week }}
-                {{ form.contribution_week.errors }}
-            </div>
-
-            <div>
-                <label>Category</label>
-                {{ form.category }}
-                {{ form.category.errors }}
-            </div>
-
-            <div>
-                <label>Amount</label>
-                {{ form.amount }}
-                {{ form.amount.errors }}
-            </div>
-
-            <div>
-                <label>Contribution Date</label>
-                {{ form.contribution_date }}
-                {{ form.contribution_date.errors }}
-            </div>
-
-            <div>
-                <label>Status</label>
-                {{ form.status }}
-                {{ form.status.errors }}
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <label>Remarks</label>
-            {{ form.remarks }}
-            {{ form.remarks.errors }}
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Update Contribution</button>
-        <a href="{% url 'web_contributions' %}" class="btn-secondary">Cancel</a>
-    </form>
-</div>
-
+<div class="list-toolbar contribution-toolbar"><p>Correct contribution details while preserving the member target history.</p><a href="{% url 'web_contributions' %}" class="btn-secondary"><i data-lucide="arrow-left" aria-hidden="true"></i><span>Contribution List</span></a></div>
+{% include "contributions/_form.html" with form_title="Edit Contribution" form_caption="Sahihisha taarifa za sadaka iliyorekodiwa." submit_label="Update Contribution" submit_caption="Sasisha sadaka" %}
 {% endblock %}

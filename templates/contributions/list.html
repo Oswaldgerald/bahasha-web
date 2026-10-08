@@ -1,32 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/contributions.css' %}">{% endblock %}
 
 {% block content %}
-<div class="list-toolbar">
-    <p>Review and maintain recorded member contributions.</p>
-    <a href="{% url 'web_contribution_create' %}" class="btn-primary"><i data-lucide="hand-coins" aria-hidden="true"></i><span>Record Contribution</span></a>
+<div class="list-toolbar contribution-toolbar">
+    <p>Review, search, and maintain recorded member contributions.</p>
+    <a href="{% url 'web_contribution_create' %}" class="btn-primary">
+        <i data-lucide="hand-coins" aria-hidden="true"></i>
+        <span class="contribution-button-copy"><strong>Record Contribution</strong><small>Rekodi sadaka</small></span>
+    </a>
 </div>
+
+<section class="contribution-summary" aria-label="Contribution summary">
+    <div class="contribution-summary-item">
+        <span class="contribution-summary-icon"><i data-lucide="receipt-text" aria-hidden="true"></i></span>
+        <span><small>Recorded Contributions</small><strong>{{ summary.total }}</strong></span>
+    </div>
+    <div class="contribution-summary-item">
+        <span class="contribution-summary-icon summary-contribution-amount"><i data-lucide="banknote" aria-hidden="true"></i></span>
+        <span><small>Total Amount</small><strong>{{ summary.amount|floatformat:2 }}</strong></span>
+    </div>
+</section>
+
+<form method="get" class="contribution-filters" role="search">
+    <div class="contribution-search-field">
+        <i data-lucide="search" aria-hidden="true"></i>
+        <label for="contribution-search" class="sr-only">Search contributions</label>
+        <input id="contribution-search" type="search" name="q" value="{{ filters.q }}" placeholder="Search msharika, Bahasha number, reference, or category">
+    </div>
+    <div>
+        <label for="status-filter" class="sr-only">Contribution status</label>
+        <select id="status-filter" name="status"><option value="">All statuses</option>{% for value, label in status_choices %}<option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </div>
+    <div>
+        <label for="source-filter" class="sr-only">Contribution source</label>
+        <select id="source-filter" name="source"><option value="">All sources</option>{% for value, label in source_choices %}<option value="{{ value }}"{% if filters.source == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </div>
+    <button type="submit" class="btn-primary contribution-filter-button"><i data-lucide="list-filter" aria-hidden="true"></i><span>Filter</span></button>
+    {% if filters.q or filters.status or filters.source %}<a href="{% url 'web_contributions' %}" class="contribution-clear-filter">Clear</a>{% endif %}
+</form>
 
 <section class="card list-table-card" aria-label="Recorded contributions">
     <div class="table-scroll">
         <table class="data-table list-table is-wider responsive-table{% if not contributions %} is-empty{% endif %}">
-            <thead><tr><th>Member</th><th>Date</th><th>Week</th><th>Category</th><th>Amount</th><th>Source</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <thead><tr><th>Msharika</th><th>Date</th><th>Week</th><th>Category</th><th>Amount</th><th>Source</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
             <tbody>
                 {% for contribution in contributions %}
                 <tr>
-                    <td data-label="Member" class="table-primary"><strong>{{ contribution.member.user.full_name }}</strong><small>{{ contribution.bahasha_number }}</small></td>
-                    <td data-label="Date">{{ contribution.contribution_date }}</td>
+                    <td data-label="Msharika" class="table-primary"><strong>{{ contribution.member.user.full_name }}</strong><small>Bahasha {{ contribution.bahasha_number }}</small></td>
+                    <td data-label="Date">{{ contribution.contribution_date|date:"d M Y" }}</td>
                     <td data-label="Week">Week {{ contribution.contribution_week.week_number }}</td>
                     <td data-label="Category">{{ contribution.category.name }}</td>
-                    <td data-label="Amount"><strong>{{ contribution.amount }}</strong></td>
-                    <td data-label="Source">{{ contribution.source }}</td>
-                    <td data-label="Status"><span class="status-badge {% if contribution.status == 'POSTED' %}is-success{% elif contribution.status == 'FAILED' %}is-danger{% else %}is-info{% endif %}">{{ contribution.status }}</span></td>
+                    <td data-label="Amount"><strong class="contribution-amount">{{ contribution.amount|floatformat:2 }}</strong></td>
+                    <td data-label="Source">{{ contribution.get_source_display }}</td>
+                    <td data-label="Status"><span class="status-badge {% if contribution.status == 'POSTED' %}is-success{% elif contribution.status == 'REVERSED' %}is-danger{% else %}is-info{% endif %}">{{ contribution.get_status_display }}</span></td>
                     <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_contribution_edit' contribution.id %}" class="icon-action" title="Edit contribution" aria-label="Edit contribution for {{ contribution.member.user.full_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="8" class="table-empty"><i data-lucide="hand-coins" aria-hidden="true"></i><strong>No contributions recorded</strong><span>Record the first member contribution for the active period.</span></td></tr>
+                <tr><td colspan="8" class="table-empty"><i data-lucide="hand-coins" aria-hidden="true"></i><strong>No contributions recorded</strong><span>Hakuna sadaka zilizorekodiwa. Record the first contribution for the active period.</span></td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {% if contributions.paginator.num_pages > 1 %}
+    <nav class="contribution-pagination" aria-label="Contribution pages">
+        <span>Page {{ contributions.number }} of {{ contributions.paginator.num_pages }}</span>
+        <div>
+            {% if contributions.has_previous %}<a href="?q={{ filters.q|urlencode }}&status={{ filters.status }}&source={{ filters.source }}&page={{ contributions.previous_page_number }}" class="btn-secondary">Previous</a>{% endif %}
+            {% if contributions.has_next %}<a href="?q={{ filters.q|urlencode }}&status={{ filters.status }}&source={{ filters.source }}&page={{ contributions.next_page_number }}" class="btn-secondary">Next</a>{% endif %}
+        </div>
+    </nav>
+    {% endif %}
 </section>
 {% endblock %}

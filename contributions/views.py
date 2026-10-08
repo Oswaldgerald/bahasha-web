@@ -2,6 +2,8 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 
@@ -22,7 +24,50 @@ def contribution_list(request):
         "posted_by",
     ).all()
 
-    return render(request, "contributions/list.html", {"contributions": contributions})
+    if request.user.church_id and not request.user.is_superuser:
+        contributions = contributions.filter(church_id=request.user.church_id)
+
+    query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "").strip().upper()
+    source_filter = request.GET.get("source", "").strip().upper()
+
+    if query:
+        contributions = contributions.filter(
+            Q(member__user__full_name__icontains=query)
+            | Q(bahasha_number__icontains=query)
+            | Q(reference_number__icontains=query)
+            | Q(category__name__icontains=query)
+        )
+    if status_filter in dict(Contribution.STATUS_CHOICES):
+        contributions = contributions.filter(status=status_filter)
+    else:
+        status_filter = ""
+    if source_filter in dict(Contribution.SOURCE_CHOICES):
+        contributions = contributions.filter(source=source_filter)
+    else:
+        source_filter = ""
+
+    summary = contributions.aggregate(
+        total=Count("id"),
+        amount=Sum("amount", default=0),
+    )
+    contribution_page = Paginator(contributions, 25).get_page(request.GET.get("page"))
+
+    return render(
+        request,
+        "contributions/list.html",
+        {
+            "contributions": contribution_page,
+            "summary": summary,
+            "filters": {
+                "q": query,
+                "status": status_filter,
+                "source": source_filter,
+            },
+            "status_choices": Contribution.STATUS_CHOICES,
+            "source_choices": Contribution.SOURCE_CHOICES,
+        },
+    )
 
 
 @login_required(login_url="login")

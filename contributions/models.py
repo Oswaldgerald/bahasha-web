@@ -11,7 +11,7 @@ from categories.models import ContributionCategory
 
 class Contribution(models.Model):
     SOURCE_CHOICES = [
-        ("EXCEL_UPLOAD", "Excel Upload"),
+        ("EXCEL_UPLOAD", "Contribution Upload"),
         ("MANUAL_ENTRY", "Manual Entry"),
         ("ONLINE_PAYMENT", "Online Payment"),
         ("CORRECTION", "Correction"),

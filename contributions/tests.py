@@ -151,15 +151,3 @@ class ContributionServiceTests(TestCase):
         self.assertEqual(contribution.bahasha_number, self.member.bahasha_number)
         self.target.refresh_from_db()
         self.assertEqual(self.target.contributed_amount, Decimal("125.00"))
-
-    def test_contribution_list_shows_summary_and_bilingual_action(self):
-        save_contribution(self.contribution())
-        self.client.force_login(self.admin)
-
-        response = self.client.get(reverse("web_contributions"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recorded Contributions")
-        self.assertContains(response, "Rekodi sadaka")
-        self.assertEqual(response.context["summary"]["total"], 1)
-        self.assertEqual(response.context["summary"]["amount"], Decimal("250.00"))

@@ -1,13 +1,17 @@
 DOCKER_COMPOSE := docker compose
 DEV_COMPOSE := $(DOCKER_COMPOSE) -f compose.yml -f compose.dev.yml
 
-.PHONY: up dev down logs check test migrations makemigrations superuser shell
+.PHONY: up dev dev-port down logs check test migrations makemigrations superuser shell
 
 up:
 	$(DOCKER_COMPOSE) up -d --build
 
 dev:
 	$(DEV_COMPOSE) up -d --build
+
+dev-port:
+	@test -n "$(PORT)" || (echo "Usage: make dev-port PORT=8000" && exit 1)
+	WEB_PORT=$(PORT) $(DEV_COMPOSE) up -d --build
 
 down:
 	$(DOCKER_COMPOSE) down

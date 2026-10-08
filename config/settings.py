@@ -16,6 +16,16 @@ def env_list(name, default=""):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def required_env(name):
+    value = os.getenv(name)
+    if value:
+        return value
+    raise ImproperlyConfigured(
+        f"{name} must be set. Start the app with Docker Compose so it uses the "
+        "project database instead of an unrelated local PostgreSQL instance."
+    )
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -113,13 +123,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'bahasha_db'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": required_env("POSTGRES_DB"),
+        "USER": required_env("POSTGRES_USER"),
+        "PASSWORD": required_env("POSTGRES_PASSWORD"),
+        "HOST": required_env("POSTGRES_HOST"),
+        "PORT": required_env("POSTGRES_PORT"),
     }
 }
 

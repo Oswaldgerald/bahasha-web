@@ -40,7 +40,7 @@ Replace the placeholder secrets in `.env`, then start the production-like stack:
 make up
 ```
 
-The application is available at `http://localhost:${WEB_PORT}`. The default example port is `8000`; this workspace currently uses `8001` in its private `.env`.
+The application is available at `http://localhost:${WEB_PORT}`. The default development port is `8000`; change `WEB_PORT` in the private `.env` when another port is required.
 
 Useful endpoints:
 
@@ -59,6 +59,17 @@ Start the development stack with source mounting and Django auto-reload:
 ```sh
 make dev
 ```
+
+To run the same stack on a different web port without changing its data, use:
+
+```sh
+make dev-port PORT=8000
+```
+
+The port only controls where the Docker web container is exposed. PostgreSQL data
+and uploaded media remain in the same Compose volumes. Do not start this project
+with a bare `python manage.py runserver`: it does not load `.env` and may otherwise
+connect to an unrelated PostgreSQL service installed on the host.
 
 Common commands:
 

@@ -1,74 +1,64 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/contribution-uploads.css' %}">{% endblock %}
 
 {% block content %}
-
-<h1>Excel Upload Detail</h1>
-
-<div class="card">
-    <h3>{{ upload.upload_reference }}</h3>
-
-    <p><strong>Church:</strong> {{ upload.church.church_name }}</p>
-    <p><strong>Financial Year:</strong> {{ upload.financial_year.year }}</p>
-    <p><strong>Week:</strong> Week {{ upload.contribution_week.week_number }}</p>
-    <p><strong>Category:</strong> {{ upload.selected_category.name }}</p>
-    <p><strong>Status:</strong> {{ upload.status }}</p>
-    <p><strong>Total Rows:</strong> {{ upload.total_rows }}</p>
-    <p><strong>Valid Rows:</strong> {{ upload.valid_rows }}</p>
-    <p><strong>Failed Rows:</strong> {{ upload.failed_rows }}</p>
-    <p><strong>Total Amount:</strong> {{ upload.total_amount }}</p>
-
-    {% if upload.status == "VALIDATED" %}
+<div class="list-toolbar contribution-upload-toolbar">
+    <p>Review validation results before posting this contribution batch.</p>
+    <div class="list-toolbar-actions">
+        <a href="{% url 'web_excel_uploads' %}" class="btn-secondary"><i data-lucide="arrow-left" aria-hidden="true"></i><span>All Uploads</span></a>
+        {% if upload.status == "VALIDATED" %}
         <form method="post" action="{% url 'web_excel_upload_approve' upload.id %}" class="inline-form">
             {% csrf_token %}
-            <button type="submit" class="btn-primary">Approve & Post Contributions</button>
+            <button type="submit" class="btn-primary"><i data-lucide="badge-check" aria-hidden="true"></i><span class="upload-button-copy"><strong>Approve Contributions</strong><small>Thibitisha sadaka</small></span></button>
         </form>
-    {% endif %}
-
-    <a href="{% url 'web_excel_uploads' %}" class="btn-secondary">
-        Back
-    </a>
+        {% endif %}
+    </div>
 </div>
 
-<div class="card">
-    <h3>Uploaded Rows</h3>
+<section class="card contribution-upload-detail">
+    <div class="upload-detail-heading">
+        <div>
+            <small>Contribution batch</small>
+            <h2>{{ upload.upload_reference }}</h2>
+        </div>
+        <span class="status-badge {% if upload.status == 'POSTED' %}is-success{% elif upload.status == 'FAILED' %}is-danger{% elif upload.status == 'VALIDATED' %}is-info{% else %}is-neutral{% endif %}">{{ upload.get_status_display }}</span>
+    </div>
+    <dl class="upload-detail-grid">
+        <div><dt>Church <small>Kanisa</small></dt><dd>{{ upload.church.church_name }}</dd></div>
+        <div><dt>Financial Year <small>Mwaka</small></dt><dd>{{ upload.financial_year.year }}</dd></div>
+        <div><dt>Contribution Week <small>Wiki ya sadaka</small></dt><dd>Week {{ upload.contribution_week.week_number }}</dd></div>
+        <div><dt>Category <small>Aina ya sadaka</small></dt><dd>{{ upload.selected_category.name }}</dd></div>
+        <div><dt>Total Rows</dt><dd>{{ upload.total_rows }}</dd></div>
+        <div><dt>Valid Rows</dt><dd class="detail-valid">{{ upload.valid_rows }}</dd></div>
+        <div><dt>Failed Rows</dt><dd class="{% if upload.failed_rows %}detail-failed{% endif %}">{{ upload.failed_rows }}</dd></div>
+        <div><dt>Total Amount <small>Jumla</small></dt><dd>{{ upload.total_amount|floatformat:2 }}</dd></div>
+    </dl>
+</section>
 
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Row</th>
-                <th>Bahasha Number</th>
-                <th>Amount</th>
-                <th>Member</th>
-                <th>Validation</th>
-                <th>Error</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for row in rows %}
-            <tr>
-                <td>{{ row.row_number }}</td>
-                <td>{{ row.bahasha_number }}</td>
-                <td>{{ row.amount }}</td>
-                <td>
-                    {% if row.resolved_member %}
-                        {{ row.resolved_member.user.full_name }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ row.validation_status }}</td>
-                <td>{{ row.error_message }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No rows found for this upload.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
+<section class="upload-rows-section" aria-labelledby="upload-rows-title">
+    <div class="upload-rows-heading"><h2 id="upload-rows-title">Contribution Rows <small>Mistari ya sadaka</small></h2><p>Each row is matched to a msharika using the Bahasha number.</p></div>
+    <div class="card list-table-card">
+        <div class="table-scroll">
+            <table class="data-table list-table responsive-table{% if not rows %} is-empty{% endif %}">
+                <thead><tr><th>Row</th><th>Bahasha Number</th><th>Amount</th><th>Msharika</th><th>Validation</th><th>Error</th></tr></thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td data-label="Row">{{ row.row_number }}</td>
+                        <td data-label="Bahasha Number"><strong>{{ row.bahasha_number }}</strong></td>
+                        <td data-label="Amount">{{ row.amount|floatformat:2 }}</td>
+                        <td data-label="Msharika">{% if row.resolved_member %}{{ row.resolved_member.user.full_name }}{% else %}<span class="table-muted">Not matched</span>{% endif %}</td>
+                        <td data-label="Validation"><span class="status-badge {% if row.validation_status == 'VALID' %}is-success{% else %}is-danger{% endif %}">{{ row.get_validation_status_display }}</span></td>
+                        <td data-label="Error">{{ row.error_message|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="table-empty"><i data-lucide="rows-3" aria-hidden="true"></i><strong>No contribution rows</strong><span>This upload has no processed rows.</span></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 {% endblock %}

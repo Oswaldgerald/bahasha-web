@@ -161,6 +161,7 @@ class CurrentPageHeaderTests(TestCase):
             ("web_dashboard", "Dashboard"),
             ("web_categories", "Contribution Categories"),
             ("web_contributions", "Contributions"),
+            ("web_excel_uploads", "Contribution Uploads"),
             ("web_profile", "My Profile"),
         ]
 

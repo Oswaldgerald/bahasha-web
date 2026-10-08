@@ -85,9 +85,9 @@
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
             </button>
             <div class="nav-group-items" id="nav-uploads">
-            <a href="{% url 'web_excel_uploads' %}" data-label="Excel Uploads"{% if request.resolver_match.url_name == 'web_excel_uploads' %} class="active" aria-current="page"{% endif %}>
+            <a href="{% url 'web_excel_uploads' %}" data-label="Contribution Uploads"{% if request.resolver_match.url_name == 'web_excel_uploads' or request.resolver_match.url_name == 'web_excel_upload_create' or request.resolver_match.url_name == 'web_excel_upload_detail' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
-                <span class="nav-label">Excel Uploads</span>
+                <span class="nav-label nav-label-bilingual"><strong>Contribution Uploads</strong><small>Upakiaji wa sadaka</small></span>
             </a>
             </div>
         </div>

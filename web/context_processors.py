@@ -21,7 +21,7 @@ PAGE_METADATA = {
     "web_contributions": ("Contributions", "hand-coins"),
     "web_contribution_create": ("Record Contribution", "hand-coins"),
     "web_contribution_edit": ("Edit Contribution", "settings"),
-    "web_excel_uploads": ("Excel Uploads", "file-spreadsheet"),
+    "web_excel_uploads": ("Contribution Uploads", "file-spreadsheet"),
     "web_excel_upload_create": ("Upload Contributions", "file-spreadsheet"),
     "web_excel_upload_detail": ("Upload Details", "file-spreadsheet"),
     "web_contribution_summary_report": ("Contribution Summary", "chart-no-axes-combined"),

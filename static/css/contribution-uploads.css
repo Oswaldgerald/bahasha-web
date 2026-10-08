@@ -1,0 +1,331 @@
+.upload-button-copy {
+    align-items: flex-start;
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+    text-align: left;
+}
+
+.upload-button-copy strong {
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.upload-button-copy small {
+    font-size: 9px;
+    font-weight: 600;
+    margin-top: 3px;
+    opacity: 0.72;
+}
+
+.upload-summary {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 18px;
+}
+
+.upload-summary-item {
+    align-items: center;
+    background: white;
+    border: 1px solid #ebeaf0;
+    border-radius: 8px;
+    box-shadow: 0 2px 9px rgba(33, 25, 57, 0.05);
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+    padding: 14px 16px;
+}
+
+.upload-summary-icon {
+    align-items: center;
+    background: #eceffa;
+    border-radius: 7px;
+    color: #4d57a8;
+    display: inline-flex;
+    flex: 0 0 38px;
+    height: 38px;
+    justify-content: center;
+}
+
+.upload-summary-icon svg {
+    height: 19px;
+    width: 19px;
+}
+
+.summary-rows { background: #e8f3f7; color: #28728b; }
+.summary-valid { background: #e7f5ee; color: #25805b; }
+.summary-amount { background: #fbf1df; color: #9a631d; }
+
+.upload-summary-item small,
+.upload-summary-item strong {
+    display: block;
+}
+
+.upload-summary-item small {
+    color: #716b78;
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+.upload-summary-item strong {
+    color: #211653;
+    font-size: 22px;
+}
+
+.contribution-upload-panel {
+    border: 1px solid #ebeaf0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 980px;
+}
+
+.upload-section-heading {
+    align-items: center;
+    border-bottom: 1px solid #ebeaf0;
+    display: flex;
+    gap: 12px;
+    margin: -2px 0 22px;
+    padding-bottom: 16px;
+}
+
+.upload-section-heading > span {
+    align-items: center;
+    background: #eeeaf9;
+    border-radius: 7px;
+    color: #2d1b69;
+    display: inline-flex;
+    flex: 0 0 40px;
+    height: 40px;
+    justify-content: center;
+}
+
+.upload-section-heading svg {
+    height: 20px;
+    width: 20px;
+}
+
+.upload-section-heading h2,
+.upload-section-heading p {
+    margin: 0;
+}
+
+.upload-section-heading h2 {
+    font-size: 18px;
+}
+
+.upload-section-heading p {
+    color: #756f7c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.contribution-upload-fields label small {
+    color: #7b7484;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.upload-file-field {
+    grid-column: 1 / -1;
+}
+
+.upload-file-field p {
+    color: #756f7c;
+    font-size: 11px;
+    margin: 7px 0 0;
+}
+
+.contribution-upload-actions {
+    justify-content: flex-end;
+}
+
+.upload-format-guide {
+    margin-top: 30px;
+}
+
+.upload-format-guide h2,
+.upload-format-guide p {
+    margin: 0;
+}
+
+.upload-format-guide h2 {
+    font-size: 18px;
+}
+
+.upload-format-guide h2 small {
+    color: #7b7484;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.upload-format-guide p {
+    color: #756f7c;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.upload-format-guide .table-scroll {
+    background: white;
+    border: 1px solid #ebeaf0;
+    border-radius: 8px;
+    margin-top: 14px;
+    max-width: 620px;
+}
+
+.contribution-upload-detail {
+    border: 1px solid #ebeaf0;
+    padding: 0;
+}
+
+.upload-detail-heading {
+    align-items: center;
+    border-bottom: 1px solid #ebeaf0;
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 20px;
+}
+
+.upload-detail-heading small,
+.upload-detail-heading h2 {
+    margin: 0;
+}
+
+.upload-detail-heading > div > small {
+    color: #756f7c;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.upload-detail-heading h2 {
+    font-size: 19px;
+    margin-top: 4px;
+}
+
+.upload-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+}
+
+.upload-detail-grid > div {
+    border-bottom: 1px solid #f0eef3;
+    border-right: 1px solid #f0eef3;
+    padding: 16px 20px;
+}
+
+.upload-detail-grid > div:nth-child(4n) {
+    border-right: 0;
+}
+
+.upload-detail-grid > div:nth-last-child(-n + 4) {
+    border-bottom: 0;
+}
+
+.upload-detail-grid dt {
+    color: #756f7c;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.upload-detail-grid dt small {
+    font-size: 9px;
+    font-weight: 600;
+    margin-left: 3px;
+}
+
+.upload-detail-grid dd {
+    color: #292331;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 7px 0 0;
+}
+
+.upload-detail-grid .detail-valid { color: #19724f; }
+.upload-detail-grid .detail-failed { color: #9c2d25; }
+
+.upload-rows-section {
+    margin-top: 28px;
+}
+
+.upload-rows-heading h2,
+.upload-rows-heading p {
+    margin: 0;
+}
+
+.upload-rows-heading h2 {
+    font-size: 18px;
+}
+
+.upload-rows-heading h2 small {
+    color: #7b7484;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.upload-rows-heading p {
+    color: #756f7c;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+@media (max-width: 920px) {
+    .upload-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .upload-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .upload-detail-grid > div:nth-child(4n) {
+        border-right: 1px solid #f0eef3;
+    }
+
+    .upload-detail-grid > div:nth-child(2n) {
+        border-right: 0;
+    }
+
+    .upload-detail-grid > div:nth-last-child(-n + 4) {
+        border-bottom: 1px solid #f0eef3;
+    }
+
+    .upload-detail-grid > div:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
+}
+
+@media (max-width: 620px) {
+    .upload-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-detail-grid > div,
+    .upload-detail-grid > div:nth-child(2n),
+    .upload-detail-grid > div:nth-child(4n) {
+        border-bottom: 1px solid #f0eef3;
+        border-right: 0;
+    }
+
+    .upload-detail-grid > div:last-child {
+        border-bottom: 0;
+    }
+
+    .contribution-upload-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .contribution-upload-actions .btn-primary,
+    .contribution-upload-actions .btn-secondary {
+        width: 100%;
+    }
+}

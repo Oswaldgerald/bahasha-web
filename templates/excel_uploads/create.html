@@ -1,71 +1,44 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/contribution-uploads.css' %}">{% endblock %}
 
 {% block content %}
+<div class="list-toolbar contribution-upload-toolbar">
+    <p>Upload weekly contribution amounts and validate each Bahasha number before posting.</p>
+    <a href="{% url 'web_excel_uploads' %}" class="btn-secondary"><i data-lucide="arrow-left" aria-hidden="true"></i><span>Upload History</span></a>
+</div>
 
-<h1>Upload Weekly Contributions</h1>
-<p>Upload an Excel file containing Bahasha Number and Amount.</p>
+<section class="card contribution-upload-panel">
+    <div class="upload-section-heading">
+        <span><i data-lucide="file-spreadsheet" aria-hidden="true"></i></span>
+        <div><h2>Contribution File</h2><p>Faili la sadaka in Excel format (.xlsx).</p></div>
+    </div>
 
-<div class="card">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
-            </div>
-
-            <div>
-                <label>Financial Year</label>
-                {{ form.financial_year }}
-                {{ form.financial_year.errors }}
-            </div>
-
-            <div>
-                <label>Contribution Week</label>
-                {{ form.contribution_week }}
-                {{ form.contribution_week.errors }}
-            </div>
-
-            <div>
-                <label>Category</label>
-                {{ form.selected_category }}
-                {{ form.selected_category.errors }}
-            </div>
-
-            <div>
-                <label>Excel File</label>
-                {{ form.file }}
-                {{ form.file.errors }}
-            </div>
+        {{ form.non_field_errors }}
+        <div class="form-grid contribution-upload-fields">
+            <div><label for="{{ form.church.id_for_label }}">Church <small>Kanisa</small></label>{{ form.church }}{{ form.church.errors }}</div>
+            <div><label for="{{ form.financial_year.id_for_label }}">Financial Year <small>Mwaka wa fedha</small></label>{{ form.financial_year }}{{ form.financial_year.errors }}</div>
+            <div><label for="{{ form.contribution_week.id_for_label }}">Contribution Week <small>Wiki ya sadaka</small></label>{{ form.contribution_week }}{{ form.contribution_week.errors }}</div>
+            <div><label for="{{ form.selected_category.id_for_label }}">Contribution Category <small>Aina ya sadaka</small></label>{{ form.selected_category }}{{ form.selected_category.errors }}</div>
+            <div class="upload-file-field"><label for="{{ form.file.id_for_label }}">Excel File <small>Faili la sadaka</small></label>{{ form.file }}{{ form.file.errors }}<p>Use an .xlsx file containing Bahasha Number and Amount.</p></div>
         </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Upload & Validate</button>
-        <a href="{% url 'web_excel_uploads' %}" class="btn-secondary">Cancel</a>
+        <div class="form-actions contribution-upload-actions">
+            <a href="{% url 'web_excel_uploads' %}" class="btn-secondary"><span class="upload-button-copy"><strong>Cancel</strong><small>Ghairi</small></span></a>
+            <button type="submit" class="btn-primary"><i data-lucide="upload" aria-hidden="true"></i><span class="upload-button-copy"><strong>Validate Contributions</strong><small>Hakiki na upakie sadaka</small></span></button>
+        </div>
     </form>
-</div>
+</section>
 
-<div class="card">
-    <h3>Expected Excel Format</h3>
-    <p>The uploaded Excel file should contain two columns:</p>
-
-    <table class="data-table data-table-compact table-half">
-        <tr>
-            <th>Bahasha Number</th>
-            <th>Amount</th>
-        </tr>
-        <tr>
-            <td>B001</td>
-            <td>5000</td>
-        </tr>
-        <tr>
-            <td>B002</td>
-            <td>10000</td>
-        </tr>
-    </table>
-</div>
-
+<section class="upload-format-guide" aria-labelledby="excel-format-title">
+    <div><h2 id="excel-format-title">Required Excel Format <small>Muundo wa faili</small></h2><p>The first row must contain these exact column headings.</p></div>
+    <div class="table-scroll">
+        <table class="data-table data-table-compact">
+            <thead><tr><th>Bahasha Number</th><th>Amount</th></tr></thead>
+            <tbody><tr><td>B001</td><td>5000</td></tr><tr><td>B002</td><td>10000</td></tr></tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

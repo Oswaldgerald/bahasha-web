@@ -5,6 +5,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
@@ -67,7 +68,18 @@ def excel_upload_list(request):
         "approved_by",
     ).order_by("-uploaded_at")
 
-    return render(request, "excel_uploads/list.html", {"uploads": uploads})
+    summary = uploads.aggregate(
+        total=Count("id"),
+        rows=Sum("total_rows", default=0),
+        valid=Sum("valid_rows", default=0),
+        amount=Sum("total_amount", default=0),
+    )
+
+    return render(
+        request,
+        "excel_uploads/list.html",
+        {"uploads": uploads, "summary": summary},
+    )
 
 
 @login_required(login_url="login")
@@ -86,7 +98,9 @@ def excel_upload_create(request):
 
             process_excel_upload(upload)
 
-            messages.success(request, "Excel file uploaded and validated successfully.")
+            messages.success(
+                request, "Contribution file uploaded and validated successfully."
+            )
             return redirect("web_excel_upload_detail", upload_id=upload.id)
     else:
         form = ExcelUploadForm()
@@ -129,7 +143,7 @@ def excel_upload_approve(request, upload_id):
         user=request.user,
         church=upload.church,
         action="EXCEL_APPROVED",
-        description=f"Approved Excel upload {upload.upload_reference}.",
+        description=f"Approved contribution upload {upload.upload_reference}.",
         entity_type="ExcelUpload",
         entity_id=upload.id,
         request=request,

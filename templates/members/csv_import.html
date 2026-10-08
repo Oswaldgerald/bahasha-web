@@ -18,7 +18,7 @@
 <section class="card member-import-panel">
     <div class="member-section-heading">
         <span class="member-form-section-icon"><i data-lucide="file-up" aria-hidden="true"></i></span>
-        <div><h2>Upload Members</h2><p>Pakia wanachama using a completed UTF-8 CSV file.</p></div>
+        <div><h2>Upload Members</h2><p>Pakia washarika using a completed UTF-8 CSV file.</p></div>
     </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -26,7 +26,7 @@
         <div class="member-import-file">
             <label for="{{ form.file.id_for_label }}">
                 {{ form.file.label }}
-                <small class="member-field-caption">Faili la wanachama</small>
+                <small class="member-field-caption">Faili la washarika</small>
             </label>
             {{ form.file }}
             {{ form.file.errors }}

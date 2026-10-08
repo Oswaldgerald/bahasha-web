@@ -21,7 +21,7 @@ class MemberCsvUploadForm(forms.Form):
         widget=forms.FileInput(attrs={"accept": ".csv,text/csv"}),
         help_text=(
             "UTF-8 CSV, up to 2 MB and 5,000 member rows. "
-            "Faili la CSV lenye hadi wanachama 5,000."
+            "Faili la CSV lenye hadi washarika 5,000."
         ),
     )
 

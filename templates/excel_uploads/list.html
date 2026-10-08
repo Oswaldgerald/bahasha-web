@@ -25,8 +25,8 @@
 
 <section class="card list-table-card" aria-label="Contribution upload history">
     <div class="table-scroll">
-        <table class="data-table list-table is-widest responsive-table{% if not uploads %} is-empty{% endif %}">
-            <thead><tr><th>Reference</th><th>Church</th><th>Period</th><th>Category</th><th>Uploaded By</th><th>Rows</th><th>Valid</th><th>Failed</th><th>Amount</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+        <table class="data-table list-table is-wide responsive-table{% if not uploads %} is-empty{% endif %}">
+            <thead><tr><th>Reference</th><th>Church</th><th>Period</th><th>Category</th><th>Uploaded By</th><th>Amount</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
             <tbody>
                 {% for upload in uploads %}
                 <tr>
@@ -35,15 +35,12 @@
                     <td data-label="Period" class="table-primary"><strong>{{ upload.financial_year.year }}</strong><small>Week {{ upload.contribution_week.week_number }}</small></td>
                     <td data-label="Category">{{ upload.selected_category.name }}</td>
                     <td data-label="Uploaded By">{% if upload.uploaded_by %}{{ upload.uploaded_by.full_name }}{% else %}System{% endif %}</td>
-                    <td data-label="Rows">{{ upload.total_rows }}</td>
-                    <td data-label="Valid">{{ upload.valid_rows }}</td>
-                    <td data-label="Failed">{{ upload.failed_rows }}</td>
                     <td data-label="Amount">{{ upload.total_amount|floatformat:2 }}</td>
                     <td data-label="Status"><span class="status-badge {% if upload.status == 'POSTED' %}is-success{% elif upload.status == 'FAILED' %}is-danger{% elif upload.status == 'VALIDATED' %}is-info{% else %}is-neutral{% endif %}">{{ upload.get_status_display }}</span></td>
                     <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_excel_upload_detail' upload.id %}" class="icon-action" title="View contribution upload" aria-label="View contribution upload {{ upload.upload_reference }}"><i data-lucide="eye" aria-hidden="true"></i></a></div></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="11" class="table-empty"><i data-lucide="hand-coins" aria-hidden="true"></i><strong>No contribution uploads</strong><span>Hakuna sadaka zilizopakiwa. Upload a file to begin validation.</span></td></tr>
+                <tr><td colspan="8" class="table-empty"><i data-lucide="hand-coins" aria-hidden="true"></i><strong>No contribution uploads</strong><span>Hakuna sadaka zilizopakiwa. Upload a file to begin validation.</span></td></tr>
                 {% endfor %}
             </tbody>
         </table>

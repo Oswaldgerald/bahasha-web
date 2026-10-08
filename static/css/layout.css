@@ -28,17 +28,18 @@
 }
 
 .sidebar-brand-mark {
-    align-items: center;
     background: white;
     border-radius: 8px;
     color: #2d1b69;
-    display: inline-flex;
+    display: inline-grid;
     flex: 0 0 38px;
     height: 38px;
-    justify-content: center;
+    line-height: 0;
+    place-items: center;
 }
 
 .sidebar-brand-mark svg {
+    display: block;
     height: 22px;
     width: 22px;
 }
@@ -352,13 +353,19 @@
     cursor: pointer;
     display: inline-flex;
     gap: 7px;
+    justify-content: center;
     min-height: 48px;
     padding: 4px 9px 4px 5px;
 }
 
 .account-trigger-identity {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     min-width: 0;
-    text-align: right;
+    text-align: center;
 }
 
 .account-trigger-identity strong,
@@ -373,11 +380,13 @@
 .account-trigger-identity strong {
     color: #2e2935;
     font-size: 13px;
+    line-height: 1.2;
 }
 
 .account-trigger-identity small {
     color: #77717e;
     font-size: 10px;
+    line-height: 1.2;
     margin-top: 2px;
 }
 
@@ -388,6 +397,7 @@
 }
 
 .account-menu-trigger > svg {
+    flex: 0 0 17px;
     height: 17px;
     transition: transform 150ms ease;
     width: 17px;
@@ -410,6 +420,7 @@
     font-weight: 700;
     height: 38px;
     justify-content: center;
+    line-height: 1;
     text-transform: uppercase;
 }
 

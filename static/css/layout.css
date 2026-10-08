@@ -576,23 +576,24 @@
 }
 
 .footer-mark {
-    align-items: center;
     background: white;
     border-radius: 7px;
     color: #2d1b69;
-    display: inline-flex;
+    display: inline-grid;
     flex: 0 0 36px;
     height: 36px;
-    justify-content: center;
+    line-height: 0;
+    place-items: center;
 }
 
 .footer-mark svg {
+    display: block;
     height: 20px;
     width: 20px;
 }
 
 .footer-brand strong,
-.footer-brand span {
+.footer-brand > div > span {
     display: block;
 }
 

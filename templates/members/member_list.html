@@ -16,15 +16,24 @@
     <div class="list-toolbar-actions">
         <a href="{% url 'web_member_csv_export' %}" class="btn-secondary">
             <i data-lucide="download" aria-hidden="true"></i>
-            <span>Export CSV</span>
+            <span class="member-button-copy">
+                <strong>Export Members</strong>
+                <small>Pakua wanachama</small>
+            </span>
         </a>
         <a href="{% url 'web_member_csv_import' %}" class="btn-secondary">
             <i data-lucide="file-up" aria-hidden="true"></i>
-            <span>Import CSV</span>
+            <span class="member-button-copy">
+                <strong>Upload Members</strong>
+                <small>Pakia wanachama</small>
+            </span>
         </a>
         <a href="{% url 'web_member_create' %}" class="btn-primary">
             <i data-lucide="plus" aria-hidden="true"></i>
-            <span>Add Member</span>
+            <span class="member-button-copy">
+                <strong>Add Member</strong>
+                <small>Ongeza mwanachama</small>
+            </span>
         </a>
     </div>
 </div>

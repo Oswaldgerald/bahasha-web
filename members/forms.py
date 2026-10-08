@@ -17,9 +17,12 @@ from .services import create_member, update_member
 
 class MemberCsvUploadForm(forms.Form):
     file = forms.FileField(
-        label="CSV file",
+        label="Member CSV file",
         widget=forms.FileInput(attrs={"accept": ".csv,text/csv"}),
-        help_text="UTF-8 CSV, up to 2 MB and 5,000 member rows.",
+        help_text=(
+            "UTF-8 CSV, up to 2 MB and 5,000 member rows. "
+            "Faili la CSV lenye hadi wanachama 5,000."
+        ),
     )
 
     def clean_file(self):

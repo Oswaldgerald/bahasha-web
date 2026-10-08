@@ -8,27 +8,38 @@
     <p>Upload members in one transaction. Invalid rows are reported without saving a partial import.</p>
     <a href="{% url 'web_member_csv_template' %}" class="btn-secondary">
         <i data-lucide="file-down" aria-hidden="true"></i>
-        <span>Download Template</span>
+        <span class="member-button-copy">
+            <strong>Download Template</strong>
+            <small>Pakua kiolezo</small>
+        </span>
     </a>
 </div>
 
 <section class="card member-import-panel">
     <div class="member-section-heading">
         <span class="member-form-section-icon"><i data-lucide="file-up" aria-hidden="true"></i></span>
-        <div><h2>Member CSV</h2><p>Select a completed UTF-8 CSV file for validation and import.</p></div>
+        <div><h2>Upload Members</h2><p>Pakia wanachama using a completed UTF-8 CSV file.</p></div>
     </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="member-import-file">
-            <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+            <label for="{{ form.file.id_for_label }}">
+                {{ form.file.label }}
+                <small class="member-field-caption">Faili la wanachama</small>
+            </label>
             {{ form.file }}
             {{ form.file.errors }}
             <small>{{ form.file.help_text }}</small>
         </div>
         <div class="form-actions member-import-actions">
-            <a href="{% url 'web_members' %}" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-primary"><i data-lucide="upload" aria-hidden="true"></i><span>Validate and Import</span></button>
+            <a href="{% url 'web_members' %}" class="btn-secondary">
+                <span class="member-button-copy"><strong>Cancel</strong><small>Ghairi</small></span>
+            </a>
+            <button type="submit" class="btn-primary">
+                <i data-lucide="upload" aria-hidden="true"></i>
+                <span class="member-button-copy"><strong>Upload Members</strong><small>Thibitisha na upakie</small></span>
+            </button>
         </div>
     </form>
 </section>
@@ -58,7 +69,7 @@
 
 <section class="member-import-guide" aria-labelledby="csv-columns-title">
     <div>
-        <h2 id="csv-columns-title">CSV columns</h2>
+        <h2 id="csv-columns-title">CSV columns <small>Sehemu za CSV</small></h2>
         <p>Required columns are marked below. Column names are not case-sensitive.</p>
     </div>
     <div class="table-scroll">

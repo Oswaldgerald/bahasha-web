@@ -4,7 +4,7 @@ PAGE_METADATA = {
     "web_member_create": ("Add Member", "contact-round"),
     "web_member_edit": ("Edit Member", "settings"),
     "web_member_detail": ("Member Profile", "contact-round"),
-    "web_member_csv_import": ("Import Members", "file-up"),
+    "web_member_csv_import": ("Upload Members", "file-up"),
     "web_categories": ("Contribution Categories", "tags"),
     "web_category_create": ("Add Category", "tags"),
     "web_category_edit": ("Edit Category", "settings"),

@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/members.css' %}">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/members.js' %}" defer></script>{% endblock %}
 
 {% block content %}
 <div class="list-toolbar">
@@ -23,14 +24,40 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
-        <div class="member-import-file">
-            <label for="{{ form.file.id_for_label }}">
-                {{ form.file.label }}
-                <small class="member-field-caption">Faili la washarika</small>
+        <div class="member-import-file" data-member-csv-dropzone>
+            <div class="member-import-file-heading">
+                <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+                <small>Faili la washarika</small>
+            </div>
+            <label class="member-csv-dropzone" for="{{ form.file.id_for_label }}">
+                {{ form.file }}
+                <span class="member-csv-dropzone-icon" aria-hidden="true">
+                    <i data-lucide="file-up"></i>
+                </span>
+                <span class="member-csv-dropzone-copy">
+                    <strong>Drop your CSV file here</strong>
+                    <small>Buruta faili hapa au chagua kutoka kwenye kifaa chako</small>
+                </span>
+                <span class="member-csv-browse">
+                    <i data-lucide="folder-open" aria-hidden="true"></i>
+                    Choose CSV
+                </span>
+                <span class="member-csv-limits">UTF-8 CSV &middot; Maximum 2 MB &middot; Up to 5,000 members</span>
             </label>
-            {{ form.file }}
+            <div class="member-csv-selection" data-member-csv-selection hidden aria-live="polite">
+                <span class="member-csv-selection-icon" aria-hidden="true">
+                    <i data-lucide="file-check"></i>
+                </span>
+                <span class="member-csv-selection-copy">
+                    <strong data-member-csv-name></strong>
+                    <small data-member-csv-size></small>
+                </span>
+                <button type="button" class="member-csv-remove" data-member-csv-remove aria-label="Remove selected CSV file" title="Remove selected file">
+                    <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+            </div>
             {{ form.file.errors }}
-            <small>{{ form.file.help_text }}</small>
+            <p class="member-csv-help">Only CSV files are accepted. Hakikisha umetumia kiolezo sahihi kabla ya kupakia.</p>
         </div>
         <div class="form-actions member-import-actions">
             <a href="{% url 'web_members' %}" class="btn-secondary">

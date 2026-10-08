@@ -151,11 +151,199 @@
     margin-left: 5px;
 }
 
-.member-import-file small {
+.member-import-file-heading {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 9px;
+}
+
+.member-import-file-heading label {
+    color: #28232f;
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.member-import-file-heading small {
+    color: #756f7c;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.member-csv-dropzone {
+    align-items: center;
+    background: #fafafe;
+    border: 1.5px dashed #b7b0c9;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 235px;
+    padding: 28px 20px;
+    position: relative;
+    text-align: center;
+    transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.member-csv-dropzone:hover,
+.member-csv-dropzone:focus-within,
+.member-import-file.is-dragging .member-csv-dropzone {
+    background: #f6f3ff;
+    border-color: #563ca0;
+    box-shadow: 0 0 0 3px rgba(86, 60, 160, 0.1);
+}
+
+.member-csv-dropzone input[type="file"] {
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.member-csv-dropzone-icon {
+    align-items: center;
+    background: #ebe6fa;
+    border-radius: 8px;
+    color: #382477;
+    display: inline-flex;
+    height: 48px;
+    justify-content: center;
+    margin-bottom: 13px;
+    width: 48px;
+}
+
+.member-csv-dropzone-icon svg {
+    height: 23px;
+    width: 23px;
+}
+
+.member-csv-dropzone-copy strong,
+.member-csv-dropzone-copy small {
+    display: block;
+}
+
+.member-csv-dropzone-copy strong {
+    color: #28232f;
+    font-size: 15px;
+}
+
+.member-csv-dropzone-copy small {
+    color: #756f7c;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.member-csv-browse {
+    align-items: center;
+    background: #2d1b69;
+    border-radius: 6px;
+    color: white;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 750;
+    gap: 7px;
+    margin-top: 17px;
+    min-height: 36px;
+    padding: 8px 13px;
+}
+
+.member-csv-browse svg {
+    height: 15px;
+    width: 15px;
+}
+
+.member-csv-limits {
+    color: #817a89;
+    font-size: 10px;
+    margin-top: 13px;
+}
+
+.member-csv-selection {
+    align-items: center;
+    background: #f4faf7;
+    border: 1px solid #cce4d7;
+    border-radius: 8px;
+    display: flex;
+    gap: 11px;
+    margin-top: 10px;
+    padding: 10px 12px;
+}
+
+.member-csv-selection[hidden] {
+    display: none;
+}
+
+.member-csv-selection-icon {
+    align-items: center;
+    background: #dff1e7;
+    border-radius: 6px;
+    color: #19724f;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+}
+
+.member-csv-selection-icon svg,
+.member-csv-remove svg {
+    height: 17px;
+    width: 17px;
+}
+
+.member-csv-selection-copy {
+    min-width: 0;
+}
+
+.member-csv-selection-copy strong,
+.member-csv-selection-copy small {
+    display: block;
+}
+
+.member-csv-selection-copy strong {
+    color: #28232f;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.member-csv-selection-copy small {
+    color: #587064;
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.member-csv-remove {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: #6f6876;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+}
+
+.member-csv-remove:hover,
+.member-csv-remove:focus-visible {
+    background: #e5ede9;
+    color: #28232f;
+}
+
+.member-csv-help {
     color: #756f7c;
     display: block;
     font-size: 12px;
-    margin-top: 7px;
+    margin: 8px 0 0;
 }
 
 .member-import-actions {
@@ -906,5 +1094,10 @@
     .member-form-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
+    }
+
+    .member-csv-dropzone {
+        min-height: 210px;
+        padding: 24px 14px;
     }
 }

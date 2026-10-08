@@ -1,4 +1,73 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const csvInput = document.querySelector("[data-member-csv-input]");
+    const csvDropzone = document.querySelector("[data-member-csv-dropzone]");
+    const csvSelection = document.querySelector("[data-member-csv-selection]");
+    const csvName = document.querySelector("[data-member-csv-name]");
+    const csvSize = document.querySelector("[data-member-csv-size]");
+    const csvRemove = document.querySelector("[data-member-csv-remove]");
+
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) {
+            return `${bytes} B`;
+        }
+        if (bytes < 1024 * 1024) {
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const updateCsvSelection = () => {
+        const file = csvInput?.files?.[0];
+        if (!csvSelection || !csvName || !csvSize) {
+            return;
+        }
+
+        csvSelection.hidden = !file;
+        csvDropzone?.classList.toggle("has-file", Boolean(file));
+        if (file) {
+            csvName.textContent = file.name;
+            csvSize.textContent = `${formatFileSize(file.size)} · Ready to upload / Tayari kupakiwa`;
+        } else {
+            csvName.textContent = "";
+            csvSize.textContent = "";
+        }
+    };
+
+    csvInput?.addEventListener("change", updateCsvSelection);
+
+    if (csvDropzone && csvInput) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+            csvDropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                csvDropzone.classList.add("is-dragging");
+            });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+            csvDropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                csvDropzone.classList.remove("is-dragging");
+            });
+        });
+
+        csvDropzone.addEventListener("drop", (event) => {
+            const [file] = event.dataTransfer?.files || [];
+            if (!file) {
+                return;
+            }
+            const transfer = new DataTransfer();
+            transfer.items.add(file);
+            csvInput.files = transfer.files;
+            csvInput.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
+
+    csvRemove?.addEventListener("click", () => {
+        csvInput.value = "";
+        updateCsvSelection();
+        csvInput.focus();
+    });
+
     const photoInput = document.querySelector("[data-member-photo-input]");
     const photoImage = document.querySelector("[data-member-photo-image]");
     const photoFallback = document.querySelector("[data-member-photo-fallback]");

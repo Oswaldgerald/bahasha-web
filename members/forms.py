@@ -18,7 +18,12 @@ from .services import create_member, update_member
 class MemberCsvUploadForm(forms.Form):
     file = forms.FileField(
         label="Member CSV file",
-        widget=forms.FileInput(attrs={"accept": ".csv,text/csv"}),
+        widget=forms.FileInput(
+            attrs={
+                "accept": ".csv,text/csv",
+                "data-member-csv-input": "true",
+            }
+        ),
         help_text=(
             "UTF-8 CSV, up to 2 MB and 5,000 member rows. "
             "Faili la CSV lenye hadi washarika 5,000."

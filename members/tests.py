@@ -454,6 +454,15 @@ class MemberCsvTests(TestCase):
         self.assertRedirects(response, reverse("web_members"))
         self.assertTrue(Member.objects.filter(bahasha_number="CSV-B-030").exists())
 
+    def test_csv_upload_view_uses_custom_bilingual_file_control(self):
+        response = self.client.get(reverse("web_member_csv_import"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-member-csv-input="true"')
+        self.assertContains(response, "Drop your CSV file here")
+        self.assertContains(response, "Buruta faili hapa")
+        self.assertContains(response, "Maximum 2 MB")
+
     def test_member_role_cannot_import_or_export_bulk_member_data(self):
         member_user = User.objects.create_user(
             username="csv-member",

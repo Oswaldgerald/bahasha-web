@@ -8,6 +8,7 @@ from django.shortcuts import render
 from churches.models import Church, ChurchGroup
 from categories.services import create_default_categories
 from web.forms import ChurchForm
+from web.pagination import paginate_queryset
 
 from .forms import ChurchGroupForm
 
@@ -15,6 +16,7 @@ from .forms import ChurchGroupForm
 @login_required(login_url="login")
 def church_list(request):
     churches = Church.objects.all().order_by("church_name")
+    churches = paginate_queryset(request, churches)
 
     return render(request, "churches/list.html", {"churches": churches})
 
@@ -67,10 +69,13 @@ def church_group_queryset_for_user(user):
 
 @login_required(login_url="login")
 def church_group_list(request):
+    groups = church_group_queryset_for_user(request.user).order_by(
+        "church__church_name", "name"
+    )
     return render(
         request,
         "churches/group_list.html",
-        {"church_groups": church_group_queryset_for_user(request.user)},
+        {"church_groups": paginate_queryset(request, groups)},
     )
 
 

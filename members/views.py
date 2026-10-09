@@ -3,7 +3,6 @@ from .models import Member
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -28,6 +27,7 @@ from .csv_io import (
     write_members_csv,
 )
 from .forms import MemberCreateForm, MemberCsvUploadForm, MemberEditForm
+from web.pagination import paginate_queryset
 
 
 MEMBER_CSV_ROLES = {"ADMIN", "MAIN_PASTOR"}
@@ -78,8 +78,7 @@ def member_list(request):
     elif activity_status == "inactive":
         members = members.filter(is_active=False)
 
-    paginator = Paginator(members, 25)
-    page = paginator.get_page(request.GET.get("page"))
+    page = paginate_queryset(request, members, per_page=25)
 
     return render(
         request,

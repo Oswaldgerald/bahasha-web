@@ -7,6 +7,7 @@ from django.utils import timezone
 from audit_logs.services import create_audit_log
 from notifications.models import Notification
 from web.forms import NotificationForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
@@ -14,7 +15,8 @@ def notification_list(request):
     notifications = Notification.objects.select_related(
         "church",
         "created_by",
-    ).all()
+    ).order_by("-created_at")
+    notifications = paginate_queryset(request, notifications)
 
     return render(request, "notifications/list.html", {"notifications": notifications})
 

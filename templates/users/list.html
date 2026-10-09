@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pagination_tags %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/users.css' %}">{% endblock %}
 {% block content %}
@@ -67,5 +68,6 @@
             </tbody>
         </table>
     </div>
+    {% render_pagination users %}
 </section>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pagination_tags %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/members.css' %}">
@@ -183,19 +184,7 @@
         </table>
     </div>
 
-    {% if members.paginator.num_pages > 1 %}
-    <nav class="member-pagination" aria-label="Member pages">
-        <span>Page {{ members.number }} of {{ members.paginator.num_pages }}</span>
-        <div>
-            {% if members.has_previous %}
-                <a href="?q={{ filters.q|urlencode }}&approval_status={{ filters.approval_status }}&activity_status={{ filters.activity_status }}&page={{ members.previous_page_number }}" class="btn-secondary">Previous</a>
-            {% endif %}
-            {% if members.has_next %}
-                <a href="?q={{ filters.q|urlencode }}&approval_status={{ filters.approval_status }}&activity_status={{ filters.activity_status }}&page={{ members.next_page_number }}" class="btn-secondary">Next</a>
-            {% endif %}
-        </div>
-    </nav>
-    {% endif %}
+    {% render_pagination members %}
 </section>
 
 {% endblock %}

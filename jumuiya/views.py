@@ -5,11 +5,15 @@ from django.shortcuts import render
 
 from jumuiya.models import Jumuiya
 from web.forms import JumuiyaForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
 def jumuiya_list(request):
-    jumuiya_list = Jumuiya.objects.select_related("church").all()
+    jumuiya_list = Jumuiya.objects.select_related("church").order_by(
+        "church__church_name", "name"
+    )
+    jumuiya_list = paginate_queryset(request, jumuiya_list)
 
     return render(request, "jumuiya/list.html", {"jumuiya_list": jumuiya_list})
 

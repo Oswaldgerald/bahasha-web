@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from annual_targets.models import MemberAnnualTarget
 from web.forms import MemberAnnualTargetForm
+from web.pagination import paginate_queryset
 
 
 def annual_target_list(request):
@@ -14,7 +15,12 @@ def annual_target_list(request):
         "church",
         "financial_year",
         "category",
-    ).all()
+    ).order_by(
+        "-financial_year__year",
+        "member__user__full_name",
+        "category__display_order",
+    )
+    targets = paginate_queryset(request, targets)
 
     return render(request, "annual_targets/list.html", {"targets": targets})
 

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pagination_tags %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/contribution-uploads.css' %}">{% endblock %}
 
@@ -45,5 +46,6 @@
             </tbody>
         </table>
     </div>
+    {% render_pagination uploads %}
 </section>
 {% endblock %}

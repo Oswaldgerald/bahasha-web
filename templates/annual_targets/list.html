@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load pagination_tags %}
 
 {% block content %}
 <div class="list-toolbar">
@@ -29,5 +30,6 @@
             </tbody>
         </table>
     </div>
+    {% render_pagination targets %}
 </section>
 {% endblock %}

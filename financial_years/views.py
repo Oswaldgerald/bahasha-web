@@ -5,11 +5,15 @@ from django.shortcuts import render
 
 from financial_years.models import FinancialYear
 from web.forms import FinancialYearForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
 def financial_year_list(request):
-    financial_years = FinancialYear.objects.select_related("church").all()
+    financial_years = FinancialYear.objects.select_related("church").order_by(
+        "-year", "church__church_name"
+    )
+    financial_years = paginate_queryset(request, financial_years)
 
     return render(
         request, "financial_years/list.html", {"financial_years": financial_years}

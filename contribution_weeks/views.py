@@ -9,11 +9,15 @@ from django.views.decorators.http import require_POST
 from contribution_weeks.models import ContributionWeek
 from web.forms import ContributionWeekForm
 from web.forms import GenerateWeeksForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
 def contribution_week_list(request):
-    weeks = ContributionWeek.objects.select_related("church", "financial_year").all()
+    weeks = ContributionWeek.objects.select_related(
+        "church", "financial_year"
+    ).order_by("-sunday_date", "-week_number", "church__church_name")
+    weeks = paginate_queryset(request, weeks)
 
     return render(request, "contribution_weeks/list.html", {"weeks": weeks})
 

@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 
 from audit_logs.services import create_audit_log
 from web.forms import ExcelUploadForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
@@ -28,6 +29,7 @@ def excel_upload_list(request):
         total=Count("id"),
         amount=Sum("total_amount", default=0),
     )
+    uploads = paginate_queryset(request, uploads)
 
     return render(
         request,

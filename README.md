@@ -132,6 +132,12 @@ Shared form markup lives in `templates/partials/form_field.html`,
 partials for administrative create and edit screens so labels, Swahili captions,
 validation, switches, and action placement remain consistent.
 
+List views use `web.pagination.paginate_queryset` together with the
+`render_pagination` template tag. The shared paginator preserves active query
+filters while navigating between pages. Enhanced select fields are searchable by
+default; add `data-searchable="false"` only where native non-search behavior is
+intentional.
+
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 
 Profile pictures are stored in the persistent Docker media volume and served through an authenticated route. They are not exposed by a public media directory.

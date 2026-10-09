@@ -8,6 +8,7 @@ from django.shortcuts import render
 from contributions.models import Contribution
 from contributions.services import contribution_target_key, save_contribution
 from web.forms import ContributionForm
+from web.pagination import paginate_queryset
 
 
 @login_required(login_url="login")
@@ -20,7 +21,8 @@ def contribution_list(request):
         "contribution_week",
         "category",
         "posted_by",
-    ).all()
+    ).order_by("-contribution_date", "-created_at")
+    contributions = paginate_queryset(request, contributions)
 
     return render(request, "contributions/list.html", {"contributions": contributions})
 

@@ -14,6 +14,7 @@ from audit_logs.services import create_audit_log
 from users.forms import ProfileUpdateForm, UserCreateForm, UserForm
 from users.models import User
 from users.profile_pictures import profile_picture_response
+from web.pagination import paginate_queryset
 
 
 def login_view(request):
@@ -88,6 +89,8 @@ def user_list(request):
         users = users.filter(is_active=True)
     elif account_status == "inactive":
         users = users.filter(is_active=False)
+
+    users = paginate_queryset(request, users)
 
     return render(
         request,

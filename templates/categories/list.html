@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pagination_tags %}
 
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/categories.css' %}">{% endblock %}
 {% block extra_js %}<script src="{% static 'js/categories.js' %}" defer></script>{% endblock %}
@@ -46,6 +47,7 @@
     </article>
     {% endfor %}
 </section>
+{% render_pagination categories %}
 {% else %}
 <section class="category-empty-state">
     <i data-lucide="tags" aria-hidden="true"></i>

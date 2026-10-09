@@ -1,0 +1,35 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="list-pagination" aria-label="List pages">
+    <p>
+        Showing {{ page_obj.start_index }}-{{ page_obj.end_index }}
+        of {{ page_obj.paginator.count }} records
+    </p>
+    <div class="pagination-controls">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" class="pagination-arrow" aria-label="Previous page" title="Previous page">
+                <i data-lucide="chevron-left" aria-hidden="true"></i>
+            </a>
+        {% else %}
+            <span class="pagination-arrow is-disabled" aria-hidden="true"><i data-lucide="chevron-left"></i></span>
+        {% endif %}
+
+        {% for page_number in page_numbers %}
+            {% if page_number == page_obj.paginator.ELLIPSIS %}
+                <span class="pagination-ellipsis">{{ page_number }}</span>
+            {% elif page_number == page_obj.number %}
+                <span class="pagination-page is-current" aria-current="page">{{ page_number }}</span>
+            {% else %}
+                <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_number }}" class="pagination-page" aria-label="Page {{ page_number }}">{{ page_number }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.next_page_number }}" class="pagination-arrow" aria-label="Next page" title="Next page">
+                <i data-lucide="chevron-right" aria-hidden="true"></i>
+            </a>
+        {% else %}
+            <span class="pagination-arrow is-disabled" aria-hidden="true"><i data-lucide="chevron-right"></i></span>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from categories.forms import ContributionCategoryForm
 from categories.models import ContributionCategory
+from web.pagination import paginate_queryset
 
 
 def category_queryset_for_user(user):
@@ -19,6 +20,7 @@ def category_queryset_for_user(user):
 @login_required(login_url="login")
 def category_list(request):
     categories = category_queryset_for_user(request.user)
+    categories = paginate_queryset(request, categories, per_page=12)
 
     return render(request, "categories/list.html", {"categories": categories})
 

@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Bahasha Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'vendor/lucide/lucide.min.js' %}" defer></script>
+<script src="{% static 'js/admin.js' %}" defer></script>
+{% endblock %}
+
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}" class="admin-brand" aria-label="Bahasha administration home">
+        <span class="admin-brand-mark" aria-hidden="true"><i data-lucide="church"></i></span>
+        <span class="admin-brand-copy">
+            <strong>Bahasha</strong>
+            <small>Administration</small>
+        </span>
+    </a>
+</div>
+{% if user.is_anonymous %}{% include "admin/color_theme_toggle.html" %}{% endif %}
+{% endblock %}
+
+{% block nav-global %}
+{% if user.is_authenticated %}
+<a href="{% url 'web_dashboard' %}" class="admin-workspace-link">
+    <i data-lucide="arrow-left" aria-hidden="true"></i>
+    <span>Back to workspace</span>
+</a>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<div class="admin-footer">
+    <span>Bahasha Church Contribution Management System</span>
+    <span>Secure administration workspace</span>
+</div>
+{% endblock %}

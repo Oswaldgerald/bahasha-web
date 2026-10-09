@@ -22,6 +22,11 @@ from django.conf.urls.static import static
 
 from config.views import health_check
 
+admin.site.site_header = "Bahasha Administration"
+admin.site.site_title = "Bahasha Admin"
+admin.site.index_title = "System administration"
+admin.site.site_url = "/web/dashboard/"
+
 urlpatterns = [
     path("health/", health_check, name="health_check"),
     path("admin/", admin.site.urls),

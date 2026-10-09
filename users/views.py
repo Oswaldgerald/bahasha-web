@@ -6,6 +6,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from audit_logs.services import create_audit_log
@@ -18,19 +20,40 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect("web_dashboard")
 
+    next_url = request.POST.get("next") or request.GET.get("next", "")
+
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
+            if request.POST.get("remember_me"):
+                request.session.set_expiry(None)
+            else:
+                request.session.set_expiry(0)
+
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
             return redirect("web_dashboard")
 
         messages.error(request, "Invalid username or password.")
 
-    return render(request, "users/login.html")
+    return render(
+        request,
+        "users/login.html",
+        {
+            "next": next_url,
+            "username": request.POST.get("username", ""),
+            "password_reset_url": reverse("password_reset"),
+        },
+    )
 
 
 @require_POST

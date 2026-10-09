@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Bahasha{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <script src="{% static 'vendor/lucide/lucide.min.js' %}" defer></script>
+    <script src="{% static 'js/app.js' %}" defer></script>
+    <script src="{% static 'js/auth.js' %}" defer></script>
+</head>
+<body class="auth-page">
+    <main class="auth-shell">
+        <section class="login-card" aria-labelledby="auth-title">
+            <header class="auth-header">
+                <div class="login-mark" aria-hidden="true">
+                    <i data-lucide="church"></i>
+                </div>
+                <div>
+                    <p class="auth-eyebrow">Bahasha</p>
+                    <h1 id="auth-title">{% block heading %}Welcome back{% endblock %}</h1>
+                    <p class="auth-subtitle">{% block subtitle %}Sign in to manage your church community and contributions.{% endblock %}</p>
+                </div>
+            </header>
+
+            {% if messages %}
+                <div class="auth-messages" aria-live="polite">
+                    {% for message in messages %}
+                        <div class="auth-alert auth-alert-error">
+                            <i data-lucide="circle-alert" aria-hidden="true"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </section>
+
+        <p class="auth-footer">Bahasha Church Contribution Management System</p>
+    </main>
+</body>
+</html>

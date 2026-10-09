@@ -1,46 +1,72 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bahasha Login</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-    <script src="{% static 'vendor/lucide/lucide.min.js' %}" defer></script>
-    <script src="{% static 'js/app.js' %}" defer></script>
-</head>
+{% extends "users/auth_base.html" %}
 
-<body class="auth-page">
+{% block title %}Sign in | Bahasha{% endblock %}
+{% block heading %}Welcome back{% endblock %}
+{% block subtitle %}Sign in to manage your church community and contributions.{% endblock %}
 
-<div class="login-card">
-    <div class="login-mark" aria-hidden="true">
-        <i data-lucide="church"></i>
+{% block content %}
+<form method="post" class="auth-form" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+
+    <div class="auth-field">
+        <label for="id_username">Username <span>Jina la mtumiaji</span></label>
+        <div class="auth-input-wrap">
+            <i data-lucide="user" aria-hidden="true"></i>
+            <input
+                id="id_username"
+                type="text"
+                name="username"
+                value="{{ username }}"
+                autocomplete="username"
+                autocapitalize="none"
+                placeholder="Enter your username"
+                required
+                autofocus
+            >
+        </div>
     </div>
-    <h1>Bahasha</h1>
-    <p>Church Contribution Management System</p>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="auth-error">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
+    <div class="auth-field">
+        <label for="id_password">Password <span>Nenosiri</span></label>
+        <div class="auth-input-wrap">
+            <i data-lucide="lock-keyhole" aria-hidden="true"></i>
+            <input
+                id="id_password"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                required
+            >
+            <button
+                type="button"
+                class="password-toggle"
+                data-password-toggle="id_password"
+                aria-label="Show password"
+                aria-pressed="false"
+            >
+                <i data-lucide="eye" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="auth-options">
+        <label class="auth-checkbox" for="id_remember_me">
+            <input id="id_remember_me" type="checkbox" name="remember_me">
+            <span>Keep me signed in</span>
+        </label>
+        <a href="{{ password_reset_url }}">Forgot password?</a>
+    </div>
 
-        <label>Username</label>
-        <input type="text" name="username" required>
+    <button type="submit" class="btn-primary auth-submit">
+        <span>Sign in</span>
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+    </button>
 
-        <label>Password</label>
-        <input type="password" name="password" required>
-
-        <button type="submit" class="btn-primary">
-            <i data-lucide="log-in" aria-hidden="true"></i>
-            <span>Login</span>
-        </button>
-    </form>
-</div>
-
-</body>
-</html>
+    <p class="auth-help">
+        <i data-lucide="shield-check" aria-hidden="true"></i>
+        <span>Use only your assigned Bahasha account. Contact your church administrator if you need account access.</span>
+    </p>
+</form>
+{% endblock %}

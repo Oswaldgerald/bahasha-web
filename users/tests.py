@@ -2,6 +2,7 @@ from io import BytesIO
 from tempfile import TemporaryDirectory
 
 from PIL import Image
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.test import override_settings
@@ -19,6 +20,7 @@ class SessionAuthenticationTests(TestCase):
             full_name="System Administrator",
             phone_number="255700000001",
             role="ADMIN",
+            email="admin@example.com",
         )
 
     def test_login_redirects_to_dashboard(self):
@@ -37,6 +39,71 @@ class SessionAuthenticationTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid username or password.")
+
+    def test_login_without_remember_me_expires_at_browser_close(self):
+        self.client.post(
+            reverse("login"),
+            {"username": "admin", "password": "strong-test-password"},
+        )
+
+        self.assertTrue(self.client.session.get_expire_at_browser_close())
+
+    def test_login_with_remember_me_uses_persistent_session(self):
+        self.client.post(
+            reverse("login"),
+            {
+                "username": "admin",
+                "password": "strong-test-password",
+                "remember_me": "on",
+            },
+        )
+
+        self.assertFalse(self.client.session.get_expire_at_browser_close())
+
+    def test_login_honors_safe_next_destination(self):
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "admin",
+                "password": "strong-test-password",
+                "next": reverse("web_profile"),
+            },
+        )
+
+        self.assertRedirects(response, reverse("web_profile"))
+
+    def test_login_rejects_external_next_destination(self):
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "admin",
+                "password": "strong-test-password",
+                "next": "https://example.net/unsafe",
+            },
+        )
+
+        self.assertRedirects(response, reverse("web_dashboard"))
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        DEFAULT_FROM_EMAIL="Bahasha <noreply@example.com>",
+    )
+    def test_password_reset_sends_email_for_active_user(self):
+        response = self.client.post(
+            reverse("password_reset"),
+            {"email": self.user.email},
+        )
+
+        self.assertRedirects(response, reverse("password_reset_done"))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Reset your Bahasha password", mail.outbox[0].subject)
+        self.assertIn("/password-reset/", mail.outbox[0].body)
+
+    def test_login_page_exposes_password_recovery(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, "Forgot password?")
+        self.assertContains(response, reverse("password_reset"))
 
     def test_logout_requires_post(self):
         self.client.force_login(self.user)

@@ -18,7 +18,7 @@ is the routing table only; it must not contain business or presentation logic.
 - `members/forms.py` - member account, photo, and church placement forms
 - `users/forms.py` - reusable user profile and international phone forms
 - `contributions/views.py` and `contributions/services.py` - contribution workflows
-- `excel_uploads/views.py` - web and API upload handlers
+- `excel_uploads/views.py` - contribution upload workflows
 - `reports/views.py` - contribution and member reports
 - Each remaining feature uses its own `<app>/views.py` module
 
@@ -45,6 +45,7 @@ The application is available at `http://localhost:${WEB_PORT}`. The default deve
 Useful routes:
 
 - `/` - sign in
+- `/password-reset/` - request a password reset email
 - `/web/dashboard/` - application dashboard
 - `/admin/` - Django administration
 - `/health/` - application and database readiness
@@ -116,6 +117,11 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 
 Profile pictures are stored in the persistent Docker media volume and served through an authenticated route. They are not exposed by a public media directory.
+
+Password reset emails use Django's console email backend during local development,
+so reset links appear in the web container logs. Production deployments must set
+the `EMAIL_*` and `DEFAULT_FROM_EMAIL` values documented in `.env.example` to a
+working SMTP account.
 
 Phone forms store normalized international numbers. Country selectors use the shared
 Choices.js enhancement, with Tanzania first and searchable country names and calling codes.

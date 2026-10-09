@@ -274,6 +274,66 @@
     margin-top: 6px;
 }
 
+.user-password-field > label small {
+    color: #7b7484;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.user-password-field > small {
+    color: #746e79;
+    display: block;
+    font-size: 11px;
+    line-height: 1.4;
+    margin-top: 6px;
+}
+
+.user-password-input {
+    position: relative;
+}
+
+.user-password-input input {
+    padding-right: 46px;
+}
+
+.user-password-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: #655d72;
+    cursor: pointer;
+    display: inline-flex;
+    height: 34px;
+    justify-content: center;
+    padding: 0;
+    position: absolute;
+    right: 6px;
+    top: 11px;
+    width: 34px;
+}
+
+.user-password-toggle:hover,
+.user-password-toggle:focus-visible {
+    background: #eeeaf9;
+    color: #2d1b69;
+}
+
+.user-password-toggle svg {
+    height: 17px;
+    width: 17px;
+}
+
+.user-password-toggle .hide-password-icon,
+.user-password-toggle.is-visible .show-password-icon {
+    display: none;
+}
+
+.user-password-toggle.is-visible .hide-password-icon {
+    display: inline-flex;
+}
+
 .user-optional {
     color: #88828d;
     font-size: 11px;

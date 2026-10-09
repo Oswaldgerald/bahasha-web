@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from audit_logs.services import create_audit_log
-from users.forms import ProfileUpdateForm, UserForm
+from users.forms import ProfileUpdateForm, UserCreateForm, UserForm
 from users.models import User
 from users.profile_pictures import profile_picture_response
 
@@ -92,22 +92,17 @@ def user_queryset_for_user(user):
 @login_required(login_url="login")
 def user_create(request):
     if request.method == "POST":
-        form = UserForm(request.POST, request_user=request.user)
+        form = UserCreateForm(request.POST, request_user=request.user)
 
         if form.is_valid():
-            user = form.save(commit=False)
-
-            # Default password
-            user.set_password("Password123")
-
-            user.save()
+            form.save()
 
             messages.success(request, "User created successfully.")
 
             return redirect("web_users")
 
     else:
-        form = UserForm(request_user=request.user)
+        form = UserCreateForm(request_user=request.user)
 
     return render(request, "users/create.html", {"form": form})
 

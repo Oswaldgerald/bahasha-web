@@ -7,6 +7,32 @@
             <div><label for="{{ form.full_name.id_for_label }}">Full Name</label>{{ form.full_name }}{{ form.full_name.errors }}</div>
             <div><label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}{{ form.username.errors }}</div>
             <div class="user-phone-field"><label for="{{ form.phone_number.id_for_label }}">Phone Number</label><div class="user-phone-inputs"><div>{{ form.phone_country_code }}</div><div>{{ form.phone_number }}</div></div>{{ form.phone_country_code.errors }}{{ form.phone_number.errors }}<small>Select a country code, then enter the number without the leading zero.</small></div>
+            {% if form.password1 %}
+            <div class="user-password-field">
+                <label for="{{ form.password1.id_for_label }}">Password <small>Nenosiri</small></label>
+                <div class="user-password-input">
+                    {{ form.password1 }}
+                    <button type="button" class="user-password-toggle" data-password-target="{{ form.password1.id_for_label }}" aria-pressed="false" aria-label="Show password" title="Show password">
+                        <span class="show-password-icon"><i data-lucide="eye" aria-hidden="true"></i></span>
+                        <span class="hide-password-icon"><i data-lucide="eye-off" aria-hidden="true"></i></span>
+                    </button>
+                </div>
+                {{ form.password1.errors }}
+                <small>Use at least 8 characters and avoid common or entirely numeric passwords.</small>
+            </div>
+            <div class="user-password-field">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password <small>Thibitisha nenosiri</small></label>
+                <div class="user-password-input">
+                    {{ form.password2 }}
+                    <button type="button" class="user-password-toggle" data-password-target="{{ form.password2.id_for_label }}" aria-pressed="false" aria-label="Show password confirmation" title="Show password">
+                        <span class="show-password-icon"><i data-lucide="eye" aria-hidden="true"></i></span>
+                        <span class="hide-password-icon"><i data-lucide="eye-off" aria-hidden="true"></i></span>
+                    </button>
+                </div>
+                {{ form.password2.errors }}
+                <small>Enter the same password again to prevent typing mistakes.</small>
+            </div>
+            {% endif %}
         </div>
     </section>
     <section class="card user-form-section">

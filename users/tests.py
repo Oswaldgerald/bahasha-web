@@ -193,3 +193,70 @@ class UserManagementTests(TestCase):
 
         self.assertEqual(self.client.get(url).status_code, 405)
         self.assertRedirects(self.client.post(url), reverse("web_users"))
+
+    def test_user_creation_sets_the_submitted_password(self):
+        response = self.client.post(
+            reverse("web_user_create"),
+            {
+                "full_name": "New Finance User",
+                "username": "new-finance-user",
+                "phone_country_code": "255",
+                "phone_number": "700000113",
+                "church": self.church.id,
+                "role": "FINANCE_OFFICER",
+                "is_active": "on",
+                "password1": "N4!vQ8@zL2#p",
+                "password2": "N4!vQ8@zL2#p",
+            },
+        )
+
+        self.assertRedirects(response, reverse("web_users"))
+        created_user = User.objects.get(username="new-finance-user")
+        self.assertTrue(created_user.check_password("N4!vQ8@zL2#p"))
+        self.assertFalse(created_user.check_password("Password123"))
+
+    def test_user_creation_rejects_mismatched_passwords(self):
+        response = self.client.post(
+            reverse("web_user_create"),
+            {
+                "full_name": "Mismatched Password",
+                "username": "mismatched-password",
+                "phone_country_code": "255",
+                "phone_number": "700000114",
+                "church": self.church.id,
+                "role": "MEMBER",
+                "is_active": "on",
+                "password1": "Secure-Password-2026!",
+                "password2": "Different-Password-2026!",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The two passwords do not match.")
+        self.assertFalse(User.objects.filter(username="mismatched-password").exists())
+
+    def test_user_edit_keeps_the_existing_password(self):
+        password_hash = self.member.password
+
+        get_response = self.client.get(
+            reverse("web_user_edit", args=[self.member.id])
+        )
+        self.assertNotContains(get_response, 'id="id_password1"')
+        self.assertNotContains(get_response, 'id="id_password2"')
+
+        response = self.client.post(
+            reverse("web_user_edit", args=[self.member.id]),
+            {
+                "full_name": "Updated Managed Member",
+                "username": self.member.username,
+                "phone_country_code": "255",
+                "phone_number": "700000111",
+                "church": self.church.id,
+                "role": self.member.role,
+                "is_active": "on",
+            },
+        )
+
+        self.assertRedirects(response, reverse("web_users"))
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.password, password_hash)

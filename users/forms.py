@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from churches.models import Church
 
@@ -56,6 +58,58 @@ class UserForm(PhoneNumberFormMixin, forms.ModelForm):
             "role",
             "is_active",
         ]
+
+
+class UserCreateForm(UserForm):
+    password1 = forms.CharField(
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": "Create a secure password",
+            }
+        ),
+    )
+    password2 = forms.CharField(
+        label="Confirm password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": "Enter the password again",
+            }
+        ),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            self.add_error("password2", "The two passwords do not match.")
+            return cleaned_data
+
+        if password1:
+            candidate_user = User(
+                username=cleaned_data.get("username", ""),
+                full_name=cleaned_data.get("full_name", ""),
+                phone_number=cleaned_data.get("phone_number", ""),
+            )
+            try:
+                validate_password(password1, user=candidate_user)
+            except ValidationError as error:
+                self.add_error("password1", error)
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
 
 
 class ProfileUpdateForm(PhoneNumberFormMixin, forms.ModelForm):

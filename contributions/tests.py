@@ -205,3 +205,36 @@ class ContributionServiceTests(TestCase):
         self.assertContains(response, 'name="entry_mode" value="upload"')
         self.assertContains(response, 'data-contribution-file-input="true"')
         self.assertContains(response, "Drop your Excel file here")
+
+    def test_workspace_filters_contributions_by_category(self):
+        first_contribution = self.contribution(
+            reference="FILTER-FIRST",
+        )
+        save_contribution(first_contribution)
+        other_category = ContributionCategory.objects.create(
+            church=self.church,
+            name="Building Fund",
+            code="BUILD-FILTER",
+        )
+        other_contribution = self.contribution(
+            amount="300.00",
+            reference="FILTER-SECOND",
+        )
+        other_contribution.category = other_category
+        save_contribution(other_contribution)
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse("web_contributions"),
+            {"tab": "records", "category": other_category.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["contributions"].paginator.count, 1)
+        self.assertEqual(
+            response.context["contributions"][0].reference_number,
+            "FILTER-SECOND",
+        )
+        self.assertContains(response, 'name="contribution_week"')
+        self.assertContains(response, 'name="category"')
+        self.assertContains(response, 'name="status"')

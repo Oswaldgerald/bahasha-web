@@ -7,32 +7,68 @@
 .workspace-panel-heading p { margin: 0; }
 
 .workspace-tabs {
-    background: #fff;
-    border: 1px solid #e5e2eb;
+    background: #ebe8f2;
+    border: 1px solid #dfdbe8;
     border-radius: 8px;
     display: grid;
+    gap: 1px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     margin-bottom: 26px;
+    padding: 4px;
     overflow: hidden;
 }
 
 .workspace-tabs a {
     align-items: center;
-    border-bottom: 3px solid transparent;
-    border-right: 1px solid #ece9f0;
+    background: #f8f7fa;
+    border: 1px solid transparent;
+    border-radius: 6px;
     color: #625c69;
     display: flex;
-    gap: 10px;
-    min-height: 68px;
-    padding: 12px 16px 10px;
+    gap: 11px;
+    min-height: 70px;
+    padding: 10px 13px;
+    position: relative;
     text-decoration: none;
-    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    transition: background-color 150ms ease, box-shadow 150ms ease, color 150ms ease;
 }
 
-.workspace-tabs a:last-child { border-right: 0; }
-.workspace-tabs a:hover { background: #faf9fc; color: #2d1b69; }
-.workspace-tabs a.is-active { background: #f7f5fc; border-bottom-color: #3b267a; color: #2d1b69; }
-.workspace-tabs svg { flex: 0 0 20px; height: 20px; width: 20px; }
+.workspace-tabs a:hover { background: #fff; color: #2d1b69; }
+
+.workspace-tabs a.is-active {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(45, 27, 105, 0.12);
+    color: #2d1b69;
+}
+
+.workspace-tabs a.is-active::after {
+    background: #3b267a;
+    border-radius: 3px 3px 0 0;
+    bottom: -1px;
+    content: "";
+    height: 3px;
+    left: 13px;
+    position: absolute;
+    right: 13px;
+}
+
+.workspace-tab-icon {
+    align-items: center;
+    background: #eeecf2;
+    border-radius: 6px;
+    color: #696272;
+    display: inline-flex;
+    flex: 0 0 36px;
+    height: 36px;
+    justify-content: center;
+}
+
+.workspace-tabs a.is-active .workspace-tab-icon {
+    background: #eeeafa;
+    color: #382477;
+}
+
+.workspace-tab-icon svg { height: 18px; width: 18px; }
 .workspace-tabs strong,
 .workspace-tabs small { display: block; }
 .workspace-tabs strong { font-size: 13px; }
@@ -50,15 +86,102 @@
 .workspace-panel-heading p { color: #756f7c; font-size: 13px; margin-top: 4px; }
 .contribution-entry-card { margin: 0 auto; max-width: 1080px; }
 
+.workspace-result-count {
+    background: #eeeaf8;
+    border-radius: 6px;
+    color: #4b397d;
+    font-size: 11px;
+    font-weight: 750;
+    padding: 7px 10px;
+    white-space: nowrap;
+}
+
+.contribution-filter-card {
+    border: 1px solid #e7e3ec;
+    box-shadow: 0 2px 9px rgba(33, 25, 57, 0.04);
+    margin-bottom: 16px;
+    padding: 16px 18px;
+}
+
+.contribution-filter-heading {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.contribution-filter-heading > span {
+    align-items: center;
+    background: #eeeaf9;
+    border-radius: 6px;
+    color: #382477;
+    display: inline-flex;
+    flex: 0 0 34px;
+    height: 34px;
+    justify-content: center;
+}
+
+.contribution-filter-heading svg { height: 17px; width: 17px; }
+.contribution-filter-heading h3,
+.contribution-filter-heading p { margin: 0; }
+.contribution-filter-heading h3 { font-size: 15px; }
+.contribution-filter-heading p { color: #77707d; font-size: 11px; margin-top: 2px; }
+
+.contribution-filter-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.contribution-filter-grid label {
+    color: #39333f;
+    font-size: 12px;
+}
+
+.contribution-filter-grid label small {
+    color: #827b88;
+    font-size: 9px;
+    font-weight: 650;
+    margin-left: 3px;
+}
+
+.contribution-search-field { grid-column: span 2; }
+.filter-search-input { display: block; position: relative; }
+.filter-search-input svg {
+    color: #797180;
+    height: 17px;
+    left: 12px;
+    pointer-events: none;
+    position: absolute;
+    top: 20px;
+    width: 17px;
+    z-index: 1;
+}
+.filter-search-input input { padding-left: 38px; }
+
+.contribution-filter-actions {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
 @media (max-width: 860px) {
     .workspace-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .workspace-tabs a:nth-child(2) { border-right: 0; }
-    .workspace-tabs a:nth-child(-n + 2) { border-bottom-color: #ece9f0; }
-    .workspace-tabs a.is-active { border-bottom-color: #3b267a; }
+    .contribution-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 560px) {
     .workspace-panel-heading { align-items: stretch; flex-direction: column; }
-    .workspace-tabs a { min-height: 64px; padding: 10px; }
+    .workspace-result-count { align-self: flex-start; }
+    .workspace-tabs a { min-height: 66px; padding: 9px; }
+    .workspace-tab-icon { flex-basis: 32px; height: 32px; }
     .workspace-tabs strong { font-size: 12px; }
+    .workspace-tabs small { font-size: 9px; }
+    .contribution-filter-grid { grid-template-columns: 1fr; }
+    .contribution-search-field { grid-column: auto; }
+    .contribution-filter-actions { align-items: stretch; flex-direction: column-reverse; }
+    .contribution-filter-actions .btn-primary,
+    .contribution-filter-actions .btn-secondary { width: 100%; }
 }

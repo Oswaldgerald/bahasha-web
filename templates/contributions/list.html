@@ -11,10 +11,10 @@
 {% block content %}
 <section class="contribution-workspace" aria-label="Contributions workspace">
     <nav class="workspace-tabs" aria-label="Contribution workspace views">
-        <a href="?tab=records"{% if active_tab == 'records' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="hand-coins" aria-hidden="true"></i><span><strong>Contributions</strong><small>Sadaka zilizorekodiwa</small></span></a>
-        <a href="?tab=manual"{% if active_tab == 'manual' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="square-pen" aria-hidden="true"></i><span><strong>Record payment</strong><small>Weka sadaka</small></span></a>
-        <a href="?tab=upload"{% if active_tab == 'upload' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="file-up" aria-hidden="true"></i><span><strong>Upload Excel</strong><small>Pakia faili</small></span></a>
-        <a href="?tab=uploads"{% if active_tab == 'uploads' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="history" aria-hidden="true"></i><span><strong>Upload history</strong><small>Historia ya upakiaji</small></span></a>
+        <a href="?tab=records"{% if active_tab == 'records' %} class="is-active" aria-current="page"{% endif %}><span class="workspace-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span><span><strong>Contributions</strong><small>Sadaka zilizorekodiwa</small></span></a>
+        <a href="?tab=manual"{% if active_tab == 'manual' %} class="is-active" aria-current="page"{% endif %}><span class="workspace-tab-icon"><i data-lucide="square-pen" aria-hidden="true"></i></span><span><strong>Record payment</strong><small>Weka sadaka</small></span></a>
+        <a href="?tab=upload"{% if active_tab == 'upload' %} class="is-active" aria-current="page"{% endif %}><span class="workspace-tab-icon"><i data-lucide="file-up" aria-hidden="true"></i></span><span><strong>Upload Excel</strong><small>Pakia faili</small></span></a>
+        <a href="?tab=uploads"{% if active_tab == 'uploads' %} class="is-active" aria-current="page"{% endif %}><span class="workspace-tab-icon"><i data-lucide="history" aria-hidden="true"></i></span><span><strong>Upload history</strong><small>Historia ya upakiaji</small></span></a>
     </nav>
 
     <div class="workspace-panel">

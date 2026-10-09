@@ -1,7 +1,32 @@
 {% load pagination_tags %}
 <div class="workspace-panel-heading">
     <div><h2>Recorded contributions</h2><p>Sadaka zote zilizorekodiwa kwa washirika.</p></div>
+    <span class="workspace-result-count">{{ contributions.paginator.count }} record{{ contributions.paginator.count|pluralize }}</span>
 </div>
+
+<form method="get" class="card contribution-filter-card" aria-label="Filter contributions">
+    <input type="hidden" name="tab" value="records">
+    <div class="contribution-filter-heading">
+        <span aria-hidden="true"><i data-lucide="list-filter"></i></span>
+        <div><h3>Filter contributions</h3><p>Chuja sadaka kwa wiki, aina, hali, au msharika.</p></div>
+    </div>
+    <div class="contribution-filter-grid">
+        <div class="contribution-search-field">
+            <label for="{{ contribution_filter_form.q.id_for_label }}">Search <small>Tafuta</small></label>
+            <span class="filter-search-input"><i data-lucide="search" aria-hidden="true"></i>{{ contribution_filter_form.q }}</span>
+        </div>
+        <div><label for="{{ contribution_filter_form.church.id_for_label }}">Church <small>Kanisa</small></label>{{ contribution_filter_form.church }}</div>
+        <div><label for="{{ contribution_filter_form.financial_year.id_for_label }}">Financial Year <small>Mwaka</small></label>{{ contribution_filter_form.financial_year }}</div>
+        <div><label for="{{ contribution_filter_form.contribution_week.id_for_label }}">Week <small>Wiki</small></label>{{ contribution_filter_form.contribution_week }}</div>
+        <div><label for="{{ contribution_filter_form.category.id_for_label }}">Category <small>Aina ya sadaka</small></label>{{ contribution_filter_form.category }}</div>
+        <div><label for="{{ contribution_filter_form.status.id_for_label }}">Status <small>Hali</small></label>{{ contribution_filter_form.status }}</div>
+    </div>
+    <div class="contribution-filter-actions">
+        {% if has_active_contribution_filters %}<a href="?tab=records" class="btn-secondary"><i data-lucide="rotate-ccw" aria-hidden="true"></i>Reset</a>{% endif %}
+        <button type="submit" class="btn-primary"><i data-lucide="search" aria-hidden="true"></i>Apply filters</button>
+    </div>
+</form>
+
 <section class="card list-table-card" aria-label="Recorded contributions">
     <div class="table-scroll">
         <table class="data-table list-table is-wider responsive-table{% if not contributions %} is-empty{% endif %}">

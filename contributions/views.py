@@ -2,7 +2,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Sum
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -13,6 +13,8 @@ from excel_uploads.models import ExcelUpload
 from excel_uploads.services import create_excel_upload
 from web.forms import ContributionForm, ExcelUploadForm
 from web.pagination import paginate_queryset
+
+from .forms import ContributionFilterForm
 
 
 WORKSPACE_TABS = {"records", "manual", "upload", "uploads"}
@@ -77,6 +79,36 @@ def contribution_list(request):
         ).order_by("-contribution_date", "-created_at"),
         request.user,
     )
+    filter_form = ContributionFilterForm(
+        request.GET or None,
+        request_user=request.user,
+    )
+    has_active_filters = False
+    if filter_form.is_valid():
+        filters = filter_form.cleaned_data
+        query = filters["q"].strip()
+        if query:
+            contributions = contributions.filter(
+                Q(member__user__full_name__icontains=query)
+                | Q(bahasha_number__icontains=query)
+                | Q(reference_number__icontains=query)
+            )
+        if filters["church"]:
+            contributions = contributions.filter(church=filters["church"])
+        if filters["financial_year"]:
+            contributions = contributions.filter(
+                financial_year=filters["financial_year"]
+            )
+        if filters["contribution_week"]:
+            contributions = contributions.filter(
+                contribution_week=filters["contribution_week"]
+            )
+        if filters["category"]:
+            contributions = contributions.filter(category=filters["category"])
+        if filters["status"]:
+            contributions = contributions.filter(status=filters["status"])
+        has_active_filters = any(filters.values())
+
     contributions = paginate_queryset(
         request,
         contributions,
@@ -110,7 +142,9 @@ def contribution_list(request):
         {
             "active_tab": active_tab,
             "contribution_form": contribution_form,
+            "contribution_filter_form": filter_form,
             "contributions": contributions,
+            "has_active_contribution_filters": has_active_filters,
             "upload_form": upload_form,
             "uploads": uploads,
             "upload_summary": upload_summary,

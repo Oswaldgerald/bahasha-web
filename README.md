@@ -127,6 +127,11 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/js/categories.js` - live preview for configurable mobile category cards
 - `static/js/lists.js` - reusable confirmation behavior for list actions
 
+Shared form markup lives in `templates/partials/form_field.html`,
+`form_toggle.html`, `form_section_header.html`, and `form_actions.html`. Use these
+partials for administrative create and edit screens so labels, Swahili captions,
+validation, switches, and action placement remain consistent.
+
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.
 
 Profile pictures are stored in the persistent Docker media volume and served through an authenticated route. They are not exposed by a public media directory.

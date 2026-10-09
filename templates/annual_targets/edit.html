@@ -1,56 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Edit Annual Target</h1>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Member</label>
-                {{ form.member }}
-                {{ form.member.errors }}
+{% url 'web_annual_targets' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Review and update the selected member's annual contribution commitment.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="target" title="Target details" subtitle="Taarifa za lengo la mwaka" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.member label="Member" label_sw="Msharika" %}
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.financial_year label="Financial Year" label_sw="Mwaka wa fedha" %}
+                {% include "partials/form_field.html" with field=form.category label="Contribution Category" label_sw="Aina ya sadaka" %}
+                {% include "partials/form_field.html" with field=form.target_amount label="Target Amount" label_sw="Kiasi cha lengo" %}
+                {% include "partials/form_field.html" with field=form.contributed_amount label="Contributed Amount" label_sw="Kiasi kilichochangwa" %}
             </div>
-
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
-            </div>
-
-            <div>
-                <label>Financial Year</label>
-                {{ form.financial_year }}
-                {{ form.financial_year.errors }}
-            </div>
-
-            <div>
-                <label>Category</label>
-                {{ form.category }}
-                {{ form.category.errors }}
-            </div>
-
-            <div>
-                <label>Target Amount</label>
-                {{ form.target_amount }}
-                {{ form.target_amount.errors }}
-            </div>
-
-            <div>
-                <label>Contributed Amount</label>
-                {{ form.contributed_amount }}
-                {{ form.contributed_amount.errors }}
-            </div>
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Update Target</button>
-        <a href="{% url 'web_annual_targets' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Update Target" submit_icon="save" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

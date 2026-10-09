@@ -1,57 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Edit Church</h1>
-<p>Update church profile and location details.</p>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church Code</label>
-                {{ form.church_code }}
-                {{ form.church_code.errors }}
+{% url 'web_churches' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Keep the church identity, parish, location, and system availability up to date.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="landmark" title="Church profile" subtitle="Taarifa za kanisa" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church_code label="Church Code" label_sw="Namba ya kanisa" help_text="A short unique code used to identify this church." %}
+                {% include "partials/form_field.html" with field=form.church_name label="Church Name" label_sw="Jina la kanisa" %}
+                {% include "partials/form_field.html" with field=form.parish label="Parish" label_sw="Parokia" %}
+                {% include "partials/form_field.html" with field=form.district label="District" label_sw="Jimbo" %}
+                {% include "partials/form_field.html" with field=form.location label="Location" label_sw="Mahali" wide=True %}
+                <div class="form-settings-grid">
+                    {% include "partials/form_toggle.html" with field=form.is_active label="Active church" label_sw="Kanisa linalotumika" description="Allow this church to use the system and manage contributions." wide=True %}
+                </div>
             </div>
-
-            <div>
-                <label>Church Name</label>
-                {{ form.church_name }}
-                {{ form.church_name.errors }}
-            </div>
-
-            <div>
-                <label>Parish</label>
-                {{ form.parish }}
-                {{ form.parish.errors }}
-            </div>
-
-            <div>
-                <label>District</label>
-                {{ form.district }}
-                {{ form.district.errors }}
-            </div>
-
-            <div>
-                <label>Location</label>
-                {{ form.location }}
-                {{ form.location.errors }}
-            </div>
-
-            <div>
-                <label>Active?</label><br>
-                {{ form.is_active }} Active
-                {{ form.is_active.errors }}
-            </div>
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Update Church</button>
-        <a href="{% url 'web_churches' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Update Church" submit_icon="save" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

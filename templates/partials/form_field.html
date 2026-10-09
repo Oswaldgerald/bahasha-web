@@ -1,0 +1,9 @@
+<div class="form-field{% if wide %} form-field-wide{% endif %}">
+    <label for="{{ field.id_for_label }}">
+        {{ label }}
+        {% if label_sw %}<span class="field-translation">{{ label_sw }}</span>{% endif %}
+    </label>
+    {{ field }}
+    {% if help_text %}<p class="field-help">{{ help_text }}</p>{% endif %}
+    {{ field.errors }}
+</div>

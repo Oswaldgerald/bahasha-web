@@ -1,50 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Edit Jumuiya</h1>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
+{% url 'web_jumuiya' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Update this community's identity, leadership, and availability.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="users-round" title="Jumuiya details" subtitle="Taarifa za jumuiya" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.name label="Jumuiya Name" label_sw="Jina la jumuiya" %}
+                {% include "partials/form_field.html" with field=form.leader_name label="Leader Name" label_sw="Jina la kiongozi" %}
+                {% include "partials/form_field.html" with field=form.description label="Description" label_sw="Maelezo" wide=True %}
+                <div class="form-settings-grid">
+                    {% include "partials/form_toggle.html" with field=form.is_active label="Active Jumuiya" label_sw="Jumuiya inayotumika" description="Make this community available when managing members." wide=True %}
+                </div>
             </div>
-
-            <div>
-                <label>Jumuiya Name</label>
-                {{ form.name }}
-                {{ form.name.errors }}
-            </div>
-
-            <div>
-                <label>Leader Name</label>
-                {{ form.leader_name }}
-                {{ form.leader_name.errors }}
-            </div>
-
-            <div>
-                <label>Active?</label><br>
-                {{ form.is_active }} Active
-                {{ form.is_active.errors }}
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <label>Description</label>
-            {{ form.description }}
-            {{ form.description.errors }}
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Update Jumuiya</button>
-        <a href="{% url 'web_jumuiya' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Update Jumuiya" submit_icon="save" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

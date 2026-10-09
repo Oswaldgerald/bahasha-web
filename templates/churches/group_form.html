@@ -4,19 +4,24 @@
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/church-groups.css' %}">{% endblock %}
 
 {% block content %}
-<div class="church-group-form-intro"><p>Create a reusable group that can be assigned to any number of members.</p></div>
-<form method="post" class="card church-group-form">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div class="form-grid">
-        <div><label for="{{ form.church.id_for_label }}">Church</label>{{ form.church }}{{ form.church.errors }}</div>
-        <div><label for="{{ form.name.id_for_label }}">Group Name</label>{{ form.name }}{{ form.name.errors }}</div>
-        <div class="group-description"><label for="{{ form.description.id_for_label }}">Description <span>Optional</span></label>{{ form.description }}{{ form.description.errors }}</div>
-        <div class="group-active">{{ form.is_active }}<label for="{{ form.is_active.id_for_label }}">Active group</label>{{ form.is_active.errors }}</div>
+{% url 'web_church_groups' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Create a reusable ministry or service group that can be assigned to any number of members.</p>
+    <div class="card standard-form-card church-group-form">
+        {% include "partials/form_section_header.html" with icon="users-round" title="Group details" subtitle="Taarifa za kikundi cha kanisa" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.name label="Group Name" label_sw="Jina la kikundi" %}
+                {% include "partials/form_field.html" with field=form.description label="Description" label_sw="Maelezo" wide=True %}
+                <div class="form-settings-grid">
+                    {% include "partials/form_toggle.html" with field=form.is_active label="Active group" label_sw="Kikundi kinachotumika" description="Make this group available when managing members." wide=True %}
+                </div>
+            </div>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label=submit_label submit_icon="save" %}
+        </form>
     </div>
-    <div class="group-form-actions">
-        <a href="{% url 'web_church_groups' %}" class="btn-secondary">Cancel</a>
-        <button type="submit" class="btn-primary"><i data-lucide="save" aria-hidden="true"></i><span>{{ submit_label }}</span></button>
-    </div>
-</form>
+</div>
 {% endblock %}

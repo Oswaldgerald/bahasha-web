@@ -1,51 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Send Notification</h1>
-<p>Create a church announcement, reminder, or system message.</p>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
+{% url 'web_notifications' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Send a clear church announcement, reminder, or system message to the intended audience.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="bell-ring" title="Message details" subtitle="Taarifa za ujumbe" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.notification_type label="Notification Type" label_sw="Aina ya taarifa" %}
+                {% include "partials/form_field.html" with field=form.target_role label="Audience" label_sw="Walengwa" %}
+                {% include "partials/form_field.html" with field=form.title label="Title" label_sw="Kichwa cha ujumbe" %}
+                {% include "partials/form_field.html" with field=form.message label="Message" label_sw="Ujumbe" wide=True %}
             </div>
-
-            <div>
-                <label>Notification Type</label>
-                {{ form.notification_type }}
-                {{ form.notification_type.errors }}
-            </div>
-
-            <div>
-                <label>Target Role</label>
-                {{ form.target_role }}
-                {{ form.target_role.errors }}
-            </div>
-
-            <div>
-                <label>Title</label>
-                {{ form.title }}
-                {{ form.title.errors }}
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <label>Message</label>
-            {{ form.message }}
-            {{ form.message.errors }}
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Send Notification</button>
-        <a href="{% url 'web_notifications' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Send Notification" submit_icon="send" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

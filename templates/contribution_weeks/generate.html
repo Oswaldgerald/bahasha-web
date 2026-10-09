@@ -1,47 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Generate Contribution Weeks</h1>
-<p>Automatically generate all Sunday contribution weeks for a financial year.</p>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
+{% url 'web_contribution_weeks' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Generate every Sunday collection period within a financial year in one step.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="calendar-range" title="Generation period" subtitle="Kipindi cha kutengeneza wiki" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.financial_year label="Financial Year" label_sw="Mwaka wa fedha" %}
             </div>
-
-            <div>
-                <label>Financial Year</label>
-                {{ form.financial_year }}
-                {{ form.financial_year.errors }}
+            <div class="form-guidance">
+                <i data-lucide="info" aria-hidden="true"></i>
+                <p>The system starts with the first Sunday in the selected year and creates each weekly period through the financial year end date.</p>
             </div>
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">
-            Generate Weeks
-        </button>
-
-        <a href="{% url 'web_contribution_weeks' %}" class="btn-secondary">
-            Cancel
-        </a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Generate Weeks" submit_icon="calendar-plus" %}
+        </form>
+    </div>
 </div>
-
-<div class="card">
-    <h3>How this works</h3>
-    <p>
-        The system will find the first Sunday within the selected financial year
-        and then automatically create weekly Sunday contribution periods until
-        the end date of that financial year.
-    </p>
-</div>
-
 {% endblock %}

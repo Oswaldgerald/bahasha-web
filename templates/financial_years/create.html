@@ -1,50 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Add Financial Year</h1>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
+{% url 'web_financial_years' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Define the reporting period used for contribution weeks, targets, and financial summaries.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="calendar-range" title="Financial year details" subtitle="Taarifa za mwaka wa fedha" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.year label="Year" label_sw="Mwaka" %}
+                {% include "partials/form_field.html" with field=form.start_date label="Start Date" label_sw="Tarehe ya kuanza" %}
+                {% include "partials/form_field.html" with field=form.end_date label="End Date" label_sw="Tarehe ya mwisho" %}
+                <div class="form-settings-grid">
+                    {% include "partials/form_toggle.html" with field=form.is_active label="Active financial year" label_sw="Mwaka unaotumika" description="Use this period as the current year for church operations." wide=True %}
+                </div>
             </div>
-
-            <div>
-                <label>Year</label>
-                {{ form.year }}
-                {{ form.year.errors }}
-            </div>
-
-            <div>
-                <label>Start Date</label>
-                {{ form.start_date }}
-                {{ form.start_date.errors }}
-            </div>
-
-            <div>
-                <label>End Date</label>
-                {{ form.end_date }}
-                {{ form.end_date.errors }}
-            </div>
-
-            <div>
-                <label>Active?</label><br>
-                {{ form.is_active }} Active
-                {{ form.is_active.errors }}
-            </div>
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Save Financial Year</button>
-        <a href="{% url 'web_financial_years' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Save Financial Year" submit_icon="save" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

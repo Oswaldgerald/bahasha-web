@@ -1,74 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Add Contribution</h1>
-
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-grid">
-            <div>
-                <label>Church</label>
-                {{ form.church }}
-                {{ form.church.errors }}
+{% url 'web_contributions' as cancel_url %}
+<div class="form-page">
+    <p class="form-page-lead">Record a member payment against the correct week and contribution category.</p>
+    <div class="card standard-form-card">
+        {% include "partials/form_section_header.html" with icon="hand-coins" title="Contribution details" subtitle="Taarifa za sadaka" %}
+        <form method="post" class="standard-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.church label="Church" label_sw="Kanisa" %}
+                {% include "partials/form_field.html" with field=form.member label="Member" label_sw="Msharika" %}
+                {% include "partials/form_field.html" with field=form.financial_year label="Financial Year" label_sw="Mwaka wa fedha" %}
+                {% include "partials/form_field.html" with field=form.contribution_week label="Contribution Week" label_sw="Wiki ya sadaka" %}
+                {% include "partials/form_field.html" with field=form.category label="Contribution Category" label_sw="Aina ya sadaka" %}
+                {% include "partials/form_field.html" with field=form.amount label="Amount" label_sw="Kiasi" %}
+                {% include "partials/form_field.html" with field=form.contribution_date label="Contribution Date" label_sw="Tarehe ya sadaka" %}
+                {% include "partials/form_field.html" with field=form.status label="Status" label_sw="Hali" %}
+                {% include "partials/form_field.html" with field=form.remarks label="Remarks" label_sw="Maelezo" wide=True %}
             </div>
-
-            <div>
-                <label>Member</label>
-                {{ form.member }}
-                {{ form.member.errors }}
-            </div>
-
-            <div>
-                <label>Financial Year</label>
-                {{ form.financial_year }}
-                {{ form.financial_year.errors }}
-            </div>
-
-            <div>
-                <label>Contribution Week</label>
-                {{ form.contribution_week }}
-                {{ form.contribution_week.errors }}
-            </div>
-
-            <div>
-                <label>Category</label>
-                {{ form.category }}
-                {{ form.category.errors }}
-            </div>
-
-            <div>
-                <label>Amount</label>
-                {{ form.amount }}
-                {{ form.amount.errors }}
-            </div>
-
-            <div>
-                <label>Contribution Date</label>
-                {{ form.contribution_date }}
-                {{ form.contribution_date.errors }}
-            </div>
-
-            <div>
-                <label>Status</label>
-                {{ form.status }}
-                {{ form.status.errors }}
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <label>Remarks</label>
-            {{ form.remarks }}
-            {{ form.remarks.errors }}
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">Save Contribution</button>
-        <a href="{% url 'web_contributions' %}" class="btn-secondary">Cancel</a>
-    </form>
+            {% include "partials/form_actions.html" with cancel_url=cancel_url submit_label="Save Contribution" submit_icon="save" %}
+        </form>
+    </div>
 </div>
-
 {% endblock %}

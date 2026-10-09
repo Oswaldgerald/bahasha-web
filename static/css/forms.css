@@ -11,7 +11,7 @@ label {
 }
 
 input[type="checkbox"] {
-    accent-color: #2d1b69;
+    accent-color: #0f5c5e;
     border-radius: 4px;
     margin: 0;
     min-height: 18px;
@@ -37,8 +37,8 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: #6d5daf;
-    box-shadow: 0 0 0 3px rgba(109, 93, 175, 0.14);
+    border-color: #2f7d7f;
+    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.14);
     outline: 0;
 }
 
@@ -77,8 +77,8 @@ textarea {
 
 .is-focused .choices__inner,
 .is-open .choices__inner {
-    border-color: #6d5daf;
-    box-shadow: 0 0 0 3px rgba(109, 93, 175, 0.14);
+    border-color: #2f7d7f;
+    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.14);
 }
 
 .is-open .choices__inner {
@@ -101,7 +101,7 @@ textarea {
 .choices__list--dropdown .choices__item--selectable.is-highlighted,
 .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
     background: #eeeafc;
-    color: #2d1b69;
+    color: #0f5c5e;
 }
 
 .choices__input {
@@ -113,12 +113,12 @@ textarea {
 }
 
 .choices[data-type*="select-one"]::after {
-    border-color: #655a85 transparent transparent;
+    border-color: #4d7778 transparent transparent;
     right: 16px;
 }
 
 .choices[data-type*="select-one"].is-open::after {
-    border-color: transparent transparent #655a85;
+    border-color: transparent transparent #4d7778;
 }
 
 .choices.is-disabled .choices__inner {
@@ -280,7 +280,7 @@ textarea {
 }
 
 .form-toggle input:checked + .form-toggle-control {
-    background: #2d1b69;
+    background: #0f5c5e;
 }
 
 .form-toggle input:checked + .form-toggle-control::after {
@@ -288,7 +288,7 @@ textarea {
 }
 
 .form-toggle input:focus-visible + .form-toggle-control {
-    box-shadow: 0 0 0 3px rgba(109, 93, 175, 0.2);
+    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.2);
 }
 
 .form-toggle-copy {

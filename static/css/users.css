@@ -47,8 +47,8 @@
 }
 
 .user-summary-icon.is-admin {
-    background: #eeeaf9;
-    color: #2d1b69;
+    background: #e7f2f1;
+    color: #0f5c5e;
 }
 
 .user-summary-icon.is-member {
@@ -73,7 +73,7 @@
 }
 
 .user-summary strong {
-    color: #211653;
+    color: #123f41;
     font-size: 22px;
 }
 
@@ -129,9 +129,9 @@
 
 .user-initial {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 50%;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-flex;
     flex: 0 0 36px;
     font-size: 13px;
@@ -171,8 +171,8 @@
 
 .user-role.role-admin,
 .user-role.role-main_pastor {
-    background: #eeeaf9;
-    color: #2d1b69;
+    background: #e7f2f1;
+    color: #0f5c5e;
 }
 
 .user-role.role-member {
@@ -232,9 +232,9 @@
 
 .user-section-heading > span {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 7px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-flex;
     flex: 0 0 34px;
     height: 34px;
@@ -316,8 +316,8 @@
 
 .user-password-toggle:hover,
 .user-password-toggle:focus-visible {
-    background: #eeeaf9;
-    color: #2d1b69;
+    background: #e7f2f1;
+    color: #0f5c5e;
 }
 
 .user-password-toggle svg {

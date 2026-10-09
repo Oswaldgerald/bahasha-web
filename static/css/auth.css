@@ -37,9 +37,9 @@
 
 .login-mark {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(45, 27, 105, 0.18);
+    box-shadow: 0 8px 20px rgba(15, 92, 94, 0.18);
     color: white;
     display: flex;
     height: 64px;
@@ -134,8 +134,8 @@
 
 .auth-input-wrap input:focus {
     background: #fff;
-    border-color: #6d5daf;
-    box-shadow: 0 0 0 4px rgba(109, 93, 175, 0.14);
+    border-color: #2f7d7f;
+    box-shadow: 0 0 0 4px rgba(47, 125, 127, 0.14);
     outline: 0;
 }
 
@@ -157,7 +157,7 @@
 
 .password-toggle:hover {
     background: #f1eff5;
-    color: #2d1b69;
+    color: #0f5c5e;
 }
 
 .password-toggle svg {
@@ -176,7 +176,7 @@
 
 .auth-options a,
 .auth-back-link {
-    color: #2d1b69;
+    color: #0f5c5e;
     font-weight: 750;
     text-decoration: none;
 }
@@ -196,7 +196,7 @@
 }
 
 .auth-checkbox input {
-    accent-color: #2d1b69;
+    accent-color: #0f5c5e;
     height: 18px;
     margin: 0;
     width: 18px;
@@ -220,7 +220,7 @@
 }
 
 .auth-help svg {
-    color: #2d1b69;
+    color: #0f5c5e;
     flex: 0 0 auto;
     height: 18px;
     margin-top: 1px;

@@ -60,7 +60,7 @@
 }
 
 .member-summary-item strong {
-    color: #211653;
+    color: #123f41;
     font-size: 22px;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .member-clear-filter:hover {
-    color: #2d1b69;
+    color: #0f5c5e;
     text-decoration: underline;
 }
 
@@ -191,7 +191,7 @@
 .member-csv-dropzone:focus-within,
 .member-import-file.is-dragging .member-csv-dropzone {
     background: #f6f3ff;
-    border-color: #563ca0;
+    border-color: #2b7476;
     box-shadow: 0 0 0 3px rgba(86, 60, 160, 0.1);
 }
 
@@ -209,7 +209,7 @@
     align-items: center;
     background: #ebe6fa;
     border-radius: 8px;
-    color: #382477;
+    color: #165f61;
     display: inline-flex;
     height: 48px;
     justify-content: center;
@@ -240,7 +240,7 @@
 
 .member-csv-browse {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border-radius: 6px;
     color: white;
     display: inline-flex;
@@ -422,9 +422,9 @@
 
 .member-initial {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 50%;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-flex;
     flex: 0 0 36px;
     font-size: 13px;
@@ -583,7 +583,7 @@
 
 .member-profile-initial {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border-radius: 8px;
     color: white;
     display: inline-flex;
@@ -652,7 +652,7 @@
 }
 
 .member-profile-stats strong {
-    color: #211653;
+    color: #123f41;
     font-size: 21px;
     margin: 7px 0 4px;
 }
@@ -737,9 +737,9 @@
 }
 
 .member-group-chip {
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 20px;
-    color: #2d1b69;
+    color: #0f5c5e;
     font-size: 11px;
     font-weight: 700;
     padding: 6px 9px;
@@ -772,9 +772,9 @@
 .member-status-icon,
 .member-form-section-icon {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 7px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-flex;
     flex: 0 0 34px;
     height: 34px;
@@ -866,7 +866,7 @@
 
 .member-photo-preview {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border: 3px solid white;
     border-radius: 50%;
     box-shadow: 0 0 0 1px #d8d4e6;
@@ -906,7 +906,7 @@
     background: #ebe7f7;
     border: 0;
     border-radius: 6px;
-    color: #2d1b69;
+    color: #0f5c5e;
     cursor: pointer;
     font: inherit;
     font-weight: 700;
@@ -976,7 +976,7 @@
 }
 
 .member-groups-field > small a {
-    color: #2d1b69;
+    color: #0f5c5e;
     font-weight: 700;
 }
 

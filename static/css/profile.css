@@ -16,10 +16,10 @@
 .profile-avatar,
 .profile-photo-preview {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border: 4px solid white;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px #dcd8ea, 0 8px 24px rgba(45, 27, 105, 0.16);
+    box-shadow: 0 0 0 1px #dcd8ea, 0 8px 24px rgba(15, 92, 94, 0.16);
     color: white;
     display: flex;
     font-size: 40px;
@@ -45,9 +45,9 @@
 }
 
 .profile-role {
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 20px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-block;
     font-size: 12px;
     font-weight: 700;
@@ -134,10 +134,10 @@
 }
 
 .profile-file-input::file-selector-button {
-    background: #eeeaf9;
+    background: #e7f2f1;
     border: 0;
     border-radius: 6px;
-    color: #2d1b69;
+    color: #0f5c5e;
     cursor: pointer;
     font: inherit;
     font-weight: 700;

@@ -33,12 +33,12 @@
     transition: background-color 150ms ease, box-shadow 150ms ease, color 150ms ease;
 }
 
-.workspace-tabs a:hover { background: #fff; color: #2d1b69; }
+.workspace-tabs a:hover { background: #fff; color: #0f5c5e; }
 
 .workspace-tabs a.is-active {
     background: #fff;
-    box-shadow: 0 2px 8px rgba(45, 27, 105, 0.12);
-    color: #2d1b69;
+    box-shadow: 0 2px 8px rgba(15, 92, 94, 0.12);
+    color: #0f5c5e;
 }
 
 .workspace-tabs a.is-active::after {
@@ -65,7 +65,7 @@
 
 .workspace-tabs a.is-active .workspace-tab-icon {
     background: #eeeafa;
-    color: #382477;
+    color: #165f61;
 }
 
 .workspace-tab-icon svg { height: 18px; width: 18px; }
@@ -89,7 +89,7 @@
 .workspace-result-count {
     background: #eeeaf8;
     border-radius: 6px;
-    color: #4b397d;
+    color: #286f71;
     font-size: 11px;
     font-weight: 750;
     padding: 7px 10px;
@@ -112,9 +112,9 @@
 
 .contribution-filter-heading > span {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 6px;
-    color: #382477;
+    color: #165f61;
     display: inline-flex;
     flex: 0 0 34px;
     height: 34px;

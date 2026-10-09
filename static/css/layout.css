@@ -4,7 +4,7 @@
 }
 
 .sidebar {
-    background: #2d1b69;
+    background: #0f5c5e;
     box-sizing: border-box;
     color: white;
     display: flex;
@@ -30,7 +30,7 @@
 .sidebar-brand-mark {
     background: white;
     border-radius: 8px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-grid;
     flex: 0 0 38px;
     height: 38px;
@@ -96,7 +96,7 @@
     align-items: center;
     background: transparent;
     border: 0;
-    color: #c9c2f2;
+    color: #b8d9d7;
     cursor: pointer;
     display: flex;
     font-size: 11px;
@@ -164,7 +164,7 @@
 
 .sidebar a.active {
     background: white;
-    color: #2d1b69;
+    color: #0f5c5e;
     font-weight: 700;
 }
 
@@ -266,7 +266,7 @@
 }
 
 .sidebar-collapsed .sidebar [data-label]::after {
-    background: #20144b;
+    background: #083f41;
     border-radius: 5px;
     color: white;
     content: attr(data-label);
@@ -300,7 +300,7 @@
     align-items: center;
     background: white;
     border: 1px solid #e5e2ec;
-    border-top: 3px solid #4b3b8f;
+    border-top: 3px solid #2a7375;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     display: flex;
@@ -325,9 +325,9 @@
 
 .topbar-context-icon {
     align-items: center;
-    background: #eeeaf9;
+    background: #e7f2f1;
     border-radius: 7px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-flex;
     flex: 0 0 38px;
     height: 38px;
@@ -429,7 +429,7 @@
 
 .user-avatar {
     align-items: center;
-    background: #2d1b69;
+    background: #0f5c5e;
     border: 2px solid white;
     border-radius: 50%;
     box-shadow: 0 0 0 1px #d8d4e8;
@@ -539,8 +539,8 @@
 
 .account-dropdown-links a:hover,
 .account-dropdown-logout button:hover {
-    background: #f0edf9;
-    color: #2d1b69;
+    background: #ecf5f4;
+    color: #0f5c5e;
 }
 
 .account-dropdown-links svg,
@@ -578,10 +578,10 @@
 
 .site-footer {
     align-items: center;
-    background: #211747;
-    border: 1px solid #392b6d;
+    background: #083f41;
+    border: 1px solid #1c6769;
     border-radius: 8px;
-    color: #d8d2eb;
+    color: #d5e9e7;
     display: flex;
     gap: 24px;
     justify-content: space-between;
@@ -598,7 +598,7 @@
 .footer-mark {
     background: white;
     border-radius: 7px;
-    color: #2d1b69;
+    color: #0f5c5e;
     display: inline-grid;
     flex: 0 0 36px;
     height: 36px;
@@ -637,7 +637,7 @@
 
 .footer-trust {
     align-items: center;
-    color: #f0edf9;
+    color: #ecf5f4;
     display: inline-flex;
     font-size: 11px;
     font-weight: 700;
@@ -694,7 +694,7 @@
 
     .sidebar-toggle {
         align-items: center;
-        background: #2d1b69;
+        background: #0f5c5e;
         border: 0;
         border-radius: 7px;
         color: white;

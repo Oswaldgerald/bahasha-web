@@ -15,6 +15,9 @@ history, and church announcements.
 The mobile design shown for Ahadi, Jengo, Uwakili, Jumuiya, and Mavuno must be
 server-driven. Category names, presentation metadata, availability, totals, and
 weekly entries come from the API instead of being compiled into the mobile app.
+The primary member journey is to open a contribution-category card, review the
+current and missed weeks for that category, select one or more eligible weeks, and
+complete one mobile-money payment for the selected allocations.
 
 ## 2. Design Decisions
 
@@ -27,11 +30,14 @@ weekly entries come from the API instead of being compiled into the mobile app.
 5. Mobile users cannot directly create a posted `Contribution` record.
 6. A mobile contribution starts as a payment intent. A verified payment-provider
    callback posts the contribution through `contributions.services.save_contribution`.
-7. Financial amounts are JSON strings with an ISO currency code, never floats.
-8. Dates and timestamps use ISO 8601. Server timestamps are UTC.
-9. Public resources use UUID identifiers. Sequential database primary keys remain
+7. Missing-week status is calculated by the server from church weeks and posted
+   member contributions; the mobile app never decides whether a week is missing.
+8. One payment intent may settle multiple eligible weeks within one category.
+9. Financial amounts are JSON strings with an ISO currency code, never floats.
+10. Dates and timestamps use ISO 8601. Server timestamps are UTC.
+11. Public resources use UUID identifiers. Sequential database primary keys remain
    internal implementation details.
-10. Every endpoint declares request and response schemas so the generated OpenAPI
+12. Every endpoint declares request and response schemas so the generated OpenAPI
     document is the source of truth for mobile integration.
 
 ## 3. Versioning and Documentation
@@ -194,6 +200,7 @@ changes require a future verification workflow and are not accepted by `PATCH /m
 | --- | --- | --- |
 | `GET` | `/api/v1/contribution-categories` | Active mobile-enabled category tiles and member totals |
 | `GET` | `/api/v1/contribution-categories/{category_uuid}` | Category summary for the active or selected year |
+| `GET` | `/api/v1/contribution-categories/{category_uuid}/weeks` | Payable, paid, missing, and upcoming weeks for one category |
 | `GET` | `/api/v1/contributions` | Cursor-paginated contribution history owned by the member |
 | `GET` | `/api/v1/contributions/{contribution_uuid}` | One owned contribution receipt/detail |
 | `GET` | `/api/v1/targets` | Member annual targets and progress by category |
@@ -208,6 +215,67 @@ Supported history filters:
 - `page_size` with a maximum of 50
 
 The default ordering is newest contribution date and newest creation time first.
+
+#### Category cards
+
+The category collection is the source for the mobile dashboard cards. Each card
+contains a stable `key`, localized labels, icon key, theme color, frequency,
+payment availability, total contributed, and missing-week count. The mobile app
+may control card layout, but it must not hardcode which categories exist or whether
+they accept payments.
+
+Example card:
+
+```json
+{
+  "id": "c74f9636-90c5-47b4-a854-e4515feb4907",
+  "key": "ahadi",
+  "labels": {"default": "Ahadi", "sw": "Ahadi"},
+  "description": "Track and settle your weekly promise offerings.",
+  "icon": "hand-heart",
+  "color": "#A844B7",
+  "frequency": "weekly",
+  "display_order": 1,
+  "payments_enabled": true,
+  "allows_catch_up": true,
+  "missing_weeks_count": 2,
+  "total_contributed": {"amount": "16500.00", "currency": "TZS"}
+}
+```
+
+#### Missing-week calculation
+
+For a weekly category, the server combines `ContributionWeek` records from the
+selected financial year with the authenticated member's posted contributions for
+that category. Each week has one of these states:
+
+- `paid`: one or more posted contributions exist for that week and category.
+- `missing`: the week is current or past, accepts catch-up payment, and has no
+  posted contribution.
+- `partial`: posted total is below an expected weekly amount when such an amount
+  is configured.
+- `upcoming`: the Sunday date is in the future.
+- `unavailable`: the week cannot receive a member payment under church policy.
+
+A failed or pending payment never marks a week as paid. A closed administrative
+week does not automatically decide catch-up eligibility; that is controlled by a
+separate church/category policy. Non-weekly categories return an empty weekly
+schedule and accept an unallocated category payment when enabled.
+
+Example weekly schedule item:
+
+```json
+{
+  "id": "59a58fa4-b400-45b3-a2dc-ae0652219462",
+  "week_number": 3,
+  "sunday_date": "2026-09-15",
+  "state": "missing",
+  "payment_eligible": true,
+  "contributed": {"amount": "0.00", "currency": "TZS"},
+  "expected": null,
+  "remaining": null
+}
+```
 
 ### Notifications
 
@@ -225,7 +293,9 @@ selected and the payment models exist.
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
+| `GET` | `/api/v1/payment-methods` | Payment methods currently available for the member's church |
 | `POST` | `/api/v1/payment-intents` | Start a contribution payment for the authenticated member |
+| `GET` | `/api/v1/payment-intents` | Recent and incomplete payment intents owned by the member |
 | `GET` | `/api/v1/payment-intents/{intent_uuid}` | Poll provider/payment state |
 | `POST` | `/api/v1/payment-intents/{intent_uuid}/cancel` | Cancel an intent when the provider permits it |
 | `POST` | `/api/v1/webhooks/payments/{provider}` | Receive and verify provider callbacks |
@@ -239,10 +309,19 @@ Payment intent request:
 ```json
 {
   "category_id": "c74f9636-90c5-47b4-a854-e4515feb4907",
-  "amount": "5000.00",
   "currency": "TZS",
   "payment_method": "mobile_money",
-  "payer_phone_number": "+255700000000"
+  "payer_phone_number": "+255700000000",
+  "allocations": [
+    {
+      "contribution_week_id": "59a58fa4-b400-45b3-a2dc-ae0652219462",
+      "amount": "5000.00"
+    },
+    {
+      "contribution_week_id": "115727cb-035f-4a9f-8fc5-979aef221c10",
+      "amount": "5000.00"
+    }
+  ]
 }
 ```
 
@@ -252,8 +331,12 @@ Accepted payment intent:
 {
   "id": "8c65398e-b044-4891-84fe-f3fa9daf1fea",
   "status": "pending_customer_action",
-  "amount": {"amount": "5000.00", "currency": "TZS"},
+  "amount": {"amount": "10000.00", "currency": "TZS"},
   "category": {"id": "...", "key": "ahadi", "name": "Ahadi"},
+  "allocations": [
+    {"week_number": 3, "amount": {"amount": "5000.00", "currency": "TZS"}},
+    {"week_number": 4, "amount": {"amount": "5000.00", "currency": "TZS"}}
+  ],
   "provider_reference": null,
   "expires_at": "2026-10-09T12:30:00Z",
   "next_action": {
@@ -263,9 +346,38 @@ Accepted payment intent:
 }
 ```
 
+All allocations in one intent belong to the same category, member, church, and
+financial year. The server verifies that allocation amounts sum to the intent total
+and that every selected week is payment-eligible before contacting the provider.
+
 Only a verified provider callback may change a payment to `SUCCEEDED`. On that
-transition, the payment service creates one `ONLINE_PAYMENT` contribution and calls
-`save_contribution`. Duplicate callbacks must never create duplicate contributions.
+transition, the payment service atomically creates one `ONLINE_PAYMENT` contribution
+per allocation and calls `save_contributions`. Each posted record preserves its own
+week while sharing the payment intent reference. Duplicate callbacks must never
+create duplicate contributions.
+
+Payment intent states are `created`, `pending_customer_action`, `processing`,
+`succeeded`, `failed`, `expired`, and `cancelled`. Only the server-side payment
+service moves an intent through these states. A successful response includes the
+resulting contribution UUIDs so the app can open receipts and refresh the selected
+category schedule.
+
+#### Mobile payment journey
+
+1. `GET /bootstrap` renders the available sadaka cards.
+2. The member opens a card and the app requests its detail and weekly schedule.
+3. The member selects the current week, one missed week, or several missed weeks.
+4. The app displays the exact allocation and total before confirmation.
+5. The app creates one idempotent payment intent.
+6. The member completes the provider action, such as approving a mobile-money
+   prompt on the registered phone.
+7. The app polls the intent or receives a push update while the provider callback
+   is processed.
+8. After success, the app refreshes the category schedule; settled weeks now return
+   `paid`, and the card total and missing-week count are updated.
+
+The app must keep failed and cancelled payment attempts separate from missing-week
+state. A week remains missing until a posted contribution exists.
 
 ## 7. Core Response Shapes
 
@@ -294,6 +406,8 @@ transition, the payment service creates one `ONLINE_PAYMENT` contribution and ca
       "icon": "hand-heart",
       "color": "#A844B7",
       "can_contribute": true,
+      "allows_catch_up": true,
+      "missing_weeks_count": 2,
       "total_contributed": {"amount": "16500.00", "currency": "TZS"}
     }
   ],
@@ -395,17 +509,20 @@ The current schema is not yet sufficient for the complete contract.
 1. Add stable public UUIDs to users, members, churches, categories, contributions,
    financial years, weeks, notifications, and targets.
 2. Add category mobile metadata: `key`, optional Swahili label, `icon_key`,
-   `theme_color`, `is_mobile_visible`, and `allows_member_payment`.
+   `theme_color`, `is_mobile_visible`, `allows_member_payment`, and
+   `allows_catch_up`.
 3. Add refresh-token sessions with token hash, family, device, expiry, revocation,
    last-used timestamp, and last-seen IP metadata.
 4. Add mobile-device records for push tokens and platform metadata.
 5. Add per-user notification receipts; the current notification model cannot track
    read state for individual users.
-6. Add `PaymentIntent`, `PaymentAttempt`, and `PaymentWebhookEvent` models before
-   enabling mobile payments.
-7. Add a database uniqueness constraint linking a successful payment intent to at
-   most one contribution.
-8. Decide whether contribution categories are global templates or church-owned.
+6. Add `PaymentIntent`, `PaymentIntentAllocation`, `PaymentAttempt`, and
+   `PaymentWebhookEvent` models before enabling mobile payments.
+7. Link each payment allocation to at most one contribution and enforce uniqueness
+   for intent, category, and selected contribution week.
+8. Add an optional weekly expectation/commitment model if the product must
+   distinguish partially paid weeks from weeks with any posted payment.
+9. Decide whether contribution categories are global templates or church-owned.
    The current category names and codes are globally unique.
 
 The API must not reuse the current administrative dashboard query directly because
@@ -443,7 +560,8 @@ church-scoped.
 
 ### Phase 3: Read-only mobile experience
 
-- Implement bootstrap, categories, targets, history, and financial years.
+- Implement bootstrap, category cards, weekly payment-state schedules, targets,
+  history, and financial years.
 - Validate the payloads against the mobile home and Ahadi detail screens.
 - Add query-count and cross-member authorization tests.
 
@@ -454,8 +572,8 @@ church-scoped.
 ### Phase 5: Payments
 
 - Select a provider and document its state machine and signature rules.
-- Add payment models, idempotent intent creation, webhooks, reconciliation, and
-  contribution posting.
+- Add payment models, multi-week allocations, idempotent intent creation, webhooks,
+  reconciliation, and atomic contribution posting.
 - Enable `payments_enabled` only after sandbox and failure-path testing succeeds.
 
 ## 13. Definition of Ready for API Coding
@@ -466,6 +584,8 @@ Implementation starts after these product decisions are confirmed:
 - Password recovery channel: email initially, or SMS/OTP.
 - Canonical category keys and mobile presentation metadata.
 - Whether every category accepts direct member payments.
+- Which categories are weekly and whether members can settle closed/past weeks.
+- Whether a missing week means no payment or an amount below a weekly commitment.
 - First payment provider and its supported Tanzania payment flows.
 - Mobile deep-link domains for password recovery and payment return paths.
 - Retention periods for token sessions, webhook events, and device registrations.

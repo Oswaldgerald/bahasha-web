@@ -1,10 +1,10 @@
 # Bahasha System
 
-Bahasha is a Django application for church membership and contribution management. It includes member approval, contribution periods, annual targets, Excel contribution imports, reporting, notifications, audit logs, session authentication, and JWT API authentication.
+Bahasha is a Django application for church membership and contribution management. It includes member approval, contribution periods, annual targets, Excel contribution imports, reporting, notifications, audit logs, and session authentication.
 
 ## Architecture
 
-- Django 6 and Django REST Framework
+- Django 6
 - PostgreSQL 17
 - Gunicorn and WhiteNoise for production
 - Docker Compose for local and production-like environments
@@ -42,15 +42,16 @@ make up
 
 The application is available at `http://localhost:${WEB_PORT}`. The default development port is `8000`; change `WEB_PORT` in the private `.env` when another port is required.
 
-Useful endpoints:
+Useful routes:
 
 - `/` - sign in
 - `/web/dashboard/` - application dashboard
 - `/admin/` - Django administration
-- `/api/auth/login/` - JWT login
-- `/api/auth/me/` - current API user
-- `/api/excel-uploads/` - Excel upload API
 - `/health/` - application and database readiness
+
+The project intentionally exposes no public application API at this stage. The
+previous Django REST Framework and JWT endpoints were removed so a versioned,
+member-scoped Django Ninja API can be designed without legacy contracts.
 
 ## Development
 

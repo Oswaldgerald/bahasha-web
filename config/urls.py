@@ -25,11 +25,8 @@ from config.views import health_check
 urlpatterns = [
     path("health/", health_check, name="health_check"),
     path("admin/", admin.site.urls),
-    path("api/", include("excel_uploads.urls")),
-    path("api/auth/", include("authentication.urls")),
     path("web/", include("web.urls")),
     path("", include("users.urls")),
-    # path("members/", include("members.urls"))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

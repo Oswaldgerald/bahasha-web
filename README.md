@@ -54,6 +54,11 @@ The project intentionally exposes no public application API at this stage. The
 previous Django REST Framework and JWT endpoints were removed so a versioned,
 member-scoped Django Ninja API can be designed without legacy contracts.
 
+The proposed mobile contract, authorization boundaries, prerequisite model work,
+and phased Django Ninja rollout are documented in
+[`docs/API_DESIGN.md`](docs/API_DESIGN.md). This is a design artifact only; Django
+Ninja and the endpoints are not implemented yet.
+
 ## Development
 
 Start the development stack with source mounting and Django auto-reload:

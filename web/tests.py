@@ -98,6 +98,7 @@ class ExcelApprovalTests(TestCase):
             sunday_date=date(2026, 1, 4),
         )
         self.category = ContributionCategory.objects.create(
+            church=self.church,
             name="Excel Offering",
             code="EXCEL",
         )

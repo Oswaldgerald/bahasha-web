@@ -1,0 +1,154 @@
+<form method="post" class="category-editor" data-category-editor>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="category-editor-layout">
+        <div class="category-form-sections">
+            <section class="category-form-section" aria-labelledby="category-identity-heading">
+                <div class="section-heading">
+                    <span class="section-icon"><i data-lucide="tags" aria-hidden="true"></i></span>
+                    <div>
+                        <h2 id="category-identity-heading">Category identity</h2>
+                        <p>Church ownership, names, and stable system identifiers.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="{{ form.church.id_for_label }}">Church <span>Kanisa</span></label>
+                        {{ form.church }}
+                        {{ form.church.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.name.id_for_label }}">Category name <span>Jina la sadaka</span></label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.name_sw.id_for_label }}">Swahili label <span>Jina la Kiswahili</span></label>
+                        {{ form.name_sw }}
+                        {{ form.name_sw.errors }}
+                        {% if form.name_sw.help_text %}<small>{{ form.name_sw.help_text }}</small>{% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.key.id_for_label }}">Mobile key <span>Kitambulisho</span></label>
+                        {{ form.key }}
+                        {{ form.key.errors }}
+                        {% if form.key.help_text %}<small>{{ form.key.help_text }}</small>{% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.code.id_for_label }}">Reference code <span>Msimbo</span></label>
+                        {{ form.code }}
+                        {{ form.code.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.frequency.id_for_label }}">Frequency <span>Marudio</span></label>
+                        {{ form.frequency }}
+                        {{ form.frequency.errors }}
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label for="{{ form.description.id_for_label }}">Description <span>Maelezo</span></label>
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-form-section" aria-labelledby="category-mobile-heading">
+                <div class="section-heading">
+                    <span class="section-icon"><i data-lucide="smartphone" aria-hidden="true"></i></span>
+                    <div>
+                        <h2 id="category-mobile-heading">Mobile card appearance</h2>
+                        <p>Choose the visual treatment and placement shown to members.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-three">
+                    <div class="form-field">
+                        <label for="{{ form.icon_key.id_for_label }}">Card icon <span>Alama</span></label>
+                        {{ form.icon_key }}
+                        {{ form.icon_key.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.theme_color.id_for_label }}">Card color <span>Rangi</span></label>
+                        <div class="color-field">{{ form.theme_color }}<output data-color-value>{{ form.theme_color.value|default:"#2D1B69" }}</output></div>
+                        {{ form.theme_color.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.display_order.id_for_label }}">Display order <span>Nafasi</span></label>
+                        {{ form.display_order }}
+                        {{ form.display_order.errors }}
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-form-section" aria-labelledby="category-payment-heading">
+                <div class="section-heading">
+                    <span class="section-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+                    <div>
+                        <h2 id="category-payment-heading">Member payment rules</h2>
+                        <p>Control suggested amounts and whether mobile catch-up payments are available.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-three">
+                    <div class="form-field">
+                        <label for="{{ form.suggested_amount.id_for_label }}">Suggested amount <span>Kiasi pendekezo</span></label>
+                        {{ form.suggested_amount }}
+                        {{ form.suggested_amount.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.minimum_amount.id_for_label }}">Minimum amount <span>Kiasi cha chini</span></label>
+                        {{ form.minimum_amount }}
+                        {{ form.minimum_amount.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.maximum_amount.id_for_label }}">Maximum amount <span>Kiasi cha juu</span></label>
+                        {{ form.maximum_amount }}
+                        {{ form.maximum_amount.errors }}
+                    </div>
+                </div>
+
+                <div class="category-switches">
+                    <label class="setting-switch" for="{{ form.is_mobile_visible.id_for_label }}">
+                        {{ form.is_mobile_visible }}
+                        <span><strong>Show in mobile app</strong><small>Display this sadaka as a member dashboard card.</small></span>
+                    </label>
+                    <label class="setting-switch" for="{{ form.allows_member_payment.id_for_label }}">
+                        {{ form.allows_member_payment }}
+                        <span><strong>Accept member payments</strong><small>Allow members to start payments for this category.</small></span>
+                    </label>
+                    <label class="setting-switch" for="{{ form.allows_catch_up.id_for_label }}">
+                        {{ form.allows_catch_up }}
+                        <span><strong>Allow missed-week payments</strong><small>Members may select eligible past weeks and settle them.</small></span>
+                    </label>
+                    <label class="setting-switch" for="{{ form.is_active.id_for_label }}">
+                        {{ form.is_active }}
+                        <span><strong>Category is active</strong><small>Inactive categories remain in financial history but cannot be newly selected.</small></span>
+                    </label>
+                </div>
+            </section>
+        </div>
+
+        <aside class="category-preview-panel" aria-labelledby="category-preview-heading">
+            <div class="preview-heading">
+                <p>Mobile preview</p>
+                <span>Live</span>
+            </div>
+            <div class="mobile-category-card" data-category-preview>
+                <i data-lucide="{{ form.icon_key.value|default:'hand-heart' }}" aria-hidden="true"></i>
+                <strong data-preview-name>{{ form.name.value|default:"Category" }}</strong>
+                <small data-preview-description>{{ form.description.value|default:"Contribution category" }}</small>
+            </div>
+            <p id="category-preview-heading" class="preview-note">Members will see this card according to its display order and mobile visibility.</p>
+        </aside>
+    </div>
+
+    <div class="category-form-actions">
+        <a href="{% url 'web_categories' %}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary"><i data-lucide="save" aria-hidden="true"></i><span>{{ submit_label }}</span></button>
+    </div>
+</form>

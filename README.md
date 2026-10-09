@@ -59,6 +59,12 @@ and phased Django Ninja rollout are documented in
 [`docs/API_DESIGN.md`](docs/API_DESIGN.md). This is a design artifact only; Django
 Ninja and the endpoints are not implemented yet.
 
+Contribution categories are already church-specific and configurable in the web
+application. Administrators can control each mobile card's labels, icon, color,
+order, visibility, payment availability, catch-up behavior, frequency, and amount
+guidance. Churches created through the web interface receive the standard Ahadi,
+Jengo, Uwakili, Jumuiya, and Mavuno categories as editable defaults.
+
 ## Development
 
 Start the development stack with source mounting and Django auto-reload:
@@ -109,6 +115,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/css/dashboard.css`, `reports.css`, `notifications.css`, and `profile.css` - feature styles
 - `static/css/members.css` - member list, form, and profile styles
 - `static/css/users.css` - user account list, filters, responsive rows, and form styles
+- `static/css/categories.css` - configurable contribution-category cards and editor
 - `static/css/member-card.css` - member card styles loaded only by that page
 - `static/css/printing.css` - print-only behavior
 - `static/js/app.js` - icons, printing, and progress bars
@@ -117,6 +124,7 @@ The shared page shell lives in `templates/base.html`, with navigation, top bar, 
 - `static/js/forms.js` - progressive enhancement for Django select fields
 - `static/js/profile.js` - profile picture preview and removal behavior
 - `static/js/members.js` - member workflow confirmation and dependent selectors
+- `static/js/categories.js` - live preview for configurable mobile category cards
 - `static/js/lists.js` - reusable confirmation behavior for list actions
 
 Lucide and Choices.js are pinned and vendored under `static/vendor/`, including their licenses. This keeps icons and enhanced dropdowns available without a runtime CDN dependency.

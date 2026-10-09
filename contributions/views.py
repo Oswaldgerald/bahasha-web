@@ -28,7 +28,7 @@ def contribution_list(request):
 @login_required(login_url="login")
 def contribution_create(request):
     if request.method == "POST":
-        form = ContributionForm(request.POST)
+        form = ContributionForm(request.POST, request_user=request.user)
 
         if form.is_valid():
             contribution = form.save(commit=False)
@@ -45,7 +45,7 @@ def contribution_create(request):
             messages.success(request, "Contribution recorded successfully.")
             return redirect("web_contributions")
     else:
-        form = ContributionForm()
+        form = ContributionForm(request_user=request.user)
 
     return render(request, "contributions/create.html", {"form": form})
 
@@ -56,7 +56,11 @@ def contribution_edit(request, contribution_id):
     previous_target_key = contribution_target_key(contribution)
 
     if request.method == "POST":
-        form = ContributionForm(request.POST, instance=contribution)
+        form = ContributionForm(
+            request.POST,
+            instance=contribution,
+            request_user=request.user,
+        )
 
         if form.is_valid():
             updated_contribution = form.save(commit=False)
@@ -65,7 +69,7 @@ def contribution_edit(request, contribution_id):
             messages.success(request, "Contribution updated successfully.")
             return redirect("web_contributions")
     else:
-        form = ContributionForm(instance=contribution)
+        form = ContributionForm(instance=contribution, request_user=request.user)
 
     return render(
         request, "contributions/edit.html", {"form": form, "contribution": contribution}

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from members.models import Member
 from churches.models import Church
@@ -65,6 +66,26 @@ class MemberAnnualTarget(models.Model):
             "category",
         )
         ordering = ["member__user__full_name", "category__name"]
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if self.member_id and self.church_id and self.member.church_id != self.church_id:
+            errors["member"] = "Member must belong to the selected church."
+        if (
+            self.financial_year_id
+            and self.church_id
+            and self.financial_year.church_id != self.church_id
+        ):
+            errors["financial_year"] = "Financial year must belong to the selected church."
+        if (
+            self.category_id
+            and self.church_id
+            and self.category.church_id != self.church_id
+        ):
+            errors["category"] = "Contribution category must belong to the selected church."
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         self.remaining_amount = self.target_amount - self.contributed_amount

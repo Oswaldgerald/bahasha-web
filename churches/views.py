@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 
 from churches.models import Church, ChurchGroup
+from categories.services import create_default_categories
 from web.forms import ChurchForm
 
 from .forms import ChurchGroupForm
@@ -23,8 +25,13 @@ def church_create(request):
         form = ChurchForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            messages.success(request, "Church created successfully.")
+            with transaction.atomic():
+                church = form.save()
+                create_default_categories(church)
+            messages.success(
+                request,
+                "Church created with the default contribution categories.",
+            )
             return redirect("web_churches")
     else:
         form = ChurchForm()

@@ -1,7 +1,6 @@
 from django import forms
 from churches.models import Church
 from jumuiya.models import Jumuiya
-from categories.models import ContributionCategory
 from financial_years.models import FinancialYear
 from contribution_weeks.models import ContributionWeek
 from annual_targets.models import MemberAnnualTarget
@@ -22,24 +21,6 @@ class JumuiyaForm(forms.ModelForm):
             "name",
             "description",
             "leader_name",
-            "is_active",
-        ]
-
-        widgets = {
-            "description": forms.Textarea(attrs={"rows": 3}),
-        }
-
-
-class ContributionCategoryForm(forms.ModelForm):
-    class Meta:
-        model = ContributionCategory
-        fields = [
-            "name",
-            "code",
-            "description",
-            "frequency",
-            "display_order",
-            "is_annual",
             "is_active",
         ]
 
@@ -100,6 +81,10 @@ class MemberAnnualTargetForm(forms.ModelForm):
             "contributed_amount",
         ]
 
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_financial_form_fields(self, request_user)
+
 
 class ContributionForm(forms.ModelForm):
     class Meta:
@@ -120,6 +105,10 @@ class ContributionForm(forms.ModelForm):
             "contribution_date": forms.DateInput(attrs={"type": "date"}),
             "remarks": forms.Textarea(attrs={"rows": 3}),
         }
+
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_financial_form_fields(self, request_user)
 
 
 # Excel Upload Form
@@ -142,6 +131,10 @@ class ExcelUploadForm(forms.ModelForm):
             )
         }
 
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_financial_form_fields(self, request_user)
+
     def clean_file(self):
         uploaded_file = self.cleaned_data["file"]
         if not uploaded_file.name.lower().endswith(".xlsx"):
@@ -149,6 +142,28 @@ class ExcelUploadForm(forms.ModelForm):
         if uploaded_file.size > 5 * 1024 * 1024:
             raise forms.ValidationError("The contribution file must not exceed 5 MB.")
         return uploaded_file
+
+
+def scope_financial_form_fields(form, request_user):
+    if not request_user or not request_user.church_id or request_user.is_superuser:
+        return
+
+    church_id = request_user.church_id
+    if "church" in form.fields:
+        form.fields["church"].queryset = Church.objects.filter(id=church_id)
+        form.fields["church"].initial = church_id
+
+    church_scoped_fields = {
+        "member",
+        "financial_year",
+        "contribution_week",
+        "category",
+        "selected_category",
+    }
+    for field_name in church_scoped_fields.intersection(form.fields):
+        field = form.fields[field_name]
+        if hasattr(field, "queryset"):
+            field.queryset = field.queryset.filter(church_id=church_id)
 
 
 # Church Management Form

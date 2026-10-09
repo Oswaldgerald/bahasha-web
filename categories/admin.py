@@ -6,10 +6,19 @@ from .models import ContributionCategory
 class ContributionCategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "church",
         "frequency",
+        "is_mobile_visible",
+        "allows_member_payment",
         "is_active",
         "created_at",
     )
-    search_fields = ("name",)
-    list_filter = ("frequency", "is_active")
-    readonly_fields = ("created_at", "updated_at")
+    search_fields = ("name", "name_sw", "key", "code", "church__church_name")
+    list_filter = (
+        "church",
+        "frequency",
+        "is_mobile_visible",
+        "allows_member_payment",
+        "is_active",
+    )
+    readonly_fields = ("public_id", "created_at", "updated_at")

@@ -39,7 +39,11 @@ def excel_upload_list(request):
 @login_required(login_url="login")
 def excel_upload_create(request):
     if request.method == "POST":
-        form = ExcelUploadForm(request.POST, request.FILES)
+        form = ExcelUploadForm(
+            request.POST,
+            request.FILES,
+            request_user=request.user,
+        )
 
         if form.is_valid():
             upload = form.save(commit=False)
@@ -57,7 +61,7 @@ def excel_upload_create(request):
             )
             return redirect("web_excel_upload_detail", upload_id=upload.id)
     else:
-        form = ExcelUploadForm()
+        form = ExcelUploadForm(request_user=request.user)
 
     return render(request, "excel_uploads/create.html", {"form": form})
 

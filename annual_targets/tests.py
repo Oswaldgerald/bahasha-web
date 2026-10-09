@@ -38,6 +38,7 @@ class MemberAnnualTargetTests(TestCase):
             end_date=date(2026, 12, 31),
         )
         self.category = ContributionCategory.objects.create(
+            church=self.church,
             name="Weekly Offering",
             code="WEEKLY",
         )

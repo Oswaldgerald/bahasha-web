@@ -58,6 +58,7 @@ class ContributionServiceTests(TestCase):
             sunday_date=date(2026, 1, 4),
         )
         self.category = ContributionCategory.objects.create(
+            church=self.church,
             name="Contribution Test Offering",
             code="CONTRIB-TEST",
         )

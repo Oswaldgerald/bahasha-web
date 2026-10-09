@@ -504,13 +504,18 @@ under `/api/internal/v1/`; they are not added to the member token's scope.
 
 ## 10. Required Model Work Before Implementation
 
-The current schema is not yet sufficient for the complete contract.
+The current schema is not yet sufficient for the complete contract. The web/domain
+foundation for item 2 and the category ownership decision in item 9 is complete:
+categories are church-scoped, have stable public UUIDs, expose configurable mobile
+presentation and payment fields, and are seeded with editable defaults when a
+church is created. This does not expose an API; Ninja schemas and routes remain
+future work.
 
 1. Add stable public UUIDs to users, members, churches, categories, contributions,
    financial years, weeks, notifications, and targets.
-2. Add category mobile metadata: `key`, optional Swahili label, `icon_key`,
-   `theme_color`, `is_mobile_visible`, `allows_member_payment`, and
-   `allows_catch_up`.
+2. Completed in the domain model: category mobile metadata includes `key`, optional
+   Swahili label, `icon_key`, `theme_color`, `is_mobile_visible`,
+   `allows_member_payment`, and `allows_catch_up`.
 3. Add refresh-token sessions with token hash, family, device, expiry, revocation,
    last-used timestamp, and last-seen IP metadata.
 4. Add mobile-device records for push tokens and platform metadata.
@@ -522,8 +527,8 @@ The current schema is not yet sufficient for the complete contract.
    for intent, category, and selected contribution week.
 8. Add an optional weekly expectation/commitment model if the product must
    distinguish partially paid weeks from weeks with any posted payment.
-9. Decide whether contribution categories are global templates or church-owned.
-   The current category names and codes are globally unique.
+9. Completed: contribution categories are church-owned. Names, keys, and codes are
+   unique within each church, and default records remain fully editable.
 
 The API must not reuse the current administrative dashboard query directly because
 that aggregation is system-wide. Mobile summary queries are always member- and

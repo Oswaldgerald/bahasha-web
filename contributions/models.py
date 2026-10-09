@@ -133,6 +133,12 @@ class Contribution(models.Model):
 
         if self.category_id and self._state.adding and not self.category.is_active:
             errors["category"] = "Contribution category must be active."
+        if (
+            self.category_id
+            and self.church_id
+            and self.category.church_id != self.church_id
+        ):
+            errors["category"] = "Contribution category must belong to the selected church."
 
         if self.contribution_date and self.financial_year_id:
             if not (

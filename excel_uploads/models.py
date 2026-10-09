@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models
 
 from churches.models import Church
 from financial_years.models import FinancialYear
@@ -79,6 +80,32 @@ class ExcelUpload(models.Model):
         verbose_name = "Excel Upload"
         verbose_name_plural = "Excel Uploads"
         ordering = ["-uploaded_at"]
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if (
+            self.financial_year_id
+            and self.church_id
+            and self.financial_year.church_id != self.church_id
+        ):
+            errors["financial_year"] = "Financial year must belong to the selected church."
+        if self.contribution_week_id and self.church_id:
+            if self.contribution_week.church_id != self.church_id:
+                errors["contribution_week"] = "Contribution week must belong to the selected church."
+            elif (
+                self.financial_year_id
+                and self.contribution_week.financial_year_id != self.financial_year_id
+            ):
+                errors["contribution_week"] = "Contribution week must belong to the selected financial year."
+        if (
+            self.selected_category_id
+            and self.church_id
+            and self.selected_category.church_id != self.church_id
+        ):
+            errors["selected_category"] = "Contribution category must belong to the selected church."
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return f"{self.upload_reference} - {self.church.church_name}"

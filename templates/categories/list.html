@@ -1,31 +1,57 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/categories.css' %}">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/categories.js' %}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="list-toolbar">
-    <p>Manage offering categories such as Ahadi, Jengo, Uwakili, Jumuiya, and Mavuno.</p>
+<div class="list-toolbar category-list-toolbar">
+    <div>
+        <p class="page-eyebrow">Sadaka settings</p>
+        <h1>Contribution Categories</h1>
+        <p>Configure the cards, payment rules, and ordering available to congregation members.</p>
+    </div>
     <a href="{% url 'web_category_create' %}" class="btn-primary"><i data-lucide="plus" aria-hidden="true"></i><span>Add Category</span></a>
 </div>
 
-<section class="card list-table-card" aria-label="Contribution categories">
-    <div class="table-scroll">
-        <table class="data-table list-table responsive-table{% if not categories %} is-empty{% endif %}">
-            <thead><tr><th>Order</th><th>Category</th><th>Code</th><th>Frequency</th><th>Annual</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
-            <tbody>
-                {% for category in categories %}
-                <tr>
-                    <td data-label="Order">{{ category.display_order }}</td>
-                    <td data-label="Category" class="table-primary"><strong>{{ category.name }}</strong></td>
-                    <td data-label="Code">{{ category.code }}</td>
-                    <td data-label="Frequency">{{ category.frequency }}</td>
-                    <td data-label="Annual"><span class="status-badge {% if category.is_annual %}is-info{% else %}is-neutral{% endif %}">{% if category.is_annual %}Annual{% else %}Recurring{% endif %}</span></td>
-                    <td data-label="Status"><span class="status-badge {% if category.is_active %}is-success{% else %}is-neutral{% endif %}">{% if category.is_active %}Active{% else %}Inactive{% endif %}</span></td>
-                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_category_edit' category.id %}" class="icon-action" title="Edit category" aria-label="Edit {{ category.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="7" class="table-empty"><i data-lucide="tags" aria-hidden="true"></i><strong>No categories yet</strong><span>Add a contribution category to get started.</span></td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% if categories %}
+<section class="category-admin-grid" aria-label="Contribution categories">
+    {% for category in categories %}
+    <article class="category-admin-card" data-category-color="{{ category.theme_color }}">
+        <div class="category-card-accent"></div>
+        <div class="category-card-header">
+            <span class="category-card-icon"><i data-lucide="{{ category.icon_key }}" aria-hidden="true"></i></span>
+            <div>
+                <h2>{{ category.name }}</h2>
+                <p>{{ category.name_sw|default:category.key }}</p>
+            </div>
+            <a href="{% url 'web_category_edit' category.id %}" class="icon-action" title="Edit category" aria-label="Edit {{ category.name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a>
+        </div>
+
+        <p class="category-description">{{ category.description|default:"No description provided." }}</p>
+
+        <dl class="category-card-details">
+            <div><dt>Church</dt><dd>{{ category.church.church_name }}</dd></div>
+            <div><dt>Frequency</dt><dd>{{ category.get_frequency_display }}</dd></div>
+            <div><dt>Order</dt><dd>{{ category.display_order }}</dd></div>
+            <div><dt>Suggested</dt><dd>{% if category.suggested_amount %}TZS {{ category.suggested_amount }}{% else %}Flexible{% endif %}</dd></div>
+        </dl>
+
+        <div class="category-card-statuses">
+            <span class="status-badge {% if category.is_active %}is-success{% else %}is-neutral{% endif %}">{% if category.is_active %}Active{% else %}Inactive{% endif %}</span>
+            <span class="status-badge {% if category.is_mobile_visible %}is-info{% else %}is-neutral{% endif %}">{% if category.is_mobile_visible %}Mobile visible{% else %}Web only{% endif %}</span>
+            {% if category.allows_member_payment %}<span class="status-badge is-payment">Payments</span>{% endif %}
+            {% if category.allows_catch_up %}<span class="status-badge is-catch-up">Catch-up</span>{% endif %}
+        </div>
+    </article>
+    {% endfor %}
 </section>
+{% else %}
+<section class="category-empty-state">
+    <i data-lucide="tags" aria-hidden="true"></i>
+    <h2>No contribution categories</h2>
+    <p>Add the first sadaka category for this church.</p>
+    <a href="{% url 'web_category_create' %}" class="btn-primary">Add Category</a>
+</section>
+{% endif %}
 {% endblock %}

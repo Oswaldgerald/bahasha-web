@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal, InvalidOperation
 
 from django.db import transaction
@@ -9,6 +10,15 @@ from contributions.services import save_contributions
 from members.models import Member
 
 from .models import ExcelUpload, ExcelUploadRow
+
+
+def create_excel_upload(form, uploaded_by):
+    upload = form.save(commit=False)
+    upload.uploaded_by = uploaded_by
+    upload.file_name = upload.file.name
+    upload.upload_reference = f"UPL-{uuid.uuid4().hex[:10].upper()}"
+    upload.save()
+    return process_excel_upload(upload)
 
 
 @transaction.atomic

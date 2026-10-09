@@ -1,0 +1,33 @@
+{% load pagination_tags %}
+<div class="workspace-panel-heading">
+    <div><h2>Upload history</h2><p>Historia ya mafaili ya sadaka, uhakiki, na kiasi kilichowekwa.</p></div>
+    <a href="?tab=upload" class="btn-primary"><i data-lucide="file-up" aria-hidden="true"></i>Upload contributions</a>
+</div>
+<section class="upload-summary" aria-label="Contribution upload summary">
+    <div class="upload-summary-item"><span class="upload-summary-icon"><i data-lucide="files" aria-hidden="true"></i></span><span><small>Upload batches</small><strong>{{ upload_summary.total }}</strong></span></div>
+    <div class="upload-summary-item"><span class="upload-summary-icon summary-amount"><i data-lucide="banknote" aria-hidden="true"></i></span><span><small>Total amount</small><strong>{{ upload_summary.amount|floatformat:2 }}</strong></span></div>
+</section>
+<section class="card list-table-card" aria-label="Contribution upload history">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wide responsive-table{% if not uploads %} is-empty{% endif %}">
+            <thead><tr><th>Reference</th><th>Church</th><th>Period</th><th>Category</th><th>Uploaded By</th><th>Amount</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for upload in uploads %}
+                <tr>
+                    <td data-label="Reference" class="table-primary"><strong>{{ upload.upload_reference }}</strong><small>{{ upload.uploaded_at|date:"d M Y, H:i" }}</small></td>
+                    <td data-label="Church">{{ upload.church.church_name }}</td>
+                    <td data-label="Period" class="table-primary"><strong>{{ upload.financial_year.year }}</strong><small>Week {{ upload.contribution_week.week_number }}</small></td>
+                    <td data-label="Category">{{ upload.selected_category.name }}</td>
+                    <td data-label="Uploaded By">{% if upload.uploaded_by %}{{ upload.uploaded_by.full_name }}{% else %}System{% endif %}</td>
+                    <td data-label="Amount">{{ upload.total_amount|floatformat:2 }}</td>
+                    <td data-label="Status"><span class="status-badge {% if upload.status == 'POSTED' %}is-success{% elif upload.status == 'FAILED' %}is-danger{% elif upload.status == 'VALIDATED' %}is-info{% else %}is-neutral{% endif %}">{{ upload.get_status_display }}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_excel_upload_detail' upload.id %}" class="icon-action" title="View contribution upload" aria-label="View contribution upload {{ upload.upload_reference }}"><i data-lucide="eye" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="table-empty"><i data-lucide="file-up" aria-hidden="true"></i><strong>No contribution uploads</strong><span>Hakuna sadaka zilizopakiwa. Upload a file to begin validation.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% render_pagination uploads "upload_page" %}
+</section>

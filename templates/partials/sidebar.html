@@ -72,22 +72,9 @@
                 <i data-lucide="target" aria-hidden="true"></i>
                 <span class="nav-label">Annual Targets</span>
             </a>
-            <a href="{% url 'web_contributions' %}" data-label="Contributions"{% if request.resolver_match.url_name == 'web_contributions' %} class="active" aria-current="page"{% endif %}>
+            <a href="{% url 'web_contributions' %}" data-label="Contributions"{% if request.resolver_match.url_name == 'web_contributions' or request.resolver_match.url_name == 'web_contribution_create' or request.resolver_match.url_name == 'web_contribution_edit' or request.resolver_match.url_name == 'web_excel_uploads' or request.resolver_match.url_name == 'web_excel_upload_create' or request.resolver_match.url_name == 'web_excel_upload_detail' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="hand-coins" aria-hidden="true"></i>
-                <span class="nav-label">Contributions</span>
-            </a>
-            </div>
-        </div>
-
-        <div class="nav-group">
-            <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-uploads" aria-expanded="true">
-                <span>Uploads</span>
-                <i data-lucide="chevron-down" aria-hidden="true"></i>
-            </button>
-            <div class="nav-group-items" id="nav-uploads">
-            <a href="{% url 'web_excel_uploads' %}" data-label="Contribution Uploads"{% if request.resolver_match.url_name == 'web_excel_uploads' or request.resolver_match.url_name == 'web_excel_upload_create' or request.resolver_match.url_name == 'web_excel_upload_detail' %} class="active" aria-current="page"{% endif %}>
-                <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
-                <span class="nav-label nav-label-bilingual"><strong>Contribution Uploads</strong><small>Upakiaji wa sadaka</small></span>
+                <span class="nav-label nav-label-bilingual"><strong>Contributions</strong><small>Sadaka</small></span>
             </a>
             </div>
         </div>

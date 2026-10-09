@@ -6,7 +6,7 @@
     </p>
     <div class="pagination-controls">
         {% if page_obj.has_previous %}
-            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" class="pagination-arrow" aria-label="Previous page" title="Previous page">
+            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}{{ page_parameter }}={{ page_obj.previous_page_number }}" class="pagination-arrow" aria-label="Previous page" title="Previous page">
                 <i data-lucide="chevron-left" aria-hidden="true"></i>
             </a>
         {% else %}
@@ -19,12 +19,12 @@
             {% elif page_number == page_obj.number %}
                 <span class="pagination-page is-current" aria-current="page">{{ page_number }}</span>
             {% else %}
-                <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_number }}" class="pagination-page" aria-label="Page {{ page_number }}">{{ page_number }}</a>
+                <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}{{ page_parameter }}={{ page_number }}" class="pagination-page" aria-label="Page {{ page_number }}">{{ page_number }}</a>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
-            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.next_page_number }}" class="pagination-arrow" aria-label="Next page" title="Next page">
+            <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}{{ page_parameter }}={{ page_obj.next_page_number }}" class="pagination-arrow" aria-label="Next page" title="Next page">
                 <i data-lucide="chevron-right" aria-hidden="true"></i>
             </a>
         {% else %}

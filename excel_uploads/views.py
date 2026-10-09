@@ -1,6 +1,5 @@
 from .models import ExcelUpload
-from .services import process_excel_upload, approve_excel_upload
-import uuid
+from .services import approve_excel_upload, create_excel_upload
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -48,15 +47,7 @@ def excel_upload_create(request):
         )
 
         if form.is_valid():
-            upload = form.save(commit=False)
-
-            upload.uploaded_by = request.user
-            upload.file_name = upload.file.name
-            upload.upload_reference = f"UPL-{uuid.uuid4().hex[:10].upper()}"
-
-            upload.save()
-
-            process_excel_upload(upload)
+            upload = create_excel_upload(form, request.user)
 
             messages.success(
                 request, "Contribution file uploaded and validated successfully."

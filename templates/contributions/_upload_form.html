@@ -1,0 +1,44 @@
+<div class="workspace-panel-heading">
+    <div><h2>Upload contribution file</h2><p>Pakia sadaka nyingi kwa kutumia faili moja la Excel.</p></div>
+</div>
+<section class="card contribution-upload-panel">
+    <div class="upload-section-heading">
+        <span><i data-lucide="file-spreadsheet" aria-hidden="true"></i></span>
+        <div><h2>Contribution file</h2><p>Faili la sadaka katika muundo wa Excel (.xlsx).</p></div>
+    </div>
+    <form method="post" action="{% url 'web_contributions' %}?tab=upload" enctype="multipart/form-data">
+        {% csrf_token %}<input type="hidden" name="entry_mode" value="upload">
+        {{ upload_form.non_field_errors }}
+        <div class="form-grid contribution-upload-fields">
+            <div><label for="{{ upload_form.church.id_for_label }}">Church <small>Kanisa</small></label>{{ upload_form.church }}{{ upload_form.church.errors }}</div>
+            <div><label for="{{ upload_form.financial_year.id_for_label }}">Financial Year <small>Mwaka wa fedha</small></label>{{ upload_form.financial_year }}{{ upload_form.financial_year.errors }}</div>
+            <div><label for="{{ upload_form.contribution_week.id_for_label }}">Contribution Week <small>Wiki ya sadaka</small></label>{{ upload_form.contribution_week }}{{ upload_form.contribution_week.errors }}</div>
+            <div><label for="{{ upload_form.selected_category.id_for_label }}">Contribution Category <small>Aina ya sadaka</small></label>{{ upload_form.selected_category }}{{ upload_form.selected_category.errors }}</div>
+            <div class="upload-file-field" data-contribution-file-dropzone>
+                <div class="upload-file-heading"><label for="{{ upload_form.file.id_for_label }}">Contribution Excel File</label><small>Faili la sadaka</small></div>
+                <label class="contribution-file-dropzone" for="{{ upload_form.file.id_for_label }}">
+                    {{ upload_form.file }}
+                    <span class="contribution-file-dropzone-icon" aria-hidden="true"><i data-lucide="file-spreadsheet"></i></span>
+                    <span class="contribution-file-dropzone-copy"><strong>Drop your Excel file here</strong><small>Buruta faili hapa au chagua kutoka kwenye kifaa chako</small></span>
+                    <span class="contribution-file-browse"><i data-lucide="folder-open" aria-hidden="true"></i>Choose Excel file</span>
+                    <span class="contribution-file-limits">XLSX &middot; Maximum 5 MB &middot; Bahasha Number and Amount</span>
+                </label>
+                <div class="contribution-file-selection" data-contribution-file-selection hidden aria-live="polite">
+                    <span class="contribution-file-selection-icon" aria-hidden="true"><i data-lucide="file-check"></i></span>
+                    <span class="contribution-file-selection-copy"><strong data-contribution-file-name></strong><small data-contribution-file-size></small></span>
+                    <button type="button" class="contribution-file-remove" data-contribution-file-remove aria-label="Remove selected contribution file" title="Remove selected file"><i data-lucide="x" aria-hidden="true"></i></button>
+                </div>
+                {{ upload_form.file.errors }}
+                <p class="contribution-file-help">The first row must contain <strong>Bahasha Number</strong> and <strong>Amount</strong>. Safu ya kwanza lazima iwe na vichwa hivyo.</p>
+            </div>
+        </div>
+        <div class="form-actions contribution-upload-actions">
+            <a href="?tab=records" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary"><i data-lucide="scan-line" aria-hidden="true"></i><span class="upload-button-copy"><strong>Validate contributions</strong><small>Hakiki na upakie sadaka</small></span></button>
+        </div>
+    </form>
+</section>
+<section class="upload-format-guide" aria-labelledby="excel-format-title">
+    <div><h2 id="excel-format-title">Required Excel format <small>Muundo wa faili</small></h2><p>Use these exact column headings in the first row.</p></div>
+    <div class="table-scroll"><table class="data-table data-table-compact"><thead><tr><th>Bahasha Number</th><th>Amount</th></tr></thead><tbody><tr><td>B001</td><td>5000</td></tr><tr><td>B002</td><td>10000</td></tr></tbody></table></div>
+</section>

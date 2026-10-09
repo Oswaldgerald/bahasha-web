@@ -1,0 +1,22 @@
+<div class="workspace-panel-heading">
+    <div><h2>Record a contribution</h2><p>Weka malipo ya msharika kwa wiki na aina sahihi ya sadaka.</p></div>
+</div>
+<section class="card standard-form-card contribution-entry-card">
+    {% include "partials/form_section_header.html" with icon="hand-coins" title="Contribution details" subtitle="Taarifa za sadaka" %}
+    <form method="post" action="{% url 'web_contributions' %}?tab=manual" class="standard-form">
+        {% csrf_token %}<input type="hidden" name="entry_mode" value="manual">
+        {{ contribution_form.non_field_errors }}
+        <div class="form-grid">
+            {% include "partials/form_field.html" with field=contribution_form.church label="Church" label_sw="Kanisa" %}
+            {% include "partials/form_field.html" with field=contribution_form.member label="Member" label_sw="Msharika" %}
+            {% include "partials/form_field.html" with field=contribution_form.financial_year label="Financial Year" label_sw="Mwaka wa fedha" %}
+            {% include "partials/form_field.html" with field=contribution_form.contribution_week label="Contribution Week" label_sw="Wiki ya sadaka" %}
+            {% include "partials/form_field.html" with field=contribution_form.category label="Contribution Category" label_sw="Aina ya sadaka" %}
+            {% include "partials/form_field.html" with field=contribution_form.amount label="Amount" label_sw="Kiasi" %}
+            {% include "partials/form_field.html" with field=contribution_form.contribution_date label="Contribution Date" label_sw="Tarehe ya sadaka" %}
+            {% include "partials/form_field.html" with field=contribution_form.status label="Status" label_sw="Hali" %}
+            {% include "partials/form_field.html" with field=contribution_form.remarks label="Remarks" label_sw="Maelezo" wide=True %}
+        </div>
+        <div class="form-actions"><a href="?tab=records" class="btn-secondary">Cancel</a><button type="submit" class="btn-primary"><i data-lucide="save" aria-hidden="true"></i>Save contribution</button></div>
+    </form>
+</section>

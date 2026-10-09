@@ -152,3 +152,56 @@ class ContributionServiceTests(TestCase):
         self.assertEqual(contribution.bahasha_number, self.member.bahasha_number)
         self.target.refresh_from_db()
         self.assertEqual(self.target.contributed_amount, Decimal("125.00"))
+
+    def test_contribution_workspace_combines_entry_and_upload_workflows(self):
+        self.client.force_login(self.admin)
+
+        response = self.client.get(reverse("web_contributions"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Contributions workspace")
+        self.assertContains(response, "Record payment")
+        self.assertContains(response, "Upload Excel")
+        self.assertContains(response, "Upload history")
+        self.assertNotContains(response, 'id="nav-uploads"')
+
+    def test_manual_entry_can_be_submitted_from_contribution_workspace(self):
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse("web_contributions"),
+            {
+                "entry_mode": "manual",
+                "church": self.church.id,
+                "member": self.member.id,
+                "financial_year": self.financial_year.id,
+                "contribution_week": self.week.id,
+                "category": self.category.id,
+                "amount": "175.00",
+                "contribution_date": self.week.sunday_date.isoformat(),
+                "status": "POSTED",
+                "remarks": "Unified workspace entry",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('web_contributions')}?tab=records",
+        )
+        contribution = Contribution.objects.get(
+            remarks="Unified workspace entry",
+        )
+        self.assertEqual(contribution.bahasha_number, self.member.bahasha_number)
+
+    def test_workspace_shows_the_selected_upload_form(self):
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse("web_contributions"),
+            {"tab": "upload"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="entry_mode" value="upload"')
+        self.assertContains(response, 'data-contribution-file-input="true"')
+        self.assertContains(response, "Drop your Excel file here")

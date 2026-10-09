@@ -1,0 +1,29 @@
+{% load pagination_tags %}
+<div class="workspace-panel-heading">
+    <div><h2>Recorded contributions</h2><p>Sadaka zote zilizorekodiwa kwa washirika.</p></div>
+    <a href="?tab=manual" class="btn-primary"><i data-lucide="plus" aria-hidden="true"></i>Record contribution</a>
+</div>
+<section class="card list-table-card" aria-label="Recorded contributions">
+    <div class="table-scroll">
+        <table class="data-table list-table is-wider responsive-table{% if not contributions %} is-empty{% endif %}">
+            <thead><tr><th>Member</th><th>Date</th><th>Week</th><th>Category</th><th>Amount</th><th>Source</th><th>Status</th><th class="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+                {% for contribution in contributions %}
+                <tr>
+                    <td data-label="Member" class="table-primary"><strong>{{ contribution.member.user.full_name }}</strong><small>{{ contribution.bahasha_number }}</small></td>
+                    <td data-label="Date">{{ contribution.contribution_date|date:"d M Y" }}</td>
+                    <td data-label="Week">Week {{ contribution.contribution_week.week_number }}</td>
+                    <td data-label="Category">{{ contribution.category.name }}</td>
+                    <td data-label="Amount"><strong>{{ contribution.amount|floatformat:2 }}</strong></td>
+                    <td data-label="Source">{{ contribution.get_source_display }}</td>
+                    <td data-label="Status"><span class="status-badge {% if contribution.status == 'POSTED' %}is-success{% elif contribution.status == 'REVERSED' %}is-danger{% else %}is-info{% endif %}">{{ contribution.get_status_display }}</span></td>
+                    <td data-label="Actions"><div class="table-actions"><a href="{% url 'web_contribution_edit' contribution.id %}" class="icon-action" title="Edit contribution" aria-label="Edit contribution for {{ contribution.member.user.full_name }}"><i data-lucide="square-pen" aria-hidden="true"></i></a></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="table-empty"><i data-lucide="hand-coins" aria-hidden="true"></i><strong>No contributions recorded</strong><span>Record the first member contribution for the active period.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% render_pagination contributions "contribution_page" %}
+</section>

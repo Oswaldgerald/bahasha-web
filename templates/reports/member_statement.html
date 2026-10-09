@@ -1,139 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Member Statement Report</h1>
-<button type="button" class="btn-primary" data-action="print">
-    Print Statement
-</button>
-
-<br><br>
-<p>View a member's annual targets, balances, and contribution history.</p>
-
-<div class="card">
-    <form method="get">
-        <div class="form-grid">
-            <div>
-                <label>Select Member</label>
-                <select name="member">
-                    <option value="">-- Select Member --</option>
-
-                    {% for member in members %}
-                        <option value="{{ member.id }}"
-                            {% if selected_member_id == member.id|stringformat:"s" %}selected{% endif %}>
-                            {{ member.user.full_name }} - {{ member.bahasha_number }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+<section class="report-page" aria-labelledby="report-title">
+    <header class="report-page-header">
+        <div class="report-title-group">
+            <span class="report-title-icon" aria-hidden="true"><i data-lucide="contact-round"></i></span>
+            <div><h1 id="report-title" class="sr-only">Member Statement</h1><p class="report-page-lead">Review a member's annual targets, balances, and contribution history.</p></div>
         </div>
+        <button type="button" class="btn-secondary" data-action="print"><i data-lucide="printer" aria-hidden="true"></i><span class="report-button-copy"><strong>Print Statement</strong><small>Chapisha taarifa</small></span></button>
+    </header>
 
-        <br>
-
-        <button type="submit" class="btn-primary">
-            View Statement
-        </button>
+    <form method="get" class="card report-filter-card">
+        <div class="report-section-heading"><span aria-hidden="true"><i data-lucide="user-search"></i></span><div><h2>Select Member</h2><p>Chagua msharika kutazama taarifa</p></div></div>
+        <div class="report-selector-row">
+            <div><label for="report-member">Member <small>Msharika</small></label><select id="report-member" name="member" data-searchable="true" data-search-placeholder="Search member or Bahasha number"><option value="">Select a member</option>{% for member in members %}<option value="{{ member.id }}"{% if selected_member_id == member.id|stringformat:"s" %} selected{% endif %}>{{ member.user.full_name }} - {{ member.bahasha_number }}</option>{% endfor %}</select></div>
+            <button type="submit" class="btn-primary"><i data-lucide="file-search" aria-hidden="true"></i><span>View Statement</span></button>
+        </div>
     </form>
-</div>
 
-{% if selected_member %}
+    {% if selected_member %}
+    <section class="card report-profile-card" aria-labelledby="member-name">
+        <div class="report-profile-heading"><span aria-hidden="true">{{ selected_member.user.full_name|slice:":1"|upper }}</span><div><h2 id="member-name">{{ selected_member.user.full_name }}</h2><p>Bahasha {{ selected_member.bahasha_number }}</p></div><strong class="report-profile-total">{{ total_contributed|floatformat:2 }}<small>Total contributed</small></strong></div>
+        <dl class="report-detail-grid"><div><dt>Phone</dt><dd>{{ selected_member.user.phone_number }}</dd></div><div><dt>Church</dt><dd>{{ selected_member.church.church_name }}</dd></div><div><dt>Jumuiya</dt><dd>{{ selected_member.jumuiya.name|default:"Not assigned" }}</dd></div></dl>
+    </section>
 
-<div class="card">
-    <h2>{{ selected_member.user.full_name }}</h2>
+    <section class="card report-results-card" aria-labelledby="targets-title">
+        <div class="report-results-heading"><div><h2 id="targets-title">Annual Targets</h2><p>Malengo ya mwaka</p></div><span class="report-result-count">{{ targets|length }} target{{ targets|length|pluralize }}</span></div>
+        <div class="table-scroll"><table class="data-table list-table report-table{% if not targets %} is-empty{% endif %}"><thead><tr><th>Year</th><th>Category</th><th>Target</th><th>Contributed</th><th>Remaining</th><th>Completion</th></tr></thead><tbody>{% for target in targets %}<tr><td>{{ target.financial_year.year }}</td><td class="table-primary"><strong>{{ target.category.name }}</strong></td><td class="report-number">{{ target.target_amount|floatformat:2 }}</td><td class="report-number report-positive">{{ target.contributed_amount|floatformat:2 }}</td><td class="report-number">{{ target.remaining_amount|floatformat:2 }}</td><td><strong class="report-percentage">{{ target.completion_percentage }}%</strong><div class="progress-track" role="progressbar" aria-label="{{ target.category.name }} completion" aria-valuenow="{{ target.completion_percentage }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ target.completion_percentage }}"></div></div></td></tr>{% empty %}<tr><td colspan="6" class="report-empty-state"><i data-lucide="target" aria-hidden="true"></i><strong>No annual targets found</strong><span>This member does not have an annual target yet.</span></td></tr>{% endfor %}</tbody></table></div>
+    </section>
 
-    <p><strong>Bahasha Number:</strong> {{ selected_member.bahasha_number }}</p>
-    <p><strong>Phone:</strong> {{ selected_member.user.phone_number }}</p>
-    <p><strong>Church:</strong> {{ selected_member.church.church_name }}</p>
-    <p>
-        <strong>Jumuiya:</strong>
-        {% if selected_member.jumuiya %}
-            {{ selected_member.jumuiya.name }}
-        {% else %}
-            -
-        {% endif %}
-    </p>
-
-    <h3>Total Contributed: {{ total_contributed }}</h3>
-</div>
-
-<div class="card">
-    <h2>Annual Targets Summary</h2>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>Category</th>
-                <th>Target</th>
-                <th>Contributed</th>
-                <th>Remaining</th>
-                <th>Completion</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for target in targets %}
-            <tr>
-                <td>{{ target.financial_year.year }}</td>
-                <td>{{ target.category.name }}</td>
-                <td>{{ target.target_amount }}</td>
-                <td>{{ target.contributed_amount }}</td>
-                <td>{{ target.remaining_amount }}</td>
-                <td>
-                    <strong>{{ target.completion_percentage }}%</strong>
-
-                    <div class="progress-track">
-                        <div class="progress-bar" data-progress="{{ target.completion_percentage }}"></div>
-                    </div>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No annual targets found for this member.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<div class="card">
-    <h2>Contribution History</h2>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Year</th>
-                <th>Week</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Source</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for contribution in contributions %}
-            <tr>
-                <td>{{ contribution.contribution_date }}</td>
-                <td>{{ contribution.financial_year.year }}</td>
-                <td>Week {{ contribution.contribution_week.week_number }}</td>
-                <td>{{ contribution.category.name }}</td>
-                <td>{{ contribution.amount }}</td>
-                <td>{{ contribution.source }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="empty-state">
-                    No contributions found for this member.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-{% endif %}
-
+    <section class="card report-results-card" aria-labelledby="history-title">
+        <div class="report-results-heading"><div><h2 id="history-title">Contribution History</h2><p>Historia ya sadaka</p></div><span class="report-result-count">{{ contributions|length }} record{{ contributions|length|pluralize }}</span></div>
+        <div class="table-scroll"><table class="data-table list-table report-table{% if not contributions %} is-empty{% endif %}"><thead><tr><th>Date</th><th>Year</th><th>Week</th><th>Category</th><th>Amount</th><th>Source</th></tr></thead><tbody>{% for contribution in contributions %}<tr><td>{{ contribution.contribution_date }}</td><td>{{ contribution.financial_year.year }}</td><td>Week {{ contribution.contribution_week.week_number }}</td><td class="table-primary"><strong>{{ contribution.category.name }}</strong></td><td class="report-number report-positive">{{ contribution.amount|floatformat:2 }}</td><td><span class="status-badge is-neutral">{{ contribution.get_source_display }}</span></td></tr>{% empty %}<tr><td colspan="6" class="report-empty-state"><i data-lucide="receipt-text" aria-hidden="true"></i><strong>No contributions found</strong><span>No posted contributions are available for this member.</span></td></tr>{% endfor %}</tbody></table></div>
+    </section>
+    {% else %}
+    <div class="report-prompt"><span aria-hidden="true"><i data-lucide="user-round-search"></i></span><div><strong>Select a member to begin</strong><p>Choose a member above to view targets and contribution history.</p></div></div>
+    {% endif %}
+</section>
 {% endblock %}

@@ -201,6 +201,21 @@ class CurrentPageHeaderTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, f'data-page-title="{title}"')
 
+    def test_report_pages_use_the_shared_report_interface(self):
+        report_pages = [
+            ("web_contribution_summary_report", "Contribution Summary"),
+            ("web_member_statement_report", "Member Statement"),
+            ("web_weekly_collection_report", "Weekly Collection"),
+        ]
+
+        for route_name, heading in report_pages:
+            with self.subTest(route_name=route_name):
+                response = self.client.get(reverse(route_name))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'class="report-page"')
+                self.assertContains(response, 'class="card report-filter-card"')
+                self.assertContains(response, heading)
+
 
 class ViewModuleOwnershipTests(TestCase):
     def test_web_routes_resolve_to_their_domain_modules(self):

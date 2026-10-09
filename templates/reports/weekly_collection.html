@@ -1,88 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="report-page" aria-labelledby="report-title">
+    <header class="report-page-header">
+        <div class="report-title-group"><span class="report-title-icon" aria-hidden="true"><i data-lucide="calendar-range"></i></span><div><h1 id="report-title" class="sr-only">Weekly Collection</h1><p class="report-page-lead">Review contributions collected by category for a selected Sunday week.</p></div></div>
+        <button type="button" class="btn-secondary" data-action="print"><i data-lucide="printer" aria-hidden="true"></i><span class="report-button-copy"><strong>Print Report</strong><small>Chapisha ripoti</small></span></button>
+    </header>
 
-<h1>Weekly Collection Report</h1>
-<p>View total contributions collected per category for a selected Sunday week.</p>
-<button type="button" class="btn-primary" data-action="print">
-    Print Report
-</button>
-
-<br><br>
-<div class="card">
-    <form method="get">
-        <div class="form-grid">
-            <div>
-                <label>Select Contribution Week</label>
-                <select name="week">
-                    <option value="">-- Select Week --</option>
-
-                    {% for week in weeks %}
-                        <option value="{{ week.id }}"
-                            {% if selected_week_id == week.id|stringformat:"s" %}selected{% endif %}>
-                            {{ week.church.church_name }} -
-                            {{ week.financial_year.year }} -
-                            Week {{ week.week_number }} -
-                            {{ week.sunday_date }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <br>
-
-        <button type="submit" class="btn-primary">
-            View Report
-        </button>
+    <form method="get" class="card report-filter-card">
+        <div class="report-section-heading"><span aria-hidden="true"><i data-lucide="calendar-search"></i></span><div><h2>Select Collection Week</h2><p>Chagua wiki ya makusanyo</p></div></div>
+        <div class="report-selector-row"><div><label for="report-week">Contribution Week <small>Wiki ya sadaka</small></label><select id="report-week" name="week" data-searchable="true" data-search-placeholder="Search church, year, or week"><option value="">Select a contribution week</option>{% for week in weeks %}<option value="{{ week.id }}"{% if selected_week_id == week.id|stringformat:"s" %} selected{% endif %}>{{ week.church.church_name }} - {{ week.financial_year.year }} - Week {{ week.week_number }} - {{ week.sunday_date }}</option>{% endfor %}</select></div><button type="submit" class="btn-primary"><i data-lucide="file-search" aria-hidden="true"></i><span>View Report</span></button></div>
     </form>
-</div>
 
-{% if selected_week %}
-
-<div class="card">
-    <h2>
-        Week {{ selected_week.week_number }} Collection Summary
-    </h2>
-
-    <p><strong>Church:</strong> {{ selected_week.church.church_name }}</p>
-    <p><strong>Financial Year:</strong> {{ selected_week.financial_year.year }}</p>
-    <p><strong>Sunday Date:</strong> {{ selected_week.sunday_date }}</p>
-
-    <h3>Total Collected: {{ grand_total }}</h3>
-</div>
-
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Amount Collected</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in summary %}
-            <tr>
-                <td>{{ item.category__name }}</td>
-                <td>{{ item.total_amount }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2" class="empty-state">
-                    No contributions found for this week.
-                </td>
-            </tr>
-            {% endfor %}
-
-            <tr class="report-total-row">
-                <td>Grand Total</td>
-                <td>{{ grand_total }}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-{% endif %}
-
+    {% if selected_week %}
+    <section class="report-metric-grid" aria-label="Selected week summary">
+        <div class="report-metric"><span aria-hidden="true"><i data-lucide="church"></i></span><div><small>Church</small><strong>{{ selected_week.church.church_name }}</strong></div></div>
+        <div class="report-metric"><span aria-hidden="true"><i data-lucide="calendar-days"></i></span><div><small>Sunday Date</small><strong>{{ selected_week.sunday_date }}</strong></div></div>
+        <div class="report-metric report-metric-emphasis"><span aria-hidden="true"><i data-lucide="banknote"></i></span><div><small>Total Collected</small><strong>{{ grand_total|floatformat:2 }}</strong></div></div>
+    </section>
+    <section class="card report-results-card" aria-labelledby="collection-results-title"><div class="report-results-heading"><div><h2 id="collection-results-title">Collection by Category</h2><p>Makusanyo kwa aina ya sadaka</p></div><span class="report-result-count">Financial year {{ selected_week.financial_year.year }}</span></div><div class="table-scroll"><table class="data-table list-table report-table{% if not summary %} is-empty{% endif %}"><thead><tr><th>Category</th><th>Amount Collected</th></tr></thead><tbody>{% for item in summary %}<tr><td class="table-primary"><strong>{{ item.category__name }}</strong></td><td class="report-number report-positive">{{ item.total_amount|floatformat:2 }}</td></tr>{% empty %}<tr><td colspan="2" class="report-empty-state"><i data-lucide="calendar-x" aria-hidden="true"></i><strong>No contributions found</strong><span>No posted contributions are available for this week.</span></td></tr>{% endfor %}{% if summary %}<tr class="report-total-row"><td>Grand Total</td><td class="report-number">{{ grand_total|floatformat:2 }}</td></tr>{% endif %}</tbody></table></div></section>
+    {% else %}
+    <div class="report-prompt"><span aria-hidden="true"><i data-lucide="calendar-search"></i></span><div><strong>Select a contribution week</strong><p>Choose a week above to view its collection summary.</p></div></div>
+    {% endif %}
+</section>
 {% endblock %}

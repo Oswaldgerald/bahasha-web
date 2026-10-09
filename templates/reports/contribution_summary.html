@@ -1,102 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Contribution Summary Report</h1>
-<button type="button" class="btn-primary" data-action="print">
-    Print Report
-</button>
-
-<br><br>
-<p>View target, contribution, and remaining balance summaries by category.</p>
-
-<div class="card">
-    <form method="get">
-        <div class="form-grid">
-
+<section class="report-page" aria-labelledby="report-title">
+    <header class="report-page-header">
+        <div class="report-title-group">
+            <span class="report-title-icon" aria-hidden="true"><i data-lucide="chart-no-axes-combined"></i></span>
             <div>
-                <label>Church</label>
-                <select name="church">
-                    <option value="">All Churches</option>
-                    {% for church in churches %}
-                        <option value="{{ church.id }}"
-                            {% if selected_church == church.id|stringformat:"s" %}selected{% endif %}>
-                            {{ church.church_name }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <h1 id="report-title" class="sr-only">Contribution Summary</h1>
+                <p class="report-page-lead">Review targets, collected contributions, and remaining balances by category.</p>
             </div>
-
-            <div>
-                <label>Financial Year</label>
-                <select name="financial_year">
-                    <option value="">All Years</option>
-                    {% for year in financial_years %}
-                        <option value="{{ year.id }}"
-                            {% if selected_financial_year == year.id|stringformat:"s" %}selected{% endif %}>
-                            {{ year.year }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div>
-                <label>Category</label>
-                <select name="category">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}"
-                            {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
         </div>
+        <button type="button" class="btn-secondary" data-action="print">
+            <i data-lucide="printer" aria-hidden="true"></i>
+            <span class="report-button-copy"><strong>Print Report</strong><small>Chapisha ripoti</small></span>
+        </button>
+    </header>
 
-        <br>
-
-        <button type="submit" class="btn-primary">Filter Report</button>
-        <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary">Reset</a>
+    <form method="get" class="card report-filter-card">
+        <div class="report-section-heading">
+            <span aria-hidden="true"><i data-lucide="list-filter"></i></span>
+            <div><h2>Report Filters</h2><p>Chuja taarifa unazotaka kuona</p></div>
+        </div>
+        <div class="form-grid report-filter-grid report-filter-grid-three">
+            <div>
+                <label for="report-church">Church <small>Kanisa</small></label>
+                <select id="report-church" name="church" data-searchable="true">
+                    <option value="">All Churches</option>
+                    {% for church in churches %}<option value="{{ church.id }}"{% if selected_church == church.id|stringformat:"s" %} selected{% endif %}>{{ church.church_name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="report-financial-year">Financial Year <small>Mwaka wa fedha</small></label>
+                <select id="report-financial-year" name="financial_year">
+                    <option value="">All Years</option>
+                    {% for year in financial_years %}<option value="{{ year.id }}"{% if selected_financial_year == year.id|stringformat:"s" %} selected{% endif %}>{{ year.year }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="report-category">Category <small>Aina ya sadaka</small></label>
+                <select id="report-category" name="category" data-searchable="true">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}<option value="{{ category.id }}"{% if selected_category == category.id|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>{% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="report-filter-actions">
+            <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Reset</span></a>
+            <button type="submit" class="btn-primary"><i data-lucide="search" aria-hidden="true"></i><span>Apply Filters</span></button>
+        </div>
     </form>
-</div>
 
-<div class="card">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Total Target</th>
-                <th>Total Contributed</th>
-                <th>Remaining</th>
-                <th>Completion</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in summary %}
-            <tr>
-                <td>{{ item.category__name }}</td>
-                <td>{{ item.total_target }}</td>
-                <td>{{ item.total_contributed }}</td>
-                <td>{{ item.total_remaining }}</td>
-            <td>
-                <strong>{{ item.completion_percentage }}%</strong>
-
-                <div class="progress-track">
-                    <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
-                </div>
-            </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="empty-state">
-                    No report data found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
+    <section class="card report-results-card" aria-labelledby="category-results-title">
+        <div class="report-results-heading">
+            <div><h2 id="category-results-title">Category Performance</h2><p>Muhtasari wa malengo na makusanyo</p></div>
+            <span class="report-result-count">{{ summary|length }} result{{ summary|length|pluralize }}</span>
+        </div>
+        <div class="table-scroll">
+            <table class="data-table list-table report-table{% if not summary %} is-empty{% endif %}">
+                <thead><tr><th>Category</th><th>Total Target</th><th>Total Contributed</th><th>Remaining</th><th>Completion</th></tr></thead>
+                <tbody>
+                    {% for item in summary %}
+                    <tr>
+                        <td class="table-primary"><strong>{{ item.category__name }}</strong></td>
+                        <td class="report-number">{{ item.total_target|floatformat:2 }}</td>
+                        <td class="report-number report-positive">{{ item.total_contributed|floatformat:2 }}</td>
+                        <td class="report-number">{{ item.total_remaining|floatformat:2 }}</td>
+                        <td><strong class="report-percentage">{{ item.completion_percentage }}%</strong><div class="progress-track" role="progressbar" aria-label="{{ item.category__name }} completion" aria-valuenow="{{ item.completion_percentage }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div></div></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="report-empty-state"><i data-lucide="chart-no-axes-column" aria-hidden="true"></i><strong>No contribution summary yet</strong><span>Adjust the filters or add annual targets to see category performance.</span></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
 {% endblock %}

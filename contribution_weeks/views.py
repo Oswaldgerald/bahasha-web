@@ -2,8 +2,10 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Case, IntegerField, Value, When
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from contribution_weeks.models import ContributionWeek
@@ -14,9 +16,23 @@ from web.pagination import paginate_queryset
 
 @login_required(login_url="login")
 def contribution_week_list(request):
+    today = timezone.localdate()
+    current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     weeks = ContributionWeek.objects.select_related(
         "church", "financial_year"
-    ).order_by("-sunday_date", "-week_number", "church__church_name")
+    ).annotate(
+        list_priority=Case(
+            When(is_active=True, then=Value(0)),
+            When(sunday_date=current_sunday, then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by(
+        "list_priority",
+        "-sunday_date",
+        "-week_number",
+        "church__church_name",
+    )
     weeks = paginate_queryset(request, weeks)
 
     return render(request, "contribution_weeks/list.html", {"weeks": weeks})

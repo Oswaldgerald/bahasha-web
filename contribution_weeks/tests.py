@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -55,3 +56,44 @@ class ContributionWeekListTests(TestCase):
             {"page": 2},
         )
         self.assertEqual(second_page.context["weeks"][0].week_number, 1)
+
+    @patch("contribution_weeks.views.timezone.localdate")
+    def test_current_calendar_week_precedes_future_weeks(self, localdate):
+        localdate.return_value = date(2026, 10, 9)
+        current_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=40,
+            sunday_date=date(2026, 10, 4),
+        )
+        ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=52,
+            sunday_date=date(2026, 12, 27),
+        )
+
+        response = self.client.get(reverse("web_contribution_weeks"))
+
+        self.assertEqual(response.context["weeks"][0], current_week)
+
+    @patch("contribution_weeks.views.timezone.localdate")
+    def test_explicitly_active_week_has_highest_priority(self, localdate):
+        localdate.return_value = date(2026, 10, 9)
+        active_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=30,
+            sunday_date=date(2026, 7, 26),
+            is_active=True,
+        )
+        ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=40,
+            sunday_date=date(2026, 10, 4),
+        )
+
+        response = self.client.get(reverse("web_contribution_weeks"))
+
+        self.assertEqual(response.context["weeks"][0], active_week)

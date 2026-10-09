@@ -3,52 +3,8 @@
     max-width: 1480px;
 }
 
-.workspace-intro {
-    align-items: flex-end;
-    display: flex;
-    gap: 28px;
-    justify-content: space-between;
-    margin-bottom: 22px;
-}
-
-.workspace-intro h1,
-.workspace-intro p,
 .workspace-panel-heading h2,
 .workspace-panel-heading p { margin: 0; }
-
-.workspace-eyebrow {
-    color: #4d3a86;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.workspace-eyebrow span {
-    color: #817a89;
-    font-weight: 650;
-    margin-left: 5px;
-    text-transform: none;
-}
-
-.workspace-intro h1 {
-    font-size: clamp(26px, 3vw, 36px);
-    letter-spacing: 0;
-    margin-top: 6px;
-}
-
-.workspace-intro > div:first-child > p:last-child {
-    color: #6f6975;
-    font-size: 14px;
-    line-height: 1.55;
-    margin-top: 6px;
-    max-width: 720px;
-}
-
-.workspace-quick-actions {
-    display: flex;
-    flex: 0 0 auto;
-    gap: 9px;
-}
 
 .workspace-tabs {
     background: #fff;
@@ -95,7 +51,6 @@
 .contribution-entry-card { margin: 0 auto; max-width: 1080px; }
 
 @media (max-width: 860px) {
-    .workspace-intro { align-items: flex-start; flex-direction: column; }
     .workspace-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .workspace-tabs a:nth-child(2) { border-right: 0; }
     .workspace-tabs a:nth-child(-n + 2) { border-bottom-color: #ece9f0; }
@@ -103,11 +58,7 @@
 }
 
 @media (max-width: 560px) {
-    .workspace-quick-actions,
     .workspace-panel-heading { align-items: stretch; flex-direction: column; }
-    .workspace-quick-actions .btn-primary,
-    .workspace-quick-actions .btn-secondary,
-    .workspace-panel-heading .btn-primary { width: 100%; }
     .workspace-tabs a { min-height: 64px; padding: 10px; }
     .workspace-tabs strong { font-size: 12px; }
 }

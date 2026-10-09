@@ -159,7 +159,7 @@ class ContributionServiceTests(TestCase):
         response = self.client.get(reverse("web_contributions"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Contributions workspace")
+        self.assertContains(response, 'aria-label="Contributions workspace"')
         self.assertContains(response, "Record payment")
         self.assertContains(response, "Upload Excel")
         self.assertContains(response, "Upload history")

@@ -1,8 +1,5 @@
-<div class="workspace-panel-heading">
-    <div><h2>Record a contribution</h2><p>Weka malipo ya msharika kwa wiki na aina sahihi ya sadaka.</p></div>
-</div>
 <section class="card standard-form-card contribution-entry-card">
-    {% include "partials/form_section_header.html" with icon="hand-coins" title="Contribution details" subtitle="Taarifa za sadaka" %}
+    {% include "partials/form_section_header.html" with icon="hand-coins" title="Record a contribution" subtitle="Weka malipo ya msharika kwa wiki na aina sahihi ya sadaka" %}
     <form method="post" action="{% url 'web_contributions' %}?tab=manual" class="standard-form">
         {% csrf_token %}<input type="hidden" name="entry_mode" value="manual">
         {{ contribution_form.non_field_errors }}

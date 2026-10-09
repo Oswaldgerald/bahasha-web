@@ -1,10 +1,7 @@
-<div class="workspace-panel-heading">
-    <div><h2>Upload contribution file</h2><p>Pakia sadaka nyingi kwa kutumia faili moja la Excel.</p></div>
-</div>
 <section class="card contribution-upload-panel">
     <div class="upload-section-heading">
         <span><i data-lucide="file-spreadsheet" aria-hidden="true"></i></span>
-        <div><h2>Contribution file</h2><p>Faili la sadaka katika muundo wa Excel (.xlsx).</p></div>
+        <div><h2>Upload contribution file</h2><p>Pakia sadaka nyingi kwa faili la Excel (.xlsx).</p></div>
     </div>
     <form method="post" action="{% url 'web_contributions' %}?tab=upload" enctype="multipart/form-data">
         {% csrf_token %}<input type="hidden" name="entry_mode" value="upload">

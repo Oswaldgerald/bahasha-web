@@ -9,19 +9,7 @@
 {% block extra_js %}<script src="{% static 'js/contribution-uploads.js' %}" defer></script>{% endblock %}
 
 {% block content %}
-<section class="contribution-workspace" aria-labelledby="contribution-workspace-title">
-    <header class="workspace-intro">
-        <div>
-            <p class="workspace-eyebrow">Contribution management <span>Usimamizi wa sadaka</span></p>
-            <h1 id="contribution-workspace-title">Contributions workspace</h1>
-            <p>Record individual payments, validate spreadsheet batches, and review all contribution activity in one place.</p>
-        </div>
-        <div class="workspace-quick-actions" aria-label="Contribution shortcuts">
-            <a href="?tab=manual" class="btn-secondary"><i data-lucide="plus" aria-hidden="true"></i>Record payment</a>
-            <a href="?tab=upload" class="btn-primary"><i data-lucide="file-up" aria-hidden="true"></i>Upload Excel</a>
-        </div>
-    </header>
-
+<section class="contribution-workspace" aria-label="Contributions workspace">
     <nav class="workspace-tabs" aria-label="Contribution workspace views">
         <a href="?tab=records"{% if active_tab == 'records' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="hand-coins" aria-hidden="true"></i><span><strong>Contributions</strong><small>Sadaka zilizorekodiwa</small></span></a>
         <a href="?tab=manual"{% if active_tab == 'manual' %} class="is-active" aria-current="page"{% endif %}><i data-lucide="square-pen" aria-hidden="true"></i><span><strong>Record payment</strong><small>Weka sadaka</small></span></a>

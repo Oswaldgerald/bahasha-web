@@ -93,8 +93,6 @@ def contribution_list(request):
                 | Q(bahasha_number__icontains=query)
                 | Q(reference_number__icontains=query)
             )
-        if filters["church"]:
-            contributions = contributions.filter(church=filters["church"])
         if filters["financial_year"]:
             contributions = contributions.filter(
                 financial_year=filters["financial_year"]

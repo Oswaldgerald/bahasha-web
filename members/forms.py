@@ -105,13 +105,12 @@ class MemberBaseForm(forms.Form):
 
     def _scope_relationship_fields(self):
         church_queryset = Church.objects.filter(is_active=True)
-        if (
-            self.request_user
-            and self.request_user.church_id
-            and not self.request_user.is_superuser
-        ):
-            church_queryset = church_queryset.filter(id=self.request_user.church_id)
-            self.fields["church"].initial = self.request_user.church_id
+        if self.request_user and not self.request_user.is_superuser:
+            if self.request_user.church_id:
+                church_queryset = church_queryset.filter(id=self.request_user.church_id)
+                self.fields["church"].initial = self.request_user.church_id
+            else:
+                church_queryset = church_queryset.none()
 
         self.fields["church"].queryset = church_queryset
         self.fields["church"].widget.attrs["data-member-church"] = "true"
@@ -128,11 +127,14 @@ class MemberBaseForm(forms.Form):
                 church_id=church_id,
                 is_active=True,
             )
-        else:
+        elif not self.request_user or self.request_user.is_superuser:
             self.fields["jumuiya"].queryset = Jumuiya.objects.filter(is_active=True)
             self.fields["church_groups"].queryset = ChurchGroup.objects.filter(
                 is_active=True
             )
+        else:
+            self.fields["jumuiya"].queryset = Jumuiya.objects.none()
+            self.fields["church_groups"].queryset = ChurchGroup.objects.none()
 
     def _set_member_initial_values(self):
         if not self.member:

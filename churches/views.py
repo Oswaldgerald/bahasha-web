@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
@@ -9,19 +8,29 @@ from churches.models import Church, ChurchGroup
 from categories.services import create_default_categories
 from web.forms import ChurchForm
 from web.pagination import paginate_queryset
+from web.access import (
+    church_admin_required,
+    member_management_required,
+    scope_queryset_to_church,
+    superuser_required,
+)
 
 from .forms import ChurchGroupForm
 
 
-@login_required(login_url="login")
+@church_admin_required
 def church_list(request):
-    churches = Church.objects.all().order_by("church_name")
+    churches = scope_queryset_to_church(
+        Church.objects.all().order_by("church_name"),
+        request.user,
+        church_field="pk",
+    )
     churches = paginate_queryset(request, churches)
 
     return render(request, "churches/list.html", {"churches": churches})
 
 
-@login_required(login_url="login")
+@superuser_required
 def church_create(request):
     if request.method == "POST":
         form = ChurchForm(request.POST)
@@ -41,9 +50,12 @@ def church_create(request):
     return render(request, "churches/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@church_admin_required
 def church_edit(request, church_id):
-    church = get_object_or_404(Church, id=church_id)
+    churches = scope_queryset_to_church(
+        Church.objects.all(), request.user, church_field="pk"
+    )
+    church = get_object_or_404(churches, id=church_id)
 
     if request.method == "POST":
         form = ChurchForm(request.POST, instance=church)
@@ -62,12 +74,10 @@ def church_group_queryset_for_user(user):
     groups = ChurchGroup.objects.select_related("church").annotate(
         member_count=Count("members")
     )
-    if user.church_id and not user.is_superuser:
-        groups = groups.filter(church_id=user.church_id)
-    return groups
+    return scope_queryset_to_church(groups, user)
 
 
-@login_required(login_url="login")
+@member_management_required
 def church_group_list(request):
     groups = church_group_queryset_for_user(request.user).order_by(
         "church__church_name", "name"
@@ -79,7 +89,7 @@ def church_group_list(request):
     )
 
 
-@login_required(login_url="login")
+@member_management_required
 def church_group_create(request):
     form = ChurchGroupForm(request.POST or None, request_user=request.user)
     if request.method == "POST" and form.is_valid():
@@ -94,7 +104,7 @@ def church_group_create(request):
     )
 
 
-@login_required(login_url="login")
+@member_management_required
 def church_group_edit(request, group_id):
     church_group = get_object_or_404(
         church_group_queryset_for_user(request.user),

@@ -2,7 +2,6 @@ from .models import ExcelUpload
 from .services import approve_excel_upload, create_excel_upload
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
@@ -11,9 +10,10 @@ from django.views.decorators.http import require_POST
 from audit_logs.services import create_audit_log
 from web.forms import ExcelUploadForm
 from web.pagination import paginate_queryset
+from web.access import finance_management_required, scope_queryset_to_church
 
 
-@login_required(login_url="login")
+@finance_management_required
 def excel_upload_list(request):
     uploads = ExcelUpload.objects.select_related(
         "church",
@@ -24,6 +24,7 @@ def excel_upload_list(request):
         "approved_by",
     ).order_by("-uploaded_at")
 
+    uploads = scope_queryset_to_church(uploads, request.user)
     summary = uploads.aggregate(
         total=Count("id"),
         amount=Sum("total_amount", default=0),
@@ -37,7 +38,7 @@ def excel_upload_list(request):
     )
 
 
-@login_required(login_url="login")
+@finance_management_required
 def excel_upload_create(request):
     if request.method == "POST":
         form = ExcelUploadForm(
@@ -59,16 +60,19 @@ def excel_upload_create(request):
     return render(request, "excel_uploads/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@finance_management_required
 def excel_upload_detail(request, upload_id):
     upload = get_object_or_404(
-        ExcelUpload.objects.select_related(
-            "church",
-            "financial_year",
-            "contribution_week",
-            "selected_category",
-            "uploaded_by",
-            "approved_by",
+        scope_queryset_to_church(
+            ExcelUpload.objects.select_related(
+                "church",
+                "financial_year",
+                "contribution_week",
+                "selected_category",
+                "uploaded_by",
+                "approved_by",
+            ),
+            request.user,
         ),
         id=upload_id,
     )
@@ -80,10 +84,13 @@ def excel_upload_detail(request, upload_id):
     )
 
 
-@login_required(login_url="login")
+@finance_management_required
 @require_POST
 def excel_upload_approve(request, upload_id):
-    upload = get_object_or_404(ExcelUpload, id=upload_id)
+    upload = get_object_or_404(
+        scope_queryset_to_church(ExcelUpload.objects.all(), request.user),
+        id=upload_id,
+    )
 
     if upload.status != "VALIDATED":
         messages.error(request, "Only validated uploads can be approved.")

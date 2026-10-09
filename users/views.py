@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
@@ -15,11 +15,18 @@ from users.forms import ProfileUpdateForm, UserCreateForm, UserForm
 from users.models import User
 from users.profile_pictures import profile_picture_response
 from web.pagination import paginate_queryset
+from web.access import church_admin_required, scope_queryset_to_church
+
+
+def authenticated_home(user):
+    if user.role == "MEMBER" and not user.is_superuser:
+        return "web_profile"
+    return "web_dashboard"
 
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("web_dashboard")
+        return redirect(authenticated_home(request.user))
 
     next_url = request.POST.get("next") or request.GET.get("next", "")
 
@@ -42,7 +49,7 @@ def login_view(request):
                 require_https=request.is_secure(),
             ):
                 return redirect(next_url)
-            return redirect("web_dashboard")
+            return redirect(authenticated_home(user))
 
         messages.error(request, "Invalid username or password.")
 
@@ -63,7 +70,7 @@ def logout_view(request):
     return redirect("login")
 
 
-@login_required(login_url="login")
+@church_admin_required
 def user_list(request):
     users = user_queryset_for_user(request.user)
     summary = users.aggregate(
@@ -110,12 +117,10 @@ def user_list(request):
 
 def user_queryset_for_user(user):
     users = User.objects.select_related("church").order_by("full_name")
-    if user.church_id and not user.is_superuser:
-        users = users.filter(church_id=user.church_id)
-    return users
+    return scope_queryset_to_church(users, user)
 
 
-@login_required(login_url="login")
+@church_admin_required
 def user_create(request):
     if request.method == "POST":
         form = UserCreateForm(request.POST, request_user=request.user)
@@ -133,7 +138,7 @@ def user_create(request):
     return render(request, "users/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@church_admin_required
 def user_edit(request, user_id):
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
@@ -153,29 +158,44 @@ def user_edit(request, user_id):
     return render(request, "users/edit.html", {"form": form, "user_obj": user})
 
 
-@login_required(login_url="login")
+@church_admin_required
 @require_POST
 def user_reset_password(request, user_id):
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
+    if not user.email:
+        messages.error(
+            request,
+            f"Add an email address for {user.full_name} before sending a reset link.",
+        )
+        return redirect("web_users")
 
-    user.set_password("Password123")
-    user.save()
+    reset_form = PasswordResetForm({"email": user.email})
+    if not reset_form.is_valid():
+        messages.error(request, "The password reset request could not be created.")
+        return redirect("web_users")
+
+    reset_form.save(
+        request=request,
+        use_https=request.is_secure(),
+        email_template_name="users/password_reset_email.txt",
+        subject_template_name="users/password_reset_subject.txt",
+    )
     create_audit_log(
         user=request.user,
         church=user.church,
         action="PASSWORD_RESET",
-        description=f"Reset password for user {user.full_name}.",
+        description=f"Sent a password reset link to user {user.full_name}.",
         entity_type="User",
         entity_id=user.id,
         request=request,
     )
 
-    messages.success(request, f"Password reset for {user.full_name}")
+    messages.success(request, f"Password reset link sent to {user.full_name}.")
 
     return redirect("web_users")
 
 
-@login_required(login_url="login")
+@church_admin_required
 @require_POST
 def user_activate(request, user_id):
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
@@ -187,7 +207,7 @@ def user_activate(request, user_id):
     return redirect("web_users")
 
 
-@login_required(login_url="login")
+@church_admin_required
 @require_POST
 def user_deactivate(request, user_id):
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)

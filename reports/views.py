@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
@@ -11,9 +10,10 @@ from contribution_weeks.models import ContributionWeek
 from contributions.models import Contribution
 from financial_years.models import FinancialYear
 from members.models import Member
+from web.access import report_access_required, scope_queryset_to_church
 
 
-@login_required(login_url="login")
+@report_access_required
 def contribution_summary_report(request):
     church_id = request.GET.get("church")
     financial_year_id = request.GET.get("financial_year")
@@ -26,6 +26,7 @@ def contribution_summary_report(request):
         "financial_year",
         "category",
     ).all()
+    targets = scope_queryset_to_church(targets, request.user)
 
     if church_id:
         targets = targets.filter(church_id=church_id)
@@ -57,9 +58,15 @@ def contribution_summary_report(request):
         else:
             item["completion_percentage"] = 0
 
-    churches = Church.objects.filter(is_active=True)
-    financial_years = FinancialYear.objects.all()
-    categories = ContributionCategory.objects.filter(is_active=True)
+    churches = scope_queryset_to_church(
+        Church.objects.filter(is_active=True), request.user, church_field="pk"
+    )
+    financial_years = scope_queryset_to_church(
+        FinancialYear.objects.all(), request.user
+    )
+    categories = scope_queryset_to_church(
+        ContributionCategory.objects.filter(is_active=True), request.user
+    )
 
     return render(
         request,
@@ -76,11 +83,14 @@ def contribution_summary_report(request):
     )
 
 
-@login_required(login_url="login")
+@report_access_required
 def member_statement_report(request):
     member_id = request.GET.get("member")
 
-    members = Member.objects.select_related("user", "church", "jumuiya").all()
+    members = scope_queryset_to_church(
+        Member.objects.select_related("user", "church", "jumuiya").all(),
+        request.user,
+    )
 
     selected_member = None
     targets = []
@@ -89,7 +99,7 @@ def member_statement_report(request):
 
     if member_id:
         selected_member = get_object_or_404(
-            Member.objects.select_related("user", "church", "jumuiya"), id=member_id
+            members, id=member_id
         )
 
         targets = MemberAnnualTarget.objects.filter(
@@ -120,20 +130,21 @@ def member_statement_report(request):
     )
 
 
-@login_required(login_url="login")
+@report_access_required
 def weekly_collection_report(request):
     week_id = request.GET.get("week")
 
     weeks = ContributionWeek.objects.select_related(
         "church", "financial_year"
     ).order_by("-sunday_date")
+    weeks = scope_queryset_to_church(weeks, request.user)
 
     selected_week = None
     summary = []
     grand_total = 0
 
     if week_id:
-        selected_week = get_object_or_404(ContributionWeek, id=week_id)
+        selected_week = get_object_or_404(weeks, id=week_id)
 
         summary = (
             Contribution.objects.filter(

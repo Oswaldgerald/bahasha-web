@@ -1,23 +1,19 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 
 from categories.forms import ContributionCategoryForm
 from categories.models import ContributionCategory
 from web.pagination import paginate_queryset
+from web.access import church_admin_required, scope_queryset_to_church
 
 
 def category_queryset_for_user(user):
     categories = ContributionCategory.objects.select_related("church")
-    if not user.is_superuser:
-        if not user.church_id:
-            return categories.none()
-        categories = categories.filter(church_id=user.church_id)
-    return categories
+    return scope_queryset_to_church(categories, user)
 
 
-@login_required(login_url="login")
+@church_admin_required
 def category_list(request):
     categories = category_queryset_for_user(request.user)
     categories = paginate_queryset(request, categories, per_page=12)
@@ -25,7 +21,7 @@ def category_list(request):
     return render(request, "categories/list.html", {"categories": categories})
 
 
-@login_required(login_url="login")
+@church_admin_required
 def category_create(request):
     if request.method == "POST":
         form = ContributionCategoryForm(request.POST, request_user=request.user)
@@ -40,7 +36,7 @@ def category_create(request):
     return render(request, "categories/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@church_admin_required
 def category_edit(request, category_id):
     category = get_object_or_404(category_queryset_for_user(request.user), id=category_id)
 

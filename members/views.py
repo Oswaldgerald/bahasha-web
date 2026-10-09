@@ -1,7 +1,6 @@
 from .models import Member
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import HttpResponse, JsonResponse
@@ -28,6 +27,7 @@ from .csv_io import (
 )
 from .forms import MemberCreateForm, MemberCsvUploadForm, MemberEditForm
 from web.pagination import paginate_queryset
+from web.access import member_management_required, scope_queryset_to_church
 
 
 MEMBER_CSV_ROLES = {"ADMIN", "MAIN_PASTOR"}
@@ -38,20 +38,19 @@ def require_member_csv_access(user):
         raise PermissionDenied("You do not have permission to exchange member data.")
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_card(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     return render(request, "members/card.html", {"member": member})
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_list(request):
     members = Member.objects.select_related(
         "user", "church", "jumuiya"
     ).prefetch_related("church_groups")
-    if request.user.church_id and not request.user.is_superuser:
-        members = members.filter(church_id=request.user.church_id)
+    members = scope_queryset_to_church(members, request.user)
 
     summary = members.aggregate(
         total=models.Count("id"),
@@ -99,12 +98,10 @@ def member_queryset_for_user(user):
     queryset = Member.objects.select_related(
         "user", "church", "jumuiya"
     ).prefetch_related("church_groups")
-    if user.church_id and not user.is_superuser:
-        queryset = queryset.filter(church_id=user.church_id)
-    return queryset
+    return scope_queryset_to_church(queryset, user)
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_csv_import(request):
     require_member_csv_access(request.user)
     import_errors = []
@@ -141,7 +138,7 @@ def member_csv_import(request):
     )
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_csv_export(request):
     require_member_csv_access(request.user)
     response = HttpResponse(content_type="text/csv; charset=utf-8")
@@ -152,7 +149,7 @@ def member_csv_export(request):
     return response
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_csv_template(request):
     require_member_csv_access(request.user)
     response = HttpResponse(content_type="text/csv; charset=utf-8")
@@ -162,7 +159,7 @@ def member_csv_template(request):
     return response
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_jumuiya_options(request):
     church_id = request.GET.get("church_id")
     if not church_id or not church_id.isdigit():
@@ -188,7 +185,7 @@ def member_jumuiya_options(request):
     )
 
 
-@login_required(login_url="login")
+@member_management_required
 @require_POST
 def approve_member(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
@@ -208,7 +205,7 @@ def approve_member(request, member_id):
     return redirect("web_members")
 
 
-@login_required(login_url="login")
+@member_management_required
 @require_POST
 def reject_member(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
@@ -228,7 +225,7 @@ def reject_member(request, member_id):
     return redirect("web_members")
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_detail(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
@@ -266,13 +263,13 @@ def member_detail(request, member_id):
     return render(request, "members/member_detail.html", context)
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_profile_picture(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
     return profile_picture_response(member.user)
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_create(request):
     if request.method == "POST":
         form = MemberCreateForm(
@@ -300,7 +297,7 @@ def member_create(request):
     return render(request, "members/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@member_management_required
 def member_edit(request, member_id):
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 

@@ -1,7 +1,6 @@
 import uuid
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
@@ -13,6 +12,7 @@ from excel_uploads.models import ExcelUpload
 from excel_uploads.services import create_excel_upload
 from web.forms import ContributionForm, ExcelUploadForm
 from web.pagination import paginate_queryset
+from web.access import finance_management_required, scope_queryset_to_church
 
 from .forms import ContributionFilterForm
 
@@ -21,9 +21,7 @@ WORKSPACE_TABS = {"records", "manual", "upload", "uploads"}
 
 
 def _scope_to_user_church(queryset, user):
-    if user.is_superuser or not user.church_id:
-        return queryset
-    return queryset.filter(church_id=user.church_id)
+    return scope_queryset_to_church(queryset, user)
 
 
 def _save_manual_contribution(form, user):
@@ -35,7 +33,7 @@ def _save_manual_contribution(form, user):
     save_contribution(contribution)
 
 
-@login_required(login_url="login")
+@finance_management_required
 def contribution_list(request):
     requested_tab = request.POST.get("entry_mode") or request.GET.get("tab", "records")
     active_tab = requested_tab if requested_tab in WORKSPACE_TABS else "records"
@@ -150,7 +148,7 @@ def contribution_list(request):
     )
 
 
-@login_required(login_url="login")
+@finance_management_required
 def contribution_create(request):
     if request.method == "POST":
         form = ContributionForm(request.POST, request_user=request.user)
@@ -166,9 +164,12 @@ def contribution_create(request):
     return render(request, "contributions/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@finance_management_required
 def contribution_edit(request, contribution_id):
-    contribution = get_object_or_404(Contribution, id=contribution_id)
+    contribution = get_object_or_404(
+        scope_queryset_to_church(Contribution.objects.all(), request.user),
+        id=contribution_id,
+    )
     previous_target_key = contribution_target_key(contribution)
 
     if request.method == "POST":

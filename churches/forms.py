@@ -14,9 +14,12 @@ class ChurchGroupForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         churches = Church.objects.filter(is_active=True)
-        if request_user and request_user.church_id and not request_user.is_superuser:
-            churches = churches.filter(id=request_user.church_id)
-            self.fields["church"].initial = request_user.church_id
+        if request_user and not request_user.is_superuser:
+            if request_user.church_id:
+                churches = churches.filter(id=request_user.church_id)
+                self.fields["church"].initial = request_user.church_id
+            else:
+                churches = churches.none()
         self.fields["church"].queryset = churches
 
     def clean_name(self):

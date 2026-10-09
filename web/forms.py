@@ -14,6 +14,10 @@ from users.models import User
 
 
 class JumuiyaForm(forms.ModelForm):
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_church_field(self, request_user)
+
     class Meta:
         model = Jumuiya
         fields = [
@@ -30,6 +34,10 @@ class JumuiyaForm(forms.ModelForm):
 
 
 class FinancialYearForm(forms.ModelForm):
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_church_field(self, request_user)
+
     class Meta:
         model = FinancialYear
         fields = [
@@ -47,6 +55,11 @@ class FinancialYearForm(forms.ModelForm):
 
 
 class ContributionWeekForm(forms.ModelForm):
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_church_field(self, request_user)
+        scope_related_field(self, "financial_year", request_user)
+
     class Meta:
         model = ContributionWeek
         fields = [
@@ -67,6 +80,22 @@ class GenerateWeeksForm(forms.Form):
     church = forms.ModelChoiceField(queryset=Church.objects.filter(is_active=True))
 
     financial_year = forms.ModelChoiceField(queryset=FinancialYear.objects.all())
+
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_church_field(self, request_user)
+        scope_related_field(self, "financial_year", request_user)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        church = cleaned_data.get("church")
+        financial_year = cleaned_data.get("financial_year")
+        if church and financial_year and financial_year.church_id != church.id:
+            self.add_error(
+                "financial_year",
+                "Financial year must belong to the selected church.",
+            )
+        return cleaned_data
 
 
 class MemberAnnualTargetForm(forms.ModelForm):
@@ -145,7 +174,22 @@ class ExcelUploadForm(forms.ModelForm):
 
 
 def scope_financial_form_fields(form, request_user):
-    if not request_user or not request_user.church_id or request_user.is_superuser:
+    if not request_user or request_user.is_superuser:
+        return
+
+    if not request_user.church_id:
+        if "church" in form.fields:
+            form.fields["church"].queryset = Church.objects.none()
+        for field_name in {
+            "member",
+            "financial_year",
+            "contribution_week",
+            "category",
+            "selected_category",
+        }.intersection(form.fields):
+            field = form.fields[field_name]
+            if hasattr(field, "queryset"):
+                field.queryset = field.queryset.none()
         return
 
     church_id = request_user.church_id
@@ -164,6 +208,26 @@ def scope_financial_form_fields(form, request_user):
         field = form.fields[field_name]
         if hasattr(field, "queryset"):
             field.queryset = field.queryset.filter(church_id=church_id)
+
+
+def scope_church_field(form, request_user):
+    if "church" not in form.fields or not request_user or request_user.is_superuser:
+        return
+    if not request_user.church_id:
+        form.fields["church"].queryset = Church.objects.none()
+        return
+    form.fields["church"].queryset = Church.objects.filter(id=request_user.church_id)
+    form.fields["church"].initial = request_user.church_id
+
+
+def scope_related_field(form, field_name, request_user):
+    if field_name not in form.fields or not request_user or request_user.is_superuser:
+        return
+    field = form.fields[field_name]
+    if not request_user.church_id:
+        field.queryset = field.queryset.none()
+        return
+    field.queryset = field.queryset.filter(church_id=request_user.church_id)
 
 
 # Church Management Form
@@ -185,6 +249,10 @@ class NotificationForm(forms.ModelForm):
     target_role = forms.ChoiceField(
         choices=[("", "All Users")] + list(User.ROLE_CHOICES), required=False
     )
+
+    def __init__(self, *args, request_user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        scope_church_field(self, request_user)
 
     class Meta:
         model = Notification

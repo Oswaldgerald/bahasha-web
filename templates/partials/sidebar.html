@@ -10,7 +10,7 @@
     </div>
 
     <div class="sidebar-scroll">
-        <div class="nav-group">
+        {% if access.dashboard %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-overview" aria-expanded="true">
                 <span>Overview</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
@@ -21,18 +21,19 @@
                 <span class="nav-label">Dashboard</span>
             </a>
             </div>
-        </div>
+        </div>{% endif %}
 
-        <div class="nav-group">
+        {% if access.member_management or access.church_admin %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-church" aria-expanded="true">
                 <span>Church Management</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
             </button>
             <div class="nav-group-items" id="nav-church">
-            <a href="{% url 'web_churches' %}" data-label="Church Profile"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>
+            {% if access.church_admin %}<a href="{% url 'web_churches' %}" data-label="Church Profile"{% if request.resolver_match.url_name == 'web_churches' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="landmark" aria-hidden="true"></i>
                 <span class="nav-label">Church Profile</span>
-            </a>
+            </a>{% endif %}
+            {% if access.member_management %}
             <a href="{% url 'web_jumuiya' %}" data-label="Jumuiya"{% if request.resolver_match.url_name == 'web_jumuiya' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="users-round" aria-hidden="true"></i>
                 <span class="nav-label">Jumuiya</span>
@@ -45,29 +46,31 @@
                 <i data-lucide="contact-round" aria-hidden="true"></i>
                 <span class="nav-label">Members</span>
             </a>
-            {% if request.user.role == "MAIN_PASTOR" or request.user.role == "ADMIN" %}
+            {% endif %}
+            {% if access.church_admin %}
                 <a href="{% url 'web_users' %}" data-label="Users & Roles"{% if request.resolver_match.url_name == 'web_users' or request.resolver_match.url_name == 'web_user_create' or request.resolver_match.url_name == 'web_user_edit' %} class="active" aria-current="page"{% endif %}>
                     <i data-lucide="shield-check" aria-hidden="true"></i>
                     <span class="nav-label">Users & Roles</span>
                 </a>
             {% endif %}
             </div>
-        </div>
+        </div>{% endif %}
 
-        <div class="nav-group">
+        {% if access.finance_management or access.church_admin %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-contributions" aria-expanded="true">
                 <span>Contributions</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
             </button>
             <div class="nav-group-items" id="nav-contributions">
-            <a href="{% url 'web_categories' %}" data-label="Categories"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>
+            {% if access.church_admin %}<a href="{% url 'web_categories' %}" data-label="Categories"{% if request.resolver_match.url_name == 'web_categories' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="tags" aria-hidden="true"></i>
                 <span class="nav-label">Categories</span>
-            </a>
+            </a>{% endif %}
+            {% if access.finance_management %}
             <a href="{% url 'web_contribution_weeks' %}" data-label="Contribution Weeks"{% if request.resolver_match.url_name == 'web_contribution_weeks' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="calendar-days" aria-hidden="true"></i>
                 <span class="nav-label">Contribution Weeks</span>
-            </a>
+            </a>{% endif %}
             <a href="{% url 'web_annual_targets' %}" data-label="Annual Targets"{% if request.resolver_match.url_name == 'web_annual_targets' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="target" aria-hidden="true"></i>
                 <span class="nav-label">Annual Targets</span>
@@ -77,9 +80,9 @@
                 <span class="nav-label nav-label-bilingual"><strong>Contributions</strong><small>Sadaka</small></span>
             </a>
             </div>
-        </div>
+        </div>{% endif %}
 
-        <div class="nav-group">
+        {% if access.reports %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-reports" aria-expanded="true">
                 <span>Reports</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
@@ -98,9 +101,9 @@
                 <span class="nav-label">Weekly Collection</span>
             </a>
             </div>
-        </div>
+        </div>{% endif %}
 
-        <div class="nav-group">
+        {% if access.notifications %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-communication" aria-expanded="true">
                 <span>Communication</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
@@ -111,28 +114,28 @@
                 <span class="nav-label">Notifications</span>
             </a>
             </div>
-        </div>
+        </div>{% endif %}
 
-        <div class="nav-group">
+        {% if access.system_admin or access.finance_management or access.audit %}<div class="nav-group">
             <button type="button" class="nav-group-toggle" data-action="toggle-nav-section" aria-controls="nav-system" aria-expanded="true">
                 <span>System</span>
                 <i data-lucide="chevron-down" aria-hidden="true"></i>
             </button>
             <div class="nav-group-items" id="nav-system">
-            <a href="{% url 'admin:index' %}" data-label="Django Admin">
+            {% if access.system_admin %}<a href="{% url 'admin:index' %}" data-label="Django Admin">
                 <i data-lucide="settings" aria-hidden="true"></i>
                 <span class="nav-label">Django Admin</span>
-            </a>
-            <a href="{% url 'web_financial_years' %}" data-label="Financial Years"{% if request.resolver_match.url_name == 'web_financial_years' %} class="active" aria-current="page"{% endif %}>
+            </a>{% endif %}
+            {% if access.finance_management %}<a href="{% url 'web_financial_years' %}" data-label="Financial Years"{% if request.resolver_match.url_name == 'web_financial_years' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="calendar-cog" aria-hidden="true"></i>
                 <span class="nav-label">Financial Years</span>
-            </a>
-            <a href="{% url 'web_audit_logs' %}" data-label="Audit Logs"{% if request.resolver_match.url_name == 'web_audit_logs' %} class="active" aria-current="page"{% endif %}>
+            </a>{% endif %}
+            {% if access.audit %}<a href="{% url 'web_audit_logs' %}" data-label="Audit Logs"{% if request.resolver_match.url_name == 'web_audit_logs' %} class="active" aria-current="page"{% endif %}>
                 <i data-lucide="scroll-text" aria-hidden="true"></i>
                 <span class="nav-label">Audit Logs</span>
-            </a>
+            </a>{% endif %}
             </div>
-        </div>
+        </div>{% endif %}
     </div>
 
     <form method="post" action="{% url 'logout' %}" class="sidebar-logout">

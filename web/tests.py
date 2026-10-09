@@ -245,3 +245,112 @@ class ViewModuleOwnershipTests(TestCase):
             with self.subTest(route_name=route_name):
                 match = resolve(reverse(route_name))
                 self.assertEqual(match.func.__module__, expected_module)
+
+
+class WebAccessControlTests(TestCase):
+    def setUp(self):
+        self.church = Church.objects.create(
+            church_code="ACCESS-001",
+            church_name="Access Test Church",
+        )
+
+    def create_user(self, role, suffix):
+        return User.objects.create_user(
+            username=f"{role.lower()}-{suffix}",
+            password="strong-test-password",
+            full_name=f"{role.title()} User",
+            phone_number=f"25571000{suffix:04d}",
+            role=role,
+            church=self.church,
+        )
+
+    def test_annual_targets_require_authentication(self):
+        response = self.client.get(reverse("web_annual_targets"))
+
+        self.assertRedirects(
+            response,
+            f"{reverse('login')}?next={reverse('web_annual_targets')}",
+        )
+
+    def test_member_role_cannot_open_management_pages(self):
+        member = self.create_user("MEMBER", 1)
+        self.client.force_login(member)
+
+        restricted_pages = [
+            "web_dashboard",
+            "web_members",
+            "web_member_create",
+            "web_users",
+            "web_user_create",
+            "web_categories",
+            "web_category_create",
+            "web_contributions",
+            "web_excel_upload_create",
+            "web_audit_logs",
+            "web_notifications",
+        ]
+        for route_name in restricted_pages:
+            with self.subTest(route_name=route_name):
+                self.assertEqual(self.client.get(reverse(route_name)).status_code, 403)
+
+    def test_finance_officer_has_finance_access_but_not_user_management(self):
+        finance_user = self.create_user("FINANCE_OFFICER", 2)
+        self.client.force_login(finance_user)
+
+        self.assertEqual(self.client.get(reverse("web_contributions")).status_code, 200)
+        self.assertEqual(
+            self.client.get(reverse("web_contribution_summary_report")).status_code,
+            200,
+        )
+        self.assertEqual(self.client.get(reverse("web_users")).status_code, 403)
+        self.assertEqual(self.client.get(reverse("web_members")).status_code, 403)
+
+    def test_auditor_has_read_only_report_and_audit_access(self):
+        auditor = self.create_user("AUDITOR", 3)
+        self.client.force_login(auditor)
+
+        self.assertEqual(
+            self.client.get(reverse("web_contribution_summary_report")).status_code,
+            200,
+        )
+        self.assertEqual(self.client.get(reverse("web_audit_logs")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("web_contributions")).status_code, 403)
+
+    def test_church_administrator_cannot_open_another_church(self):
+        admin = self.create_user("ADMIN", 4)
+        other_church = Church.objects.create(
+            church_code="ACCESS-002",
+            church_name="Other Access Church",
+        )
+        self.client.force_login(admin)
+
+        response = self.client.get(reverse("web_church_edit", args=[other_church.id]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_financial_pages_and_filters_are_scoped_to_the_users_church(self):
+        admin = self.create_user("ADMIN", 5)
+        other_church = Church.objects.create(
+            church_code="ACCESS-003",
+            church_name="Hidden Access Church",
+        )
+        own_year = FinancialYear.objects.create(
+            church=self.church,
+            year=2026,
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 12, 31),
+        )
+        FinancialYear.objects.create(
+            church=other_church,
+            year=2026,
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 12, 31),
+        )
+        self.client.force_login(admin)
+
+        list_response = self.client.get(reverse("web_financial_years"))
+        report_response = self.client.get(reverse("web_contribution_summary_report"))
+
+        self.assertQuerySetEqual(list_response.context["financial_years"], [own_year])
+        self.assertQuerySetEqual(report_response.context["financial_years"], [own_year])
+        self.assertNotContains(list_response, other_church.church_name)

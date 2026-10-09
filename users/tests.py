@@ -84,6 +84,22 @@ class SessionAuthenticationTests(TestCase):
 
         self.assertRedirects(response, reverse("web_dashboard"))
 
+    def test_member_login_redirects_to_profile(self):
+        member = User.objects.create_user(
+            username="member-login",
+            password="strong-test-password",
+            full_name="Member Login",
+            phone_number="255700000002",
+            role="MEMBER",
+        )
+
+        response = self.client.post(
+            reverse("login"),
+            {"username": member.username, "password": "strong-test-password"},
+        )
+
+        self.assertRedirects(response, reverse("web_profile"))
+
     @override_settings(
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
         DEFAULT_FROM_EMAIL="Bahasha <noreply@example.com>",
@@ -255,11 +271,19 @@ class UserManagementTests(TestCase):
 
         self.assertQuerySetEqual(response.context["users"], [self.member])
 
-    def test_password_reset_requires_post(self):
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_password_reset_requires_post_and_sends_secure_link(self):
         url = reverse("web_user_reset_password", args=[self.member.id])
+        original_password = self.member.password
+        self.member.email = "member@example.com"
+        self.member.save(update_fields=["email"])
 
         self.assertEqual(self.client.get(url).status_code, 405)
         self.assertRedirects(self.client.post(url), reverse("web_users"))
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.password, original_password)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("password-reset", mail.outbox[0].body)
 
     def test_user_creation_sets_the_submitted_password(self):
         response = self.client.post(

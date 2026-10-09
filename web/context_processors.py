@@ -1,3 +1,14 @@
+from web.access import (
+    AUDIT_ACCESS_ROLES,
+    CHURCH_ADMIN_ROLES,
+    FINANCE_MANAGEMENT_ROLES,
+    MEMBER_MANAGEMENT_ROLES,
+    NOTIFICATION_MANAGEMENT_ROLES,
+    REPORT_ACCESS_ROLES,
+    STAFF_DASHBOARD_ROLES,
+)
+
+
 PAGE_METADATA = {
     "web_dashboard": ("Dashboard", "layout-dashboard"),
     "web_members": ("Members", "users-round"),
@@ -54,9 +65,22 @@ def current_page(request):
     resolver_match = getattr(request, "resolver_match", None)
     route_name = resolver_match.url_name if resolver_match else None
     title, icon = PAGE_METADATA.get(route_name, DEFAULT_PAGE)
+    user = request.user
+    is_superuser = user.is_authenticated and user.is_superuser
+    role = user.role if user.is_authenticated else None
     return {
         "current_page": {
             "title": title,
             "icon": icon,
-        }
+        },
+        "access": {
+            "dashboard": is_superuser or role in STAFF_DASHBOARD_ROLES,
+            "church_admin": is_superuser or role in CHURCH_ADMIN_ROLES,
+            "member_management": is_superuser or role in MEMBER_MANAGEMENT_ROLES,
+            "finance_management": is_superuser or role in FINANCE_MANAGEMENT_ROLES,
+            "reports": is_superuser or role in REPORT_ACCESS_ROLES,
+            "notifications": is_superuser or role in NOTIFICATION_MANAGEMENT_ROLES,
+            "audit": is_superuser or role in AUDIT_ACCESS_ROLES,
+            "system_admin": is_superuser,
+        },
     }

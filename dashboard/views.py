@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render
 
@@ -9,18 +8,28 @@ from contributions.models import Contribution
 from excel_uploads.models import ExcelUpload
 from financial_years.models import FinancialYear
 from members.models import Member
+from web.access import scope_queryset_to_church, staff_dashboard_required
 
 
-@login_required(login_url="login")
+@staff_dashboard_required
 def dashboard(request):
+    targets = scope_queryset_to_church(MemberAnnualTarget.objects.all(), request.user)
+    contributions = scope_queryset_to_church(
+        Contribution.objects.all(), request.user
+    )
+    uploads = scope_queryset_to_church(ExcelUpload.objects.all(), request.user)
+    members = scope_queryset_to_church(Member.objects.all(), request.user)
+    years = scope_queryset_to_church(FinancialYear.objects.all(), request.user)
+    weeks = scope_queryset_to_church(ContributionWeek.objects.all(), request.user)
+    churches = scope_queryset_to_church(
+        Church.objects.all(), request.user, church_field="pk"
+    )
     total_target = (
-        MemberAnnualTarget.objects.aggregate(total=Sum("target_amount"))["total"] or 0
+        targets.aggregate(total=Sum("target_amount"))["total"] or 0
     )
 
     total_contributed = (
-        Contribution.objects.filter(status="POSTED").aggregate(total=Sum("amount"))[
-            "total"
-        ]
+        contributions.filter(status="POSTED").aggregate(total=Sum("amount"))["total"]
         or 0
     )
 
@@ -29,7 +38,7 @@ def dashboard(request):
     else:
         overall_completion = 0
     category_performance = list(
-        MemberAnnualTarget.objects.values("category__name")
+        targets.values("category__name")
         .annotate(
             total_target=Sum("target_amount"),
             total_contributed=Sum("contributed_amount"),
@@ -46,14 +55,14 @@ def dashboard(request):
         else:
             item["completion_percentage"] = 0
 
-    recent_uploads = ExcelUpload.objects.select_related(
+    recent_uploads = uploads.select_related(
         "church",
         "financial_year",
         "contribution_week",
         "selected_category",
     ).order_by("-uploaded_at")[:5]
 
-    recent_contributions = Contribution.objects.select_related(
+    recent_contributions = contributions.select_related(
         "member",
         "member__user",
         "category",
@@ -61,21 +70,21 @@ def dashboard(request):
     ).order_by("-created_at")[:5]
 
     context = {
-        "total_churches": Church.objects.count(),
-        "total_members": Member.objects.count(),
-        "approved_members": Member.objects.filter(approval_status="APPROVED").count(),
-        "pending_members": Member.objects.filter(approval_status="PENDING").count(),
-        "total_contributions": Contribution.objects.filter(status="POSTED").count(),
+        "total_churches": churches.count(),
+        "total_members": members.count(),
+        "approved_members": members.filter(approval_status="APPROVED").count(),
+        "pending_members": members.filter(approval_status="PENDING").count(),
+        "total_contributions": contributions.filter(status="POSTED").count(),
         "total_contributed": total_contributed,
         "total_target": total_target,
         "overall_completion": overall_completion,
-        "total_uploads": ExcelUpload.objects.count(),
-        "pending_uploads": ExcelUpload.objects.filter(
+        "total_uploads": uploads.count(),
+        "pending_uploads": uploads.filter(
             status="PENDING_VALIDATION"
         ).count(),
-        "failed_uploads": ExcelUpload.objects.filter(status="FAILED").count(),
-        "active_year": FinancialYear.objects.filter(is_active=True).first(),
-        "active_week": ContributionWeek.objects.filter(is_active=True).first(),
+        "failed_uploads": uploads.filter(status="FAILED").count(),
+        "active_year": years.filter(is_active=True).first(),
+        "active_week": weeks.filter(is_active=True).first(),
         "recent_uploads": recent_uploads,
         "recent_contributions": recent_contributions,
         "category_performance": category_performance,

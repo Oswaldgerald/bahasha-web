@@ -1,13 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 
 from annual_targets.models import MemberAnnualTarget
 from web.forms import MemberAnnualTargetForm
 from web.pagination import paginate_queryset
+from web.access import finance_management_required, scope_queryset_to_church
 
 
+@finance_management_required
 def annual_target_list(request):
     targets = MemberAnnualTarget.objects.select_related(
         "member",
@@ -20,12 +21,13 @@ def annual_target_list(request):
         "member__user__full_name",
         "category__display_order",
     )
+    targets = scope_queryset_to_church(targets, request.user)
     targets = paginate_queryset(request, targets)
 
     return render(request, "annual_targets/list.html", {"targets": targets})
 
 
-@login_required(login_url="login")
+@finance_management_required
 def annual_target_create(request):
     if request.method == "POST":
         form = MemberAnnualTargetForm(request.POST, request_user=request.user)
@@ -40,9 +42,12 @@ def annual_target_create(request):
     return render(request, "annual_targets/create.html", {"form": form})
 
 
-@login_required(login_url="login")
+@finance_management_required
 def annual_target_edit(request, target_id):
-    target = get_object_or_404(MemberAnnualTarget, id=target_id)
+    target = get_object_or_404(
+        scope_queryset_to_church(MemberAnnualTarget.objects.all(), request.user),
+        id=target_id,
+    )
 
     if request.method == "POST":
         form = MemberAnnualTargetForm(

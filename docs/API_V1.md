@@ -1,4 +1,4 @@
-# Bahasha Member API v1 Contract
+# Bahasha API v1 Contract
 
 Status: implemented through member read experience and notification/device state;
 payment processing remains disabled pending provider selection

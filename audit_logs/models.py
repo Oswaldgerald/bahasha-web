@@ -16,6 +16,10 @@ class AuditLog(models.Model):
         ("CONTRIBUTION_CREATED", "Contribution Created"),
         ("TARGET_UPDATED", "Target Updated"),
         ("CHURCH_UPDATED", "Church Updated"),
+        ("LOGIN", "Login"),
+        ("LOGOUT", "Logout"),
+        ("PROFILE_UPDATED", "Profile Updated"),
+        ("DEVICE_REGISTERED", "Device Registered"),
         ("OTHER", "Other"),
     ]
 

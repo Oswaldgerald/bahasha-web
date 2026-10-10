@@ -1,6 +1,6 @@
 # Bahasha Mobile API Design
 
-Status: proposed contract, no API implementation yet  
+Status: phases 1-4 implemented; payment processing pending provider selection
 Target framework: Django Ninja  
 Initial client: Bahasha congregation-member mobile application
 
@@ -27,8 +27,9 @@ complete one mobile-money payment for the selected allocations.
 
 1. All public endpoints are versioned under `/api/v1/`.
 2. Django Ninja routers are split by the Django app that owns the feature.
-3. Mobile authentication uses short-lived bearer access tokens and rotating,
-   revocable refresh tokens. Browser session cookies remain web-only.
+3. Mobile authentication uses opaque short-lived bearer access tokens and rotating,
+   revocable refresh tokens. Only token hashes are stored. Browser session cookies
+   remain web-only.
 4. Every member query is scoped from the authenticated user. Member and church
    IDs are never accepted from the mobile client to establish ownership.
 5. Mobile users cannot directly create a posted `Contribution` record.
@@ -116,8 +117,8 @@ module and are shared by web views, APIs, imports, and payment callbacks.
 - Logout revokes the current device session.
 - Password change, account deactivation, member rejection, or church deactivation
   revokes all member refresh tokens.
-- Access tokens contain only stable authorization claims: user UUID, role, church
-  UUID, token session UUID, issued-at, and expiry.
+- Access tokens are opaque random values. Identity, ownership, role, session, and
+  expiry are resolved from the hashed server-side token session.
 - The database remains authoritative for active and approved status.
 
 The bearer implementation may use a maintained JWT package or a small Django Ninja

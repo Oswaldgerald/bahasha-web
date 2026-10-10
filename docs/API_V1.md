@@ -1,6 +1,7 @@
 # Bahasha Member API v1 Contract
 
-Status: draft contract, not implemented
+Status: implemented through member read experience and notification/device state;
+payment processing remains disabled pending provider selection
 
 Base path: `/api/v1`
 
@@ -620,19 +621,27 @@ Interactive docs are staff-protected or disabled in production. CI exports the
 OpenAPI JSON and checks it for unintended breaking changes. Every operation uses a
 stable `operation_id`, tags, explicit success schema, and the common error schema.
 
-## 13. Implementation Prerequisites
+The current implementation disables interactive docs when `DEBUG` is false. The
+OpenAPI schema remains available for mobile-client generation.
 
-Before all endpoints can be delivered:
+## 13. Implementation Status
 
-1. Add `django-ninja` and mount one `NinjaAPI` at `/api/v1/`.
-2. Add public UUIDs to user, member, church, church group, Jumuiya, financial year,
-   contribution week, contribution, annual target, and notification models.
-3. Add hashed refresh-token sessions and mobile-device models.
-4. Add per-user notification receipts.
-5. Add payment intent, allocation, attempt, and webhook-event models.
-6. Select the first Tanzania payment provider and document its signatures, timeout,
+Implemented:
+
+1. Django Ninja and the versioned `/api/v1/` API.
+2. Public UUIDs for all member-facing resources.
+3. Opaque access and rotating refresh tokens stored only as hashes.
+4. Member profile, protected photo, bootstrap, configurable categories, weeks,
+   targets, contribution history, notification receipts, and device registration.
+5. Cross-member and cross-church ownership enforcement with API behavior tests.
+
+Still required before mobile payments can be enabled:
+
+1. Select the first Tanzania payment provider and document signatures, timeout,
    retry, reconciliation, and sandbox behavior.
-7. Add contract, authorization, query-count, idempotency, and callback replay tests.
+2. Add payment intent, allocation, attempt, and webhook-event models.
+3. Add shared production-cache throttling for authentication and payment routes.
+4. Add idempotency, callback replay, and payment failure-path tests.
 
 Category public UUIDs and configurable mobile-card/payment fields already exist.
 The API must reuse contribution services and must not update annual-target totals

@@ -1,7 +1,10 @@
+import uuid
+
 from django.db import models
 
 
 class Church(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church_code = models.CharField(max_length=50, unique=True)
     church_name = models.CharField(max_length=255)
     parish = models.CharField(max_length=255, blank=True, null=True)
@@ -23,6 +26,7 @@ class Church(models.Model):
 
 
 class ChurchGroup(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
         on_delete=models.CASCADE,

@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from members.models import Member
@@ -7,6 +9,7 @@ from categories.models import ContributionCategory
 
 
 class MemberAnnualTarget(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     member = models.ForeignKey(
         Member,
         on_delete=models.CASCADE,

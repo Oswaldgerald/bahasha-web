@@ -1,8 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from churches.models import Church
 from pathlib import Path
 import uuid
+
+from churches.models import Church
 
 
 def profile_picture_path(instance, filename):
@@ -11,6 +12,8 @@ def profile_picture_path(instance, filename):
 
 
 class User(AbstractUser):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
     ROLE_CHOICES = [
             ("MAIN_PASTOR", "Main Pastor"),
             ("ASSISTANT_PASTOR", "Assistant Pastor"),
@@ -50,3 +53,40 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.full_name} - {self.role}"
+
+
+class ApiTokenSession(models.Model):
+    PLATFORM_CHOICES = [
+        ("android", "Android"),
+        ("ios", "iOS"),
+    ]
+
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    family_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="api_token_sessions",
+    )
+    access_token_hash = models.CharField(max_length=64, unique=True)
+    refresh_token_hash = models.CharField(max_length=64, unique=True)
+    installation_id = models.UUIDField()
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
+    app_version = models.CharField(max_length=40, blank=True)
+    device_name = models.CharField(max_length=120, blank=True)
+    access_expires_at = models.DateTimeField()
+    refresh_expires_at = models.DateTimeField()
+    last_used_at = models.DateTimeField(blank=True, null=True)
+    revoked_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "revoked_at"]),
+            models.Index(fields=["refresh_expires_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.platform} - {self.public_id}"

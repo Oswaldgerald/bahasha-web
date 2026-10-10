@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from users.models import User
@@ -6,6 +8,7 @@ from jumuiya.models import Jumuiya
 
 
 class Member(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     APPROVAL_STATUS = [
         ("PENDING", "Pending"),
         ("APPROVED", "Approved"),

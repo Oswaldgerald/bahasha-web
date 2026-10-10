@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -10,6 +12,7 @@ from categories.models import ContributionCategory
 
 
 class Contribution(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     SOURCE_CHOICES = [
         ("EXCEL_UPLOAD", "Excel Upload"),
         ("MANUAL_ENTRY", "Manual Entry"),

@@ -1,8 +1,11 @@
+import uuid
+
 from django.db import models
 from churches.models import Church
 
 
 class FinancialYear(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
         on_delete=models.CASCADE,

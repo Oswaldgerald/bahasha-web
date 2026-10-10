@@ -49,16 +49,22 @@ Useful routes:
 - `/web/dashboard/` - application dashboard
 - `/admin/` - Django administration
 - `/health/` - application and database readiness
+- `/api/v1/health` - member API and database readiness
+- `/api/v1/docs` - interactive API documentation in development
+- `/api/v1/openapi.json` - OpenAPI schema
 
-The project intentionally exposes no public application API at this stage. The
-previous Django REST Framework and JWT endpoints were removed so a versioned,
-member-scoped Django Ninja API can be designed without legacy contracts.
+The versioned, member-scoped mobile API is implemented with Django Ninja. It uses
+short-lived opaque access tokens, rotating refresh tokens stored only as hashes,
+public UUIDs, church and member ownership enforcement, and explicit request IDs.
+It currently provides authentication, member profile and photo operations,
+bootstrap data, configurable contribution-category cards, weekly status, targets,
+contribution history, notifications, and device registration.
 
 The normative mobile HTTP contract is documented in
 [`docs/API_V1.md`](docs/API_V1.md). Architecture, authorization boundaries,
 prerequisite model work, and the phased Django Ninja rollout are documented in
-[`docs/API_DESIGN.md`](docs/API_DESIGN.md). These are design artifacts only;
-Django Ninja and the endpoints are not implemented yet.
+[`docs/API_DESIGN.md`](docs/API_DESIGN.md). Mobile payment methods and intents are
+deliberately disabled until a Tanzania payment provider is selected and verified.
 
 Contribution categories are already church-specific and configurable in the web
 application. Administrators can control each mobile card's labels, icon, color,

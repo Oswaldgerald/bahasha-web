@@ -54,10 +54,11 @@ The project intentionally exposes no public application API at this stage. The
 previous Django REST Framework and JWT endpoints were removed so a versioned,
 member-scoped Django Ninja API can be designed without legacy contracts.
 
-The proposed mobile contract, authorization boundaries, prerequisite model work,
-and phased Django Ninja rollout are documented in
-[`docs/API_DESIGN.md`](docs/API_DESIGN.md). This is a design artifact only; Django
-Ninja and the endpoints are not implemented yet.
+The normative mobile HTTP contract is documented in
+[`docs/API_V1.md`](docs/API_V1.md). Architecture, authorization boundaries,
+prerequisite model work, and the phased Django Ninja rollout are documented in
+[`docs/API_DESIGN.md`](docs/API_DESIGN.md). These are design artifacts only;
+Django Ninja and the endpoints are not implemented yet.
 
 Contribution categories are already church-specific and configurable in the web
 application. Administrators can control each mobile card's labels, icon, color,

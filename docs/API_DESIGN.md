@@ -4,6 +4,10 @@ Status: proposed contract, no API implementation yet
 Target framework: Django Ninja  
 Initial client: Bahasha congregation-member mobile application
 
+The normative endpoint and payload contract is
+[`API_V1.md`](API_V1.md). This document records architecture, rationale,
+prerequisites, and rollout guidance.
+
 ## 1. Purpose
 
 The first public API serves approved congregation members. It does not expose the

@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import ContributionWeek
 
 
 @admin.register(ContributionWeek)
-class ContributionWeekAdmin(admin.ModelAdmin):
+class ContributionWeekAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "church",
         "financial_year",

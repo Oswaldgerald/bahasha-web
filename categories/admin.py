@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import ContributionCategory
 
 
 @admin.register(ContributionCategory)
-class ContributionCategoryAdmin(admin.ModelAdmin):
+class ContributionCategoryAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "name",
         "church",

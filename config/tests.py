@@ -35,3 +35,28 @@ class AdminInterfaceTests(TestCase):
         self.assertContains(response, reverse("web_dashboard"))
         self.assertContains(response, "css/admin.")
         self.assertContains(response, "js/admin.")
+
+    def test_admin_lists_offer_a_confirmed_delete_route(self):
+        other_user = User.objects.create_user(
+            username="delete-candidate",
+            password="strong-test-password",
+            full_name="Delete Candidate",
+            phone_number="255700009998",
+            role="MEMBER",
+        )
+
+        response = self.client.get(reverse("admin:users_user_changelist"))
+        delete_url = reverse("admin:users_user_delete", args=(other_user.pk,))
+        self_delete_url = reverse(
+            "admin:users_user_delete",
+            args=(self.superuser.pk,),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "admin-row-delete")
+        self.assertContains(response, delete_url)
+        self.assertNotContains(response, self_delete_url)
+
+        confirmation = self.client.get(delete_url)
+        self.assertEqual(confirmation.status_code, 200)
+        self.assertContains(confirmation, "Are you sure")

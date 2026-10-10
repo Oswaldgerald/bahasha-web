@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import User
 
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(RowDeleteActionMixin, UserAdmin):
     model = User
 
     list_display = (
@@ -61,3 +64,8 @@ class CustomUserAdmin(UserAdmin):
         "created_at",
         "updated_at",
     )
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.pk == request.user.pk:
+            return False
+        return super().has_delete_permission(request, obj)

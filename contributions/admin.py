@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import Contribution
 
 
 @admin.register(Contribution)
-class ContributionAdmin(admin.ModelAdmin):
+class ContributionAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "reference_number",
         "member",

@@ -1,4 +1,7 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import ExcelUpload, ExcelUploadRow
 
 
@@ -17,7 +20,7 @@ class ExcelUploadRowInline(admin.TabularInline):
 
 
 @admin.register(ExcelUpload)
-class ExcelUploadAdmin(admin.ModelAdmin):
+class ExcelUploadAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "upload_reference",
         "church",
@@ -54,7 +57,7 @@ class ExcelUploadAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExcelUploadRow)
-class ExcelUploadRowAdmin(admin.ModelAdmin):
+class ExcelUploadRowAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "upload",
         "row_number",

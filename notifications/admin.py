@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import Notification
 
 
 @admin.register(Notification)
-class NotificationAdmin(admin.ModelAdmin):
+class NotificationAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "title",
         "church",

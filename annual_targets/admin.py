@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import MemberAnnualTarget
 
 
 @admin.register(MemberAnnualTarget)
-class MemberAnnualTargetAdmin(admin.ModelAdmin):
+class MemberAnnualTargetAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "member",
         "church",

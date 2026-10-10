@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import FinancialYear
 
 
 @admin.register(FinancialYear)
-class FinancialYearAdmin(admin.ModelAdmin):
+class FinancialYearAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "church",
         "year",

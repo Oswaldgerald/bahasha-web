@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import Church, ChurchGroup
 
 
 @admin.register(Church)
-class ChurchAdmin(admin.ModelAdmin):
+class ChurchAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "church_name",
         "church_code",
@@ -31,7 +34,7 @@ class ChurchAdmin(admin.ModelAdmin):
 
 
 @admin.register(ChurchGroup)
-class ChurchGroupAdmin(admin.ModelAdmin):
+class ChurchGroupAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = ("name", "church", "is_active", "created_at")
     list_filter = ("church", "is_active")
     search_fields = ("name", "church__church_name")

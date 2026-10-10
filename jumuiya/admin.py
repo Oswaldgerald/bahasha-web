@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from config.admin_mixins import RowDeleteActionMixin
+
 from .models import Jumuiya
 
 
 @admin.register(Jumuiya)
-class JumuiyaAdmin(admin.ModelAdmin):
+class JumuiyaAdmin(RowDeleteActionMixin, admin.ModelAdmin):
     list_display = (
         "name",
         "church",

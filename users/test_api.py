@@ -189,6 +189,21 @@ class MemberApiTests(TestCase):
         self.assertEqual(payload["categories"][0]["missing_weeks_count"], 2)
         self.assertFalse(payload["capabilities"]["payments_enabled"])
 
+    def test_week_schedule_places_active_week_first(self):
+        ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.year,
+            week_number=3,
+            sunday_date=timezone.localdate() + timedelta(days=7),
+        )
+        tokens = self.login()
+        response = self.auth_get(
+            f"/api/v1/contribution-categories/{self.category.public_id}/weeks",
+            tokens["access_token"],
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.json()["items"][0]["week_number"], 2)
+
     def test_contribution_detail_is_scoped_to_authenticated_member(self):
         other_user = User.objects.create_user(
             username="other-member",

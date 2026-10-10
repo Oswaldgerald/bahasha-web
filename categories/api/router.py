@@ -101,7 +101,7 @@ def category_weeks(
         ContributionWeek.objects.filter(
             church=member.church,
             financial_year=year,
-        ).order_by("-sunday_date", "-week_number")
+        )
     )
     totals = {
         row["contribution_week_id"]: row["total"]
@@ -116,6 +116,13 @@ def category_weeks(
         .annotate(total=Sum("amount"))
     }
     today = timezone.localdate()
+    weeks.sort(
+        key=lambda week: (
+            not week.is_active,
+            week.sunday_date > today,
+            abs((week.sunday_date - today).days),
+        )
+    )
     results = []
     for week in weeks:
         contributed = totals.get(week.pk)

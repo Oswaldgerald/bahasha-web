@@ -614,7 +614,7 @@ creation returns `503 PAYMENTS_UNAVAILABLE`.
 
 - Schema: `/api/v1/openapi.json`
 - Interactive docs: `/api/v1/docs`
-- API title: `Bahasha Member API`
+- API title: `Bahasha API v1`
 - API version: `1.0.0`
 
 Interactive docs are staff-protected or disabled in production. CI exports the

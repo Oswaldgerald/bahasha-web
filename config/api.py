@@ -7,7 +7,8 @@ from api.v1.router import router as v1_router
 
 
 api = NinjaAPI(
-    title="Bahasha Member API",
+    title="Bahasha API v1",
+    description="Member mobile API for Bahasha church contributions and account services.",
     version="1.0.0",
     urls_namespace="bahasha_api_v1",
     docs_url="/docs" if settings.DEBUG else None,

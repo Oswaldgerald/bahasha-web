@@ -1,0 +1,2489 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Bahasha API v1",
+        "version": "1.0.0",
+        "description": "Member mobile API for Bahasha church contributions and account services."
+    },
+    "paths": {
+        "/api/v1/health": {
+            "get": {
+                "operationId": "api_v1_router_api_health",
+                "summary": "Api Health",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "tags": [
+                    "platform"
+                ]
+            }
+        },
+        "/api/v1/auth/token": {
+            "post": {
+                "operationId": "users_api_router_create_token",
+                "summary": "Create Token",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponseSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequestSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/auth/token/refresh": {
+            "post": {
+                "operationId": "users_api_router_refresh_token",
+                "summary": "Refresh Token",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponseSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshRequestSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "operationId": "users_api_router_logout",
+                "summary": "Logout",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "security": [
+                    {
+                        "LogoutBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/password/forgot": {
+            "post": {
+                "operationId": "users_api_router_forgot_password",
+                "summary": "Forgot Password",
+                "parameters": [],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordForgotSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/me": {
+            "get": {
+                "operationId": "members_api_router_get_me",
+                "summary": "Get Me",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MemberSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "operationId": "members_api_router_update_me",
+                "summary": "Update Me",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MemberSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MemberUpdateSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/me/photo": {
+            "get": {
+                "operationId": "members_api_router_get_photo",
+                "summary": "Get Photo",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            },
+            "post": {
+                "operationId": "members_api_router_update_photo",
+                "summary": "Update Photo",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MemberSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "photo": {
+                                        "format": "binary",
+                                        "title": "Photo",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "photo"
+                                ],
+                                "title": "FileParams",
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "operationId": "members_api_router_delete_photo",
+                "summary": "Delete Photo",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/bootstrap": {
+            "get": {
+                "operationId": "members_api_router_bootstrap",
+                "summary": "Bootstrap",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BootstrapSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "member"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/contribution-categories": {
+            "get": {
+                "operationId": "categories_api_router_list_categories",
+                "summary": "List Categories",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "financial_year_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Financial Year Id"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contribution categories"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/contribution-categories/{category_id}": {
+            "get": {
+                "operationId": "categories_api_router_category_detail",
+                "summary": "Category Detail",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "category_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Category Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Financial Year Id"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryCardSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contribution categories"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/contribution-categories/{category_id}/weeks": {
+            "get": {
+                "operationId": "categories_api_router_category_weeks",
+                "summary": "Category Weeks",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "category_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Category Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Financial Year Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "state",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "State"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "cursor",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Cursor"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "page_size",
+                        "schema": {
+                            "default": 20,
+                            "title": "Page Size",
+                            "type": "integer"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WeekListSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contribution categories"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/financial-years": {
+            "get": {
+                "operationId": "contributions_api_router_financial_years",
+                "summary": "Financial Years",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/YearListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contributions"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/targets": {
+            "get": {
+                "operationId": "contributions_api_router_targets",
+                "summary": "Targets",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "financial_year_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Financial Year Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Category Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "cursor",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Cursor"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "page_size",
+                        "schema": {
+                            "default": 20,
+                            "title": "Page Size",
+                            "type": "integer"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TargetListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contributions"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/contributions": {
+            "get": {
+                "operationId": "contributions_api_router_contributions",
+                "summary": "Contributions",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Category Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Financial Year Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "week_id",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "uuid",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Week Id"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Status"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "date_from",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "date",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Date From"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "date_to",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "date",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Date To"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "cursor",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Cursor"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "page_size",
+                        "schema": {
+                            "default": 20,
+                            "title": "Page Size",
+                            "type": "integer"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContributionListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contributions"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/contributions/{contribution_id}": {
+            "get": {
+                "operationId": "contributions_api_router_contribution_detail",
+                "summary": "Contribution Detail",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "contribution_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Contribution Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContributionDetailSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "contributions"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/notifications": {
+            "get": {
+                "operationId": "notifications_api_router_notification_list",
+                "summary": "Notification List",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "unread_only",
+                        "schema": {
+                            "default": false,
+                            "title": "Unread Only",
+                            "type": "boolean"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "cursor",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Cursor"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "page_size",
+                        "schema": {
+                            "default": 20,
+                            "title": "Page Size",
+                            "type": "integer"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotificationListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "notifications"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/notifications/{notification_id}/read": {
+            "post": {
+                "operationId": "notifications_api_router_mark_notification_read",
+                "summary": "Mark Notification Read",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "notification_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Notification Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "notifications"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/devices": {
+            "post": {
+                "operationId": "notifications_api_router_register_device",
+                "summary": "Register Device",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeviceSchema"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeviceSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "notifications"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceRequestSchema"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/devices/{device_id}": {
+            "delete": {
+                "operationId": "notifications_api_router_unregister_device",
+                "summary": "Unregister Device",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "device_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Device Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "notifications"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/payment-methods": {
+            "get": {
+                "operationId": "payments_api_router_payment_methods",
+                "summary": "Payment Methods",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentMethodListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "payments"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/payment-intents": {
+            "post": {
+                "operationId": "payments_api_router_create_payment_intent",
+                "summary": "Create Payment Intent",
+                "parameters": [],
+                "responses": {
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "payments"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "additionalProperties": true,
+                                "title": "Payload",
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            },
+            "get": {
+                "operationId": "payments_api_router_payment_intents",
+                "summary": "Payment Intents",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentIntentListSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "payments"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/payment-intents/{payment_intent_id}": {
+            "get": {
+                "operationId": "payments_api_router_payment_intent_detail",
+                "summary": "Payment Intent Detail",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "payment_intent_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Payment Intent Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "payments"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/payment-intents/{payment_intent_id}/cancel": {
+            "post": {
+                "operationId": "payments_api_router_cancel_payment_intent",
+                "summary": "Cancel Payment Intent",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "payment_intent_id",
+                        "schema": {
+                            "format": "uuid",
+                            "title": "Payment Intent Id",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "payments"
+                ],
+                "security": [
+                    {
+                        "MemberBearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TokenMemberSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "title": "Full Name",
+                        "type": "string"
+                    },
+                    "approval_status": {
+                        "title": "Approval Status",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "full_name",
+                    "approval_status"
+                ],
+                "title": "TokenMemberSchema",
+                "type": "object"
+            },
+            "TokenResponseSchema": {
+                "properties": {
+                    "access_token": {
+                        "title": "Access Token",
+                        "type": "string"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "title": "Token Type",
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "title": "Expires In",
+                        "type": "integer"
+                    },
+                    "member": {
+                        "$ref": "#/components/schemas/TokenMemberSchema"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "refresh_token",
+                    "token_type",
+                    "expires_in",
+                    "member"
+                ],
+                "title": "TokenResponseSchema",
+                "type": "object"
+            },
+            "ErrorDetailSchema": {
+                "properties": {
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "fields": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            }
+                        ],
+                        "title": "Fields"
+                    },
+                    "request_id": {
+                        "title": "Request Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code",
+                    "message",
+                    "fields",
+                    "request_id"
+                ],
+                "title": "ErrorDetailSchema",
+                "type": "object"
+            },
+            "ErrorSchema": {
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/ErrorDetailSchema"
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "ErrorSchema",
+                "type": "object"
+            },
+            "DeviceSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "installation_id": {
+                        "format": "uuid",
+                        "title": "Installation Id",
+                        "type": "string"
+                    },
+                    "platform": {
+                        "title": "Platform",
+                        "type": "string"
+                    },
+                    "app_version": {
+                        "title": "App Version",
+                        "type": "string"
+                    },
+                    "is_active": {
+                        "title": "Is Active",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "installation_id",
+                    "platform",
+                    "app_version",
+                    "is_active"
+                ],
+                "title": "DeviceSchema",
+                "type": "object"
+            },
+            "TokenRequestSchema": {
+                "properties": {
+                    "identifier": {
+                        "title": "Identifier",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    },
+                    "device": {
+                        "$ref": "#/components/schemas/DeviceSchema"
+                    }
+                },
+                "required": [
+                    "identifier",
+                    "password",
+                    "device"
+                ],
+                "title": "TokenRequestSchema",
+                "type": "object"
+            },
+            "RefreshRequestSchema": {
+                "properties": {
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "refresh_token"
+                ],
+                "title": "RefreshRequestSchema",
+                "type": "object"
+            },
+            "MessageSchema": {
+                "properties": {
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ],
+                "title": "MessageSchema",
+                "type": "object"
+            },
+            "PasswordForgotSchema": {
+                "properties": {
+                    "email": {
+                        "title": "Email",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email"
+                ],
+                "title": "PasswordForgotSchema",
+                "type": "object"
+            },
+            "ChurchReferenceSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "code"
+                ],
+                "title": "ChurchReferenceSchema",
+                "type": "object"
+            },
+            "MemberSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "title": "Full Name",
+                        "type": "string"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string"
+                    },
+                    "phone_number": {
+                        "title": "Phone Number",
+                        "type": "string"
+                    },
+                    "bahasha_number": {
+                        "title": "Bahasha Number",
+                        "type": "string"
+                    },
+                    "gender": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Gender"
+                    },
+                    "marital_status": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Marital Status"
+                    },
+                    "approval_status": {
+                        "title": "Approval Status",
+                        "type": "string"
+                    },
+                    "photo_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Photo Url"
+                    },
+                    "church": {
+                        "$ref": "#/components/schemas/ChurchReferenceSchema"
+                    },
+                    "jumuiya": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/NamedReferenceSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "church_groups": {
+                        "items": {
+                            "$ref": "#/components/schemas/NamedReferenceSchema"
+                        },
+                        "title": "Church Groups",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "full_name",
+                    "username",
+                    "email",
+                    "phone_number",
+                    "bahasha_number",
+                    "gender",
+                    "marital_status",
+                    "approval_status",
+                    "photo_url",
+                    "church",
+                    "jumuiya",
+                    "church_groups"
+                ],
+                "title": "MemberSchema",
+                "type": "object"
+            },
+            "NamedReferenceSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "NamedReferenceSchema",
+                "type": "object"
+            },
+            "MemberUpdateSchema": {
+                "properties": {
+                    "full_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Full Name"
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Email"
+                    }
+                },
+                "title": "MemberUpdateSchema",
+                "type": "object"
+            },
+            "ActivePeriodSchema": {
+                "properties": {
+                    "financial_year": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ActiveYearSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "week": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ActiveWeekSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "financial_year",
+                    "week"
+                ],
+                "title": "ActivePeriodSchema",
+                "type": "object"
+            },
+            "ActiveWeekSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "sunday_date": {
+                        "title": "Sunday Date",
+                        "type": "string"
+                    },
+                    "is_closed": {
+                        "title": "Is Closed",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "sunday_date",
+                    "is_closed"
+                ],
+                "title": "ActiveWeekSchema",
+                "type": "object"
+            },
+            "ActiveYearSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "year": {
+                        "title": "Year",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "year"
+                ],
+                "title": "ActiveYearSchema",
+                "type": "object"
+            },
+            "AmountGuidanceSchema": {
+                "properties": {
+                    "suggested": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MoneySchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "minimum": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MoneySchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "maximum": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MoneySchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "suggested",
+                    "minimum",
+                    "maximum"
+                ],
+                "title": "AmountGuidanceSchema",
+                "type": "object"
+            },
+            "BootstrapSchema": {
+                "properties": {
+                    "member": {
+                        "$ref": "#/components/schemas/MemberSchema"
+                    },
+                    "active_period": {
+                        "$ref": "#/components/schemas/ActivePeriodSchema"
+                    },
+                    "categories": {
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryCardSchema"
+                        },
+                        "title": "Categories",
+                        "type": "array"
+                    },
+                    "unread_notifications_count": {
+                        "title": "Unread Notifications Count",
+                        "type": "integer"
+                    },
+                    "capabilities": {
+                        "$ref": "#/components/schemas/CapabilitySchema"
+                    }
+                },
+                "required": [
+                    "member",
+                    "active_period",
+                    "categories",
+                    "unread_notifications_count",
+                    "capabilities"
+                ],
+                "title": "BootstrapSchema",
+                "type": "object"
+            },
+            "CapabilitySchema": {
+                "properties": {
+                    "payments_enabled": {
+                        "title": "Payments Enabled",
+                        "type": "boolean"
+                    },
+                    "profile_photo_upload": {
+                        "title": "Profile Photo Upload",
+                        "type": "boolean"
+                    },
+                    "push_notifications": {
+                        "title": "Push Notifications",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "payments_enabled",
+                    "profile_photo_upload",
+                    "push_notifications"
+                ],
+                "title": "CapabilitySchema",
+                "type": "object"
+            },
+            "CategoryCardSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "key": {
+                        "title": "Key",
+                        "type": "string"
+                    },
+                    "labels": {
+                        "$ref": "#/components/schemas/LabelsSchema"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "icon": {
+                        "title": "Icon",
+                        "type": "string"
+                    },
+                    "color": {
+                        "title": "Color",
+                        "type": "string"
+                    },
+                    "frequency": {
+                        "title": "Frequency",
+                        "type": "string"
+                    },
+                    "display_order": {
+                        "title": "Display Order",
+                        "type": "integer"
+                    },
+                    "payments_enabled": {
+                        "title": "Payments Enabled",
+                        "type": "boolean"
+                    },
+                    "allows_catch_up": {
+                        "title": "Allows Catch Up",
+                        "type": "boolean"
+                    },
+                    "amount_guidance": {
+                        "$ref": "#/components/schemas/AmountGuidanceSchema"
+                    },
+                    "missing_weeks_count": {
+                        "title": "Missing Weeks Count",
+                        "type": "integer"
+                    },
+                    "total_contributed": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    }
+                },
+                "required": [
+                    "id",
+                    "key",
+                    "labels",
+                    "description",
+                    "icon",
+                    "color",
+                    "frequency",
+                    "display_order",
+                    "payments_enabled",
+                    "allows_catch_up",
+                    "amount_guidance",
+                    "missing_weeks_count",
+                    "total_contributed"
+                ],
+                "title": "CategoryCardSchema",
+                "type": "object"
+            },
+            "LabelsSchema": {
+                "properties": {
+                    "default": {
+                        "type": "string",
+                        "title": "Default"
+                    },
+                    "sw": {
+                        "title": "Sw",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "default",
+                    "sw"
+                ],
+                "title": "LabelsSchema",
+                "type": "object"
+            },
+            "MoneySchema": {
+                "properties": {
+                    "amount": {
+                        "title": "Amount",
+                        "type": "string"
+                    },
+                    "currency": {
+                        "default": "TZS",
+                        "title": "Currency",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "amount"
+                ],
+                "title": "MoneySchema",
+                "type": "object"
+            },
+            "CategoryListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryCardSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "CategoryListSchema",
+                "type": "object"
+            },
+            "PageSchema": {
+                "properties": {
+                    "next_cursor": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Next Cursor"
+                    },
+                    "has_more": {
+                        "title": "Has More",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "has_more"
+                ],
+                "title": "PageSchema",
+                "type": "object"
+            },
+            "WeekListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/WeekSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PageSchema"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page"
+                ],
+                "title": "WeekListSchema",
+                "type": "object"
+            },
+            "WeekSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "week_number": {
+                        "title": "Week Number",
+                        "type": "integer"
+                    },
+                    "sunday_date": {
+                        "title": "Sunday Date",
+                        "type": "string"
+                    },
+                    "state": {
+                        "title": "State",
+                        "type": "string"
+                    },
+                    "payment_eligible": {
+                        "title": "Payment Eligible",
+                        "type": "boolean"
+                    },
+                    "contributed": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "expected": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MoneySchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "remaining": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MoneySchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "week_number",
+                    "sunday_date",
+                    "state",
+                    "payment_eligible",
+                    "contributed",
+                    "expected",
+                    "remaining"
+                ],
+                "title": "WeekSchema",
+                "type": "object"
+            },
+            "YearListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/YearSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "YearListSchema",
+                "type": "object"
+            },
+            "YearSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "year": {
+                        "title": "Year",
+                        "type": "integer"
+                    },
+                    "start_date": {
+                        "title": "Start Date",
+                        "type": "string"
+                    },
+                    "end_date": {
+                        "title": "End Date",
+                        "type": "string"
+                    },
+                    "is_active": {
+                        "title": "Is Active",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "year",
+                    "start_date",
+                    "end_date",
+                    "is_active"
+                ],
+                "title": "YearSchema",
+                "type": "object"
+            },
+            "CategoryReferenceSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "key": {
+                        "title": "Key",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "key",
+                    "name"
+                ],
+                "title": "CategoryReferenceSchema",
+                "type": "object"
+            },
+            "TargetListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/TargetSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PageSchema"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page"
+                ],
+                "title": "TargetListSchema",
+                "type": "object"
+            },
+            "TargetSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "financial_year": {
+                        "additionalProperties": true,
+                        "title": "Financial Year",
+                        "type": "object"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/CategoryReferenceSchema"
+                    },
+                    "target": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "contributed": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "remaining": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "completion_percentage": {
+                        "title": "Completion Percentage",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "financial_year",
+                    "category",
+                    "target",
+                    "contributed",
+                    "remaining",
+                    "completion_percentage"
+                ],
+                "title": "TargetSchema",
+                "type": "object"
+            },
+            "ContributionListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/ContributionSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PageSchema"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page"
+                ],
+                "title": "ContributionListSchema",
+                "type": "object"
+            },
+            "ContributionSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "reference": {
+                        "title": "Reference",
+                        "type": "string"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/CategoryReferenceSchema"
+                    },
+                    "week": {
+                        "$ref": "#/components/schemas/WeekReferenceSchema"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "source": {
+                        "title": "Source",
+                        "type": "string"
+                    },
+                    "status": {
+                        "title": "Status",
+                        "type": "string"
+                    },
+                    "contribution_date": {
+                        "title": "Contribution Date",
+                        "type": "string"
+                    },
+                    "posted_at": {
+                        "title": "Posted At",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "category",
+                    "week",
+                    "amount",
+                    "source",
+                    "status",
+                    "contribution_date",
+                    "posted_at"
+                ],
+                "title": "ContributionSchema",
+                "type": "object"
+            },
+            "WeekReferenceSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "sunday_date": {
+                        "title": "Sunday Date",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "sunday_date"
+                ],
+                "title": "WeekReferenceSchema",
+                "type": "object"
+            },
+            "ContributionDetailSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "reference": {
+                        "title": "Reference",
+                        "type": "string"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/CategoryReferenceSchema"
+                    },
+                    "week": {
+                        "$ref": "#/components/schemas/WeekReferenceSchema"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "source": {
+                        "title": "Source",
+                        "type": "string"
+                    },
+                    "status": {
+                        "title": "Status",
+                        "type": "string"
+                    },
+                    "contribution_date": {
+                        "title": "Contribution Date",
+                        "type": "string"
+                    },
+                    "posted_at": {
+                        "title": "Posted At",
+                        "type": "string"
+                    },
+                    "financial_year": {
+                        "$ref": "#/components/schemas/YearSchema"
+                    },
+                    "remarks": {
+                        "title": "Remarks",
+                        "type": "string"
+                    },
+                    "church": {
+                        "additionalProperties": true,
+                        "title": "Church",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "category",
+                    "week",
+                    "amount",
+                    "source",
+                    "status",
+                    "contribution_date",
+                    "posted_at",
+                    "financial_year",
+                    "remarks",
+                    "church"
+                ],
+                "title": "ContributionDetailSchema",
+                "type": "object"
+            },
+            "NotificationListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/NotificationSchema"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PageSchema"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page"
+                ],
+                "title": "NotificationListSchema",
+                "type": "object"
+            },
+            "NotificationSchema": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "notification_type": {
+                        "title": "Notification Type",
+                        "type": "string"
+                    },
+                    "sent_at": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Sent At"
+                    },
+                    "is_read": {
+                        "title": "Is Read",
+                        "type": "boolean"
+                    },
+                    "read_at": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Read At"
+                    }
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "message",
+                    "notification_type",
+                    "sent_at",
+                    "is_read",
+                    "read_at"
+                ],
+                "title": "NotificationSchema",
+                "type": "object"
+            },
+            "DeviceRequestSchema": {
+                "properties": {
+                    "installation_id": {
+                        "format": "uuid",
+                        "title": "Installation Id",
+                        "type": "string"
+                    },
+                    "platform": {
+                        "title": "Platform",
+                        "type": "string"
+                    },
+                    "push_token": {
+                        "title": "Push Token",
+                        "type": "string"
+                    },
+                    "app_version": {
+                        "default": "",
+                        "title": "App Version",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "installation_id",
+                    "platform",
+                    "push_token"
+                ],
+                "title": "DeviceRequestSchema",
+                "type": "object"
+            },
+            "PaymentMethodListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "PaymentMethodListSchema",
+                "type": "object"
+            },
+            "PaymentIntentListSchema": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "title": "Items",
+                        "type": "array"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PageSchema"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page"
+                ],
+                "title": "PaymentIntentListSchema",
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "LogoutBearer": {
+                "type": "http",
+                "scheme": "bearer"
+            },
+            "MemberBearer": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "servers": []
+}

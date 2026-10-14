@@ -8,6 +8,8 @@ from jumuiya.models import Jumuiya
 
 
 class Member(models.Model):
+    """Church membership profile linked one-to-one with a user account."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     APPROVAL_STATUS = [
         ("PENDING", "Pending"),
@@ -81,6 +83,8 @@ class Member(models.Model):
         ordering = ["user__full_name"]
 
     def clean(self):
+        """Validate linked account, church, and Jumuiya ownership."""
+
         super().clean()
         errors = {}
 
@@ -98,4 +102,6 @@ class Member(models.Model):
             raise ValidationError(errors)
 
     def __str__(self):
+        """Return the member name and Bahasha number."""
+
         return f"{self.user.full_name} ({self.bahasha_number})"

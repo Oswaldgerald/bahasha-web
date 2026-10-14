@@ -6,6 +6,8 @@ register = template.Library()
 
 @register.inclusion_tag("partials/pagination.html", takes_context=True)
 def render_pagination(context, page_obj, page_parameter="page"):
+    """Preserve active filters while rendering reusable pagination controls."""
+
     request = context["request"]
     query = request.GET.copy()
     query.pop(page_parameter, None)

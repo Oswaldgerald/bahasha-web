@@ -7,6 +7,8 @@ from web.access import audit_access_required, scope_queryset_to_church
 
 @audit_access_required
 def audit_log_list(request):
+    """Display immutable audit events available to authorized administrators."""
+
     logs = AuditLog.objects.select_related("user", "church").order_by("-created_at")
     logs = scope_queryset_to_church(logs, request.user)
     logs = paginate_queryset(request, logs)

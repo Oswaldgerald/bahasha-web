@@ -8,6 +8,8 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(RowDeleteActionMixin, UserAdmin):
+    """Extend Django user administration with Bahasha identity and church data."""
+
     model = User
 
     list_display = (
@@ -66,6 +68,8 @@ class CustomUserAdmin(RowDeleteActionMixin, UserAdmin):
     )
 
     def has_delete_permission(self, request, obj=None):
+        """Prevent administrators from deleting their own active account."""
+
         if obj is not None and obj.pk == request.user.pk:
             return False
         return super().has_delete_permission(request, obj)

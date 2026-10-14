@@ -15,6 +15,8 @@ from web.access import finance_management_required, scope_queryset_to_church
 
 @finance_management_required
 def excel_upload_list(request):
+    """List contribution uploads and their processing state."""
+
     uploads = ExcelUpload.objects.select_related(
         "church",
         "financial_year",
@@ -40,6 +42,8 @@ def excel_upload_list(request):
 
 @finance_management_required
 def excel_upload_create(request):
+    """Accept and validate an Excel contribution file for review."""
+
     if request.method == "POST":
         form = ExcelUploadForm(
             request.POST,
@@ -62,6 +66,8 @@ def excel_upload_create(request):
 
 @finance_management_required
 def excel_upload_detail(request, upload_id):
+    """Display parsed rows and validation errors for one authorized upload."""
+
     upload = get_object_or_404(
         scope_queryset_to_church(
             ExcelUpload.objects.select_related(
@@ -87,6 +93,8 @@ def excel_upload_detail(request, upload_id):
 @finance_management_required
 @require_POST
 def excel_upload_approve(request, upload_id):
+    """Post valid upload rows exactly once after an explicit approval."""
+
     upload = get_object_or_404(
         scope_queryset_to_church(ExcelUpload.objects.all(), request.user),
         id=upload_id,

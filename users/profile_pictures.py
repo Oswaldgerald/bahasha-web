@@ -9,6 +9,8 @@ ALLOWED_PROFILE_PICTURE_FORMATS = {"JPEG", "PNG", "WEBP"}
 
 
 def validate_profile_picture(picture, current_picture=None):
+    """Validate profile image size and format while allowing unchanged files."""
+
     if not picture or picture == current_picture:
         return picture
     if picture.size > MAX_PROFILE_PICTURE_SIZE:
@@ -25,6 +27,8 @@ def validate_profile_picture(picture, current_picture=None):
 
 
 def profile_picture_response(user):
+    """Return a private, non-cacheable response for a user's stored picture."""
+
     picture = user.profile_picture
     if not picture:
         raise Http404("Profile picture not found.")

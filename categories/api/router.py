@@ -24,6 +24,8 @@ router = Router(auth=member_bearer, tags=["contribution categories"])
 
 
 def selected_year(member, financial_year_id=None):
+    """Resolve an explicitly selected or active year inside the member's church."""
+
     years = FinancialYear.objects.filter(church=member.church)
     if financial_year_id:
         try:
@@ -38,6 +40,8 @@ def selected_year(member, financial_year_id=None):
 
 
 def selected_category(member, category_id):
+    """Resolve one active, mobile-visible category owned by the member's church."""
+
     try:
         return ContributionCategory.objects.get(
             public_id=category_id,
@@ -55,6 +59,8 @@ def selected_category(member, category_id):
 
 @router.get("/contribution-categories", response=CategoryListSchema)
 def list_categories(request, financial_year_id: UUID | None = None):
+    """Return configurable category cards for the selected financial year."""
+
     year = selected_year(request.auth.member, financial_year_id)
     return {"items": category_cards(request.auth.member, year)}
 
@@ -64,6 +70,8 @@ def list_categories(request, financial_year_id: UUID | None = None):
     response={200: CategoryCardSchema, 404: ErrorSchema},
 )
 def category_detail(request, category_id: UUID, financial_year_id: UUID | None = None):
+    """Return one member-scoped category card and its calculated summary."""
+
     category = selected_category(request.auth.member, category_id)
     year = selected_year(request.auth.member, financial_year_id)
     cards = category_cards(request.auth.member, year)
@@ -82,6 +90,8 @@ def category_weeks(
     cursor: str | None = None,
     page_size: int = 20,
 ):
+    """Return paid, missing, and upcoming weeks for one weekly category."""
+
     member = request.auth.member
     category = selected_category(member, category_id)
     year = selected_year(member, financial_year_id)

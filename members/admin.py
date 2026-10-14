@@ -7,6 +7,8 @@ from .models import Member
 
 @admin.register(Member)
 class MemberAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure member identity, approval, and church filters in admin."""
+
     list_display = (
         "bahasha_number",
         "user",

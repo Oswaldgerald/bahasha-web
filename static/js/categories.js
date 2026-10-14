@@ -1,3 +1,4 @@
+// Keep category colors and the mobile-card preview synchronized with form input.
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-category-color]").forEach((card) => {
         card.style.setProperty("--category-color", card.dataset.categoryColor || "#2D1B69");
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const colorInput = editor.querySelector("#id_theme_color");
     const colorValue = editor.querySelector("[data-color-value]");
 
+    /** Refresh preview text, icon, and theme color from current field values. */
     const updatePreview = () => {
         const color = colorInput?.value || "#2D1B69";
         preview?.style.setProperty("--category-color", color);

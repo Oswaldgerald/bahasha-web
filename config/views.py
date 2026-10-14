@@ -4,6 +4,8 @@ from django.http import JsonResponse
 
 
 def health_check(request):
+    """Report application and database readiness for deployment probes."""
+
     try:
         with connections["default"].cursor() as cursor:
             cursor.execute("SELECT 1")

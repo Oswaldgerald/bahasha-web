@@ -1,6 +1,8 @@
+// Manage accessible profile and action menus, including focus restoration.
 document.addEventListener("DOMContentLoaded", () => {
     const dropdowns = document.querySelectorAll("[data-dropdown]");
 
+    /** Close one menu and optionally return keyboard focus to its trigger. */
     const closeDropdown = (dropdown, restoreFocus = false) => {
         const trigger = dropdown.querySelector('[data-action="toggle-dropdown"]');
         const menu = dropdown.querySelector('[role="menu"]');

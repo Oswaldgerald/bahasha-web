@@ -7,6 +7,8 @@ from .models import ContributionWeek
 
 @admin.register(ContributionWeek)
 class ContributionWeekAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure contribution-week search, filters, and row actions."""
+
     list_display = (
         "church",
         "financial_year",

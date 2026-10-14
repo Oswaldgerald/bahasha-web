@@ -10,6 +10,8 @@ from web.access import finance_management_required, scope_queryset_to_church
 
 @finance_management_required
 def financial_year_list(request):
+    """List financial years visible to the current administrator."""
+
     financial_years = FinancialYear.objects.select_related("church").order_by(
         "-year", "church__church_name"
     )
@@ -23,6 +25,8 @@ def financial_year_list(request):
 
 @finance_management_required
 def financial_year_create(request):
+    """Create a church-scoped financial year from validated form data."""
+
     if request.method == "POST":
         form = FinancialYearForm(request.POST, request_user=request.user)
 
@@ -38,6 +42,8 @@ def financial_year_create(request):
 
 @finance_management_required
 def financial_year_edit(request, financial_year_id):
+    """Update a financial year after enforcing church-level access."""
+
     financial_year = get_object_or_404(
         scope_queryset_to_church(FinancialYear.objects.all(), request.user),
         id=financial_year_id,

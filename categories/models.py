@@ -9,6 +9,8 @@ from churches.models import Church
 
 
 class ContributionCategory(models.Model):
+    """Church-configurable contribution type and mobile-card presentation."""
+
     FREQUENCY_CHOICES = [
         ("WEEKLY", "Weekly"),
         ("MONTHLY", "Monthly"),
@@ -119,6 +121,8 @@ class ContributionCategory(models.Model):
         ]
 
     def clean(self):
+        """Validate consistency between minimum, suggested, and maximum amounts."""
+
         super().clean()
         errors = {}
         if (
@@ -142,6 +146,8 @@ class ContributionCategory(models.Model):
             raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
+        """Normalize generated keys, codes, and annual-category state."""
+
         if not self.key:
             self.key = slugify(self.code or self.name)
         self.code = self.code.upper() if self.code else None
@@ -149,4 +155,6 @@ class ContributionCategory(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        """Return the category and owning church as its display label."""
+
         return f"{self.name} - {self.church.church_name}"

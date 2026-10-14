@@ -9,15 +9,21 @@ from contributions.models import Contribution
 
 
 def money(value):
+    """Serialize a decimal as the API's string-based TZS money shape."""
+
     value = value if value is not None else Decimal("0.00")
     return {"amount": f"{value:.2f}", "currency": "TZS"}
 
 
 def optional_money(value):
+    """Serialize optional monetary guidance without replacing null with zero."""
+
     return money(value) if value is not None else None
 
 
 def category_cards(member, financial_year):
+    """Build configurable mobile cards with member-scoped totals and gaps."""
+
     categories = list(
         ContributionCategory.objects.filter(
             church=member.church,

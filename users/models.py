@@ -7,11 +7,15 @@ from churches.models import Church
 
 
 def profile_picture_path(instance, filename):
+    """Generate an unguessable per-user storage path preserving the extension."""
+
     extension = Path(filename).suffix.lower()
     return f"profile_pictures/user_{instance.pk}/{uuid.uuid4().hex}{extension}"
 
 
 class User(AbstractUser):
+    """Bahasha account with church assignment, role, phone, and profile image."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
 
     ROLE_CHOICES = [
@@ -52,10 +56,14 @@ class User(AbstractUser):
         ordering = ["full_name"]
 
     def __str__(self):
+        """Return the user's name and assigned role."""
+
         return f"{self.full_name} - {self.role}"
 
 
 class ApiTokenSession(models.Model):
+    """Hashed, device-bound mobile access and refresh-token session."""
+
     PLATFORM_CHOICES = [
         ("android", "Android"),
         ("ios", "iOS"),
@@ -89,4 +97,6 @@ class ApiTokenSession(models.Model):
         ]
 
     def __str__(self):
+        """Return the account, platform, and public session identifier."""
+
         return f"{self.user.username} - {self.platform} - {self.public_id}"

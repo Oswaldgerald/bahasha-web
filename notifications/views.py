@@ -12,6 +12,8 @@ from web.access import notification_management_required, scope_queryset_to_churc
 
 @notification_management_required
 def notification_list(request):
+    """List church notifications with reusable pagination and filters."""
+
     notifications = Notification.objects.select_related(
         "church",
         "created_by",
@@ -24,6 +26,8 @@ def notification_list(request):
 
 @notification_management_required
 def notification_create(request):
+    """Create and mark a church notification for delivery."""
+
     if request.method == "POST":
         form = NotificationForm(request.POST, request_user=request.user)
 

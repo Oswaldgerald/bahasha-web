@@ -14,6 +14,8 @@ class MemberBearer(HttpBearer):
     """Resolve a hashed access token to an active, approved member principal."""
 
     def authenticate(self, request, token):
+        """Validate an access token and return its active member principal."""
+
         now = timezone.now()
         try:
             session = (
@@ -58,6 +60,8 @@ class LogoutBearer(HttpBearer):
     """Resolve revoked sessions too, allowing logout to remain idempotent."""
 
     def authenticate(self, request, token):
+        """Resolve any known session so repeated logout requests can succeed."""
+
         try:
             return ApiTokenSession.objects.select_related("user__church").get(
                 access_token_hash=hash_token(token)

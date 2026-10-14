@@ -14,6 +14,8 @@ router = Router()
 
 @router.get("/health", auth=None, tags=["platform"])
 def api_health(request):
+    """Verify database access and report API readiness and version."""
+
     with connection.cursor() as cursor:
         cursor.execute("SELECT 1")
         cursor.fetchone()

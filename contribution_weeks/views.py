@@ -16,6 +16,8 @@ from web.access import finance_management_required, scope_queryset_to_church
 
 @finance_management_required
 def contribution_week_list(request):
+    """List contribution weeks with the current week ordered first."""
+
     today = timezone.localdate()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     weeks = ContributionWeek.objects.select_related(
@@ -41,6 +43,8 @@ def contribution_week_list(request):
 
 @finance_management_required
 def contribution_week_create(request):
+    """Create one contribution week for an authorized church and year."""
+
     if request.method == "POST":
         form = ContributionWeekForm(request.POST, request_user=request.user)
 
@@ -56,6 +60,8 @@ def contribution_week_create(request):
 
 @finance_management_required
 def contribution_week_edit(request, week_id):
+    """Edit a contribution week while preserving church ownership rules."""
+
     week = get_object_or_404(
         scope_queryset_to_church(ContributionWeek.objects.all(), request.user),
         id=week_id,
@@ -79,6 +85,8 @@ def contribution_week_edit(request, week_id):
 @finance_management_required
 @require_POST
 def contribution_week_activate(request, week_id):
+    """Make one week active and rely on the model to deactivate its siblings."""
+
     week = get_object_or_404(
         scope_queryset_to_church(ContributionWeek.objects.all(), request.user),
         id=week_id,
@@ -94,6 +102,8 @@ def contribution_week_activate(request, week_id):
 @finance_management_required
 @require_POST
 def contribution_week_close(request, week_id):
+    """Close an existing week so further operational changes are restricted."""
+
     week = get_object_or_404(
         scope_queryset_to_church(ContributionWeek.objects.all(), request.user),
         id=week_id,
@@ -108,6 +118,8 @@ def contribution_week_close(request, week_id):
 
 @finance_management_required
 def contribution_week_generate(request):
+    """Generate the requested weekly schedule for a financial year."""
+
     if request.method == "POST":
         form = GenerateWeeksForm(request.POST, request_user=request.user)
 

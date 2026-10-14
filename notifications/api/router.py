@@ -21,6 +21,8 @@ router = Router(auth=member_bearer, tags=["notifications"])
 
 
 def visible_notifications(principal):
+    """Return sent notifications visible to the member's church and role."""
+
     return Notification.objects.filter(
         church=principal.member.church,
         status="SENT",
@@ -38,6 +40,8 @@ def notification_list(
     cursor: str | None = None,
     page_size: int = 20,
 ):
+    """Return cursor-paginated notifications with per-member read state."""
+
     queryset = visible_notifications(request.auth).order_by("-sent_at", "-created_at")
     read_receipts = NotificationReceipt.objects.filter(
         user=request.auth.user,
@@ -81,6 +85,8 @@ def notification_list(
     response={204: None, 404: ErrorSchema},
 )
 def mark_notification_read(request, notification_id: UUID):
+    """Mark one visible notification read using an idempotent receipt update."""
+
     try:
         notification = visible_notifications(request.auth).get(
             public_id=notification_id
@@ -102,6 +108,8 @@ def mark_notification_read(request, notification_id: UUID):
 
 
 def device_payload(device):
+    """Serialize registered mobile-device metadata without exposing push tokens."""
+
     return {
         "id": device.public_id,
         "installation_id": device.installation_id,
@@ -116,6 +124,8 @@ def device_payload(device):
     response={200: DeviceSchema, 201: DeviceSchema},
 )
 def register_device(request, payload: DeviceRequestSchema):
+    """Register or rotate a push token for one app installation."""
+
     if payload.platform not in dict(MobileDevice.PLATFORM_CHOICES):
         raise ApiError(
             "VALIDATION_ERROR",
@@ -158,6 +168,8 @@ def register_device(request, payload: DeviceRequestSchema):
     response={204: None, 404: ErrorSchema},
 )
 def unregister_device(request, device_id: UUID):
+    """Deactivate a member-owned device registration idempotently."""
+
     try:
         device = MobileDevice.objects.get(
             public_id=device_id,

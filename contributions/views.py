@@ -21,10 +21,14 @@ WORKSPACE_TABS = {"records", "manual", "upload", "uploads"}
 
 
 def _scope_to_user_church(queryset, user):
+    """Restrict contribution data to a non-superuser's assigned church."""
+
     return scope_queryset_to_church(queryset, user)
 
 
 def _save_manual_contribution(form, user):
+    """Persist one manual contribution and recalculate its annual target."""
+
     contribution = form.save(commit=False)
     if not contribution.reference_number:
         contribution.reference_number = f"MANUAL-{uuid.uuid4().hex[:10].upper()}"
@@ -35,6 +39,8 @@ def _save_manual_contribution(form, user):
 
 @finance_management_required
 def contribution_list(request):
+    """Display filterable contribution history and summary totals."""
+
     requested_tab = request.POST.get("entry_mode") or request.GET.get("tab", "records")
     active_tab = requested_tab if requested_tab in WORKSPACE_TABS else "records"
 
@@ -150,6 +156,8 @@ def contribution_list(request):
 
 @finance_management_required
 def contribution_create(request):
+    """Create a validated manual contribution within the user's scope."""
+
     if request.method == "POST":
         form = ContributionForm(request.POST, request_user=request.user)
 
@@ -166,6 +174,8 @@ def contribution_create(request):
 
 @finance_management_required
 def contribution_edit(request, contribution_id):
+    """Edit a contribution and refresh both old and new affected targets."""
+
     contribution = get_object_or_404(
         scope_queryset_to_church(Contribution.objects.all(), request.user),
         id=contribution_id,

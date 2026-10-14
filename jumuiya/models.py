@@ -5,6 +5,8 @@ from churches.models import Church
 
 
 class Jumuiya(models.Model):
+    """Small Christian community used to organize members within a church."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
@@ -35,4 +37,6 @@ class Jumuiya(models.Model):
         unique_together = ("church", "name")
 
     def __str__(self):
+        """Return the Jumuiya name and owning church."""
+
         return f"{self.name} - {self.church.church_name}"

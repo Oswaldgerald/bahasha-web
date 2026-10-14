@@ -19,6 +19,8 @@ REFRESH_TOKEN_LIFETIME = timedelta(days=30)
 
 @dataclass(frozen=True)
 class ApiPrincipal:
+    """Authenticated user, member profile, and token session passed to routes."""
+
     user: User
     member: Member
     session: ApiTokenSession
@@ -31,6 +33,8 @@ def hash_token(token):
 
 
 def random_token():
+    """Generate a high-entropy opaque credential suitable for bearer use."""
+
     return secrets.token_urlsafe(48)
 
 
@@ -98,6 +102,8 @@ def issue_token_pair(user, device, *, family_id=None):
 
 
 def token_response(member, access_token, refresh_token):
+    """Build the authentication response without exposing stored token hashes."""
+
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,

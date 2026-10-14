@@ -7,6 +7,8 @@ from .models import MemberAnnualTarget
 
 @admin.register(MemberAnnualTarget)
 class MemberAnnualTargetAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure member target administration and financial filters."""
+
     list_display = (
         "member",
         "church",

@@ -62,6 +62,8 @@ DEFAULT_PAGE = ("Bahasha", "landmark")
 
 
 def current_page(request):
+    """Provide navigation title, icon, and section metadata for the current URL."""
+
     resolver_match = getattr(request, "resolver_match", None)
     route_name = resolver_match.url_name if resolver_match else None
     title, icon = PAGE_METADATA.get(route_name, DEFAULT_PAGE)

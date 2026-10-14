@@ -34,25 +34,37 @@ MAX_MEMBER_CSV_ROWS = 5000
 
 
 class MemberCsvError(Exception):
+    """Base error for member CSV decoding and validation failures."""
+
     pass
 
 
 class MemberCsvImportError(MemberCsvError):
+    """Collect row-level validation failures from an otherwise readable CSV."""
+
     def __init__(self, errors):
+        """Store all row errors so an administrator can correct them together."""
+
         self.errors = errors
         super().__init__("The CSV contains invalid member rows.")
 
 
 @dataclass(frozen=True)
 class MemberCsvImportResult:
+    """Summarize the records created by a successful member import."""
+
     imported_count: int
 
 
 def _header_name(value):
+    """Normalize a CSV heading so common spacing and casing remain accepted."""
+
     return re.sub(r"[^a-z0-9]+", "_", (value or "").strip().lower()).strip("_")
 
 
 def _choice_value(value, choices, field_name, default=""):
+    """Resolve a human-readable or stored choice value to its canonical key."""
+
     normalized = (value or default).strip().upper()
     values = {key.upper(): key for key, _label in choices}
     labels = {label.upper(): key for key, label in choices}
@@ -65,6 +77,8 @@ def _choice_value(value, choices, field_name, default=""):
 
 
 def _boolean_value(value, default=True):
+    """Parse common CSV boolean labels while preserving an explicit default."""
+
     normalized = (value or "").strip().lower()
     if not normalized:
         return default
@@ -76,6 +90,8 @@ def _boolean_value(value, default=True):
 
 
 def _error_messages(error):
+    """Flatten Django validation errors into readable row messages."""
+
     if isinstance(error, IntegrityError):
         return ["A member with the same unique account details already exists."]
     if hasattr(error, "message_dict"):
@@ -90,6 +106,8 @@ def _error_messages(error):
 
 
 def _safe_csv_cell(value):
+    """Prevent exported cells from being interpreted as spreadsheet formulas."""
+
     text = str(value or "")
     if text.startswith(("=", "+", "-", "@")):
         return f"'{text}"
@@ -97,6 +115,8 @@ def _safe_csv_cell(value):
 
 
 def _church_for_row(row, request_user):
+    """Resolve the row's church without allowing cross-church assignment."""
+
     church_code = row.get("church_code", "").strip()
     if request_user.church_id and not request_user.is_superuser:
         church = request_user.church
@@ -114,6 +134,8 @@ def _church_for_row(row, request_user):
 
 
 def _jumuiya_for_row(row, church):
+    """Resolve an optional Jumuiya inside the already validated church."""
+
     name = row.get("jumuiya", "").strip()
     if not name:
         return None
@@ -126,6 +148,8 @@ def _jumuiya_for_row(row, church):
 
 
 def _generated_username(bahasha_number):
+    """Build a unique fallback username from a member's Bahasha number."""
+
     identifier = slugify(bahasha_number).replace("-", "_") or "member"
     base = f"member_{identifier}"[:140]
     candidate = base
@@ -137,6 +161,8 @@ def _generated_username(bahasha_number):
 
 
 def _member_data(row, request_user):
+    """Translate one normalized CSV row into validated member service data."""
+
     full_name = row.get("full_name", "").strip()
     bahasha_number = row.get("bahasha_number", "").strip().upper()
     raw_phone = row.get("phone_number", "").strip()
@@ -187,6 +213,8 @@ def _member_data(row, request_user):
 
 
 def read_member_csv(uploaded_file):
+    """Decode, validate, and return canonical rows from an uploaded UTF-8 CSV."""
+
     try:
         content = uploaded_file.read().decode("utf-8-sig")
     except UnicodeDecodeError as error:
@@ -222,6 +250,8 @@ def read_member_csv(uploaded_file):
 
 @transaction.atomic
 def import_members_csv(uploaded_file, request_user):
+    """Create every valid CSV member atomically or return all row errors."""
+
     rows = read_member_csv(uploaded_file)
     errors = []
     imported_count = 0
@@ -243,6 +273,8 @@ def import_members_csv(uploaded_file, request_user):
 
 
 def write_members_csv(file_object, members):
+    """Write member data using stable headers and spreadsheet-safe cells."""
+
     writer = csv.DictWriter(file_object, fieldnames=MEMBER_CSV_HEADERS)
     writer.writeheader()
     for member in members:

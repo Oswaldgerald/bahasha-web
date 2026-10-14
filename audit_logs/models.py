@@ -4,6 +4,8 @@ from churches.models import Church
 
 
 class AuditLog(models.Model):
+    """Immutable administrative or security event with optional request origin."""
+
     ACTION_CHOICES = [
         ("USER_CREATED", "User Created"),
         ("USER_UPDATED", "User Updated"),
@@ -53,4 +55,6 @@ class AuditLog(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
+        """Return a timestamped action and user summary."""
+
         return f"{self.action} - {self.created_at}"

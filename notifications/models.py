@@ -6,6 +6,8 @@ from churches.models import Church
 
 
 class Notification(models.Model):
+    """Church announcement or system message targeted to an optional role."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     TYPE_CHOICES = [
         ("CONTRIBUTION_UPDATE", "Contribution Update"),
@@ -62,10 +64,14 @@ class Notification(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
+        """Return the notification title used in administrative lists."""
+
         return self.title
 
 
 class NotificationReceipt(models.Model):
+    """Per-user delivery and read state for one notification."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     notification = models.ForeignKey(
         Notification,
@@ -90,6 +96,8 @@ class NotificationReceipt(models.Model):
 
 
 class MobileDevice(models.Model):
+    """Push-token registration tied to a user and app installation."""
+
     PLATFORM_CHOICES = [
         ("android", "Android"),
         ("ios", "iOS"),

@@ -4,6 +4,8 @@ from django.db import models
 
 
 class Church(models.Model):
+    """Top-level congregation that owns all operational and financial data."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church_code = models.CharField(max_length=50, unique=True)
     church_name = models.CharField(max_length=255)
@@ -22,10 +24,14 @@ class Church(models.Model):
         ordering = ["church_name"]
 
     def __str__(self):
+        """Return the church name used throughout forms and administration."""
+
         return f"{self.church_name} ({self.church_code})"
 
 
 class ChurchGroup(models.Model):
+    """Configurable ministry or service group belonging to one church."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
@@ -48,4 +54,6 @@ class ChurchGroup(models.Model):
         ]
 
     def __str__(self):
+        """Return the group and church names as a scoped display label."""
+
         return f"{self.name} - {self.church.church_name}"

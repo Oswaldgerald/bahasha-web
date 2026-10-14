@@ -1,3 +1,4 @@
+// Enhance non-native selects with searchable, accessible Choices controls.
 document.addEventListener("DOMContentLoaded", () => {
     if (!window.Choices) {
         return;

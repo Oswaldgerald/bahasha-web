@@ -1,3 +1,4 @@
+// Provide accessible password visibility controls on user-management forms.
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-password-target]").forEach((button) => {
         button.addEventListener("click", () => {

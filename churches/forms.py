@@ -4,12 +4,16 @@ from .models import Church, ChurchGroup
 
 
 class ChurchGroupForm(forms.ModelForm):
+    """Create or edit a ministry group within an authorized church."""
+
     class Meta:
         model = ChurchGroup
         fields = ["church", "name", "description", "is_active"]
         widgets = {"description": forms.Textarea(attrs={"rows": 3})}
 
     def __init__(self, *args, **kwargs):
+        """Accept the requesting user and scope available church choices."""
+
         request_user = kwargs.pop("request_user", None)
         super().__init__(*args, **kwargs)
 
@@ -23,6 +27,8 @@ class ChurchGroupForm(forms.ModelForm):
         self.fields["church"].queryset = churches
 
     def clean_name(self):
+        """Enforce a case-insensitive group name unique within the church."""
+
         name = self.cleaned_data["name"].strip()
         church = self.cleaned_data.get("church")
         groups = ChurchGroup.objects.filter(church=church, name__iexact=name)

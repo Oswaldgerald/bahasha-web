@@ -6,6 +6,8 @@ from .models import ExcelUpload, ExcelUploadRow
 
 
 class ExcelUploadRowInline(admin.TabularInline):
+    """Display parsed contribution rows inside their parent upload."""
+
     model = ExcelUploadRow
     extra = 0
     readonly_fields = (
@@ -21,6 +23,8 @@ class ExcelUploadRowInline(admin.TabularInline):
 
 @admin.register(ExcelUpload)
 class ExcelUploadAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure workbook processing and approval visibility in admin."""
+
     list_display = (
         "upload_reference",
         "church",
@@ -58,6 +62,8 @@ class ExcelUploadAdmin(RowDeleteActionMixin, admin.ModelAdmin):
 
 @admin.register(ExcelUploadRow)
 class ExcelUploadRowAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure direct inspection of parsed workbook rows."""
+
     list_display = (
         "upload",
         "row_number",

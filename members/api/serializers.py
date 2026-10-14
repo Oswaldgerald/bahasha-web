@@ -1,10 +1,14 @@
 def named_reference(instance):
+    """Serialize an optional related object as a public ID and display name."""
+
     if not instance:
         return None
     return {"id": instance.public_id, "name": instance.name}
 
 
 def member_payload(member):
+    """Serialize a hydrated member profile for mobile API responses."""
+
     user = member.user
     return {
         "id": member.public_id,

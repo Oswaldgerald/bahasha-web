@@ -7,6 +7,8 @@ from .models import Notification
 
 @admin.register(Notification)
 class NotificationAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure notification targeting, status, and delivery metadata."""
+
     list_display = (
         "title",
         "church",

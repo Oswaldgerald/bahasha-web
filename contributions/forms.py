@@ -8,6 +8,8 @@ from .models import Contribution
 
 
 class ContributionFilterForm(forms.Form):
+    """Collect contribution-list filters using church-scoped choices."""
+
     q = forms.CharField(
         required=False,
         widget=forms.SearchInput(
@@ -38,6 +40,8 @@ class ContributionFilterForm(forms.Form):
     )
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Limit filter options to records visible to the requesting user."""
+
         super().__init__(*args, **kwargs)
 
         years = FinancialYear.objects.select_related("church").order_by("-year")

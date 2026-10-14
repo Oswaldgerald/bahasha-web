@@ -7,6 +7,8 @@ from .models import Church, ChurchGroup
 
 @admin.register(Church)
 class ChurchAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure church search, filters, editing, and row actions."""
+
     list_display = (
         "church_name",
         "church_code",
@@ -35,6 +37,8 @@ class ChurchAdmin(RowDeleteActionMixin, admin.ModelAdmin):
 
 @admin.register(ChurchGroup)
 class ChurchGroupAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure church-group administration and ownership filters."""
+
     list_display = ("name", "church", "is_active", "created_at")
     list_filter = ("church", "is_active")
     search_fields = ("name", "church__church_name")

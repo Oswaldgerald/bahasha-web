@@ -10,6 +10,8 @@ from members.models import Member
 
 
 class ExcelUpload(models.Model):
+    """Contribution workbook and its validation and approval lifecycle."""
+
     STATUS_CHOICES = [
         ("PENDING_VALIDATION", "Pending Validation"),
         ("VALIDATED", "Validated"),
@@ -82,6 +84,8 @@ class ExcelUpload(models.Model):
         ordering = ["-uploaded_at"]
 
     def clean(self):
+        """Validate that upload context belongs to one church and period."""
+
         super().clean()
         errors = {}
         if (
@@ -108,10 +112,14 @@ class ExcelUpload(models.Model):
             raise ValidationError(errors)
 
     def __str__(self):
+        """Return the uploaded filename and processing status."""
+
         return f"{self.upload_reference} - {self.church.church_name}"
 
 
 class ExcelUploadRow(models.Model):
+    """Normalized contribution row parsed from one uploaded workbook."""
+
     VALIDATION_STATUS = [
         ("VALID", "Valid"),
         ("INVALID", "Invalid"),
@@ -151,4 +159,6 @@ class ExcelUploadRow(models.Model):
         ordering = ["row_number"]
 
     def __str__(self):
+        """Return the upload and row number as a display label."""
+
         return f"Row {self.row_number} - {self.bahasha_number}"

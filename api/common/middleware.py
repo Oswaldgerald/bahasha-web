@@ -11,9 +11,13 @@ class RequestIDMiddleware:
     """Attach a safe correlation ID and prevent private API response caching."""
 
     def __init__(self, get_response):
+        """Store the next middleware or view callable in the Django chain."""
+
         self.get_response = get_response
 
     def __call__(self, request):
+        """Attach request metadata before and cache controls after processing."""
+
         supplied_request_id = request.headers.get("X-Request-ID", "")
         # Do not reflect arbitrary header content back into response headers or logs.
         if REQUEST_ID_PATTERN.fullmatch(supplied_request_id):

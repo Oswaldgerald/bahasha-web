@@ -30,16 +30,22 @@ def payments_unavailable():
 
 @router.get("/payment-methods", response=PaymentMethodListSchema)
 def payment_methods(request):
+    """Return no methods until the complete payment safety gate is enabled."""
+
     return {"items": []}
 
 
 @router.post("/payment-intents", response={503: ErrorSchema})
 def create_payment_intent(request, payload: Body[dict]):
+    """Reject intent creation until durable, idempotent persistence exists."""
+
     payments_unavailable()
 
 
 @router.get("/payment-intents", response=PaymentIntentListSchema)
 def payment_intents(request):
+    """Return the empty intent history while mobile payments remain disabled."""
+
     return {
         "items": [],
         "page": {"next_cursor": None, "has_more": False},
@@ -51,6 +57,8 @@ def payment_intents(request):
     response={503: ErrorSchema},
 )
 def payment_intent_detail(request, payment_intent_id: UUID):
+    """Reject intent polling until persisted payment intents are available."""
+
     payments_unavailable()
 
 
@@ -59,4 +67,6 @@ def payment_intent_detail(request, payment_intent_id: UUID):
     response={503: ErrorSchema},
 )
 def cancel_payment_intent(request, payment_intent_id: UUID):
+    """Reject cancellation until provider-aware intent state handling exists."""
+
     payments_unavailable()

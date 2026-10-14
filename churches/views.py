@@ -20,6 +20,8 @@ from .forms import ChurchGroupForm
 
 @church_admin_required
 def church_list(request):
+    """Display the searchable, paginated church directory."""
+
     churches = scope_queryset_to_church(
         Church.objects.all().order_by("church_name"),
         request.user,
@@ -32,6 +34,8 @@ def church_list(request):
 
 @superuser_required
 def church_create(request):
+    """Create a church and its default configurable contribution categories."""
+
     if request.method == "POST":
         form = ChurchForm(request.POST)
 
@@ -52,6 +56,8 @@ def church_create(request):
 
 @church_admin_required
 def church_edit(request, church_id):
+    """Update an existing church selected by its database identifier."""
+
     churches = scope_queryset_to_church(
         Church.objects.all(), request.user, church_field="pk"
     )
@@ -71,6 +77,8 @@ def church_edit(request, church_id):
 
 
 def church_group_queryset_for_user(user):
+    """Return church groups visible within the current administrator's scope."""
+
     groups = ChurchGroup.objects.select_related("church").annotate(
         member_count=Count("members")
     )
@@ -79,6 +87,8 @@ def church_group_queryset_for_user(user):
 
 @member_management_required
 def church_group_list(request):
+    """Display searchable church groups restricted to the current church."""
+
     groups = church_group_queryset_for_user(request.user).order_by(
         "church__church_name", "name"
     )
@@ -91,6 +101,8 @@ def church_group_list(request):
 
 @member_management_required
 def church_group_create(request):
+    """Create a church group within the requesting user's allowed scope."""
+
     form = ChurchGroupForm(request.POST or None, request_user=request.user)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -106,6 +118,8 @@ def church_group_create(request):
 
 @member_management_required
 def church_group_edit(request, group_id):
+    """Update a church group after applying church-level authorization."""
+
     church_group = get_object_or_404(
         church_group_queryset_for_user(request.user),
         id=group_id,

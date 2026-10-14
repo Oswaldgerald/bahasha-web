@@ -56,6 +56,8 @@ class PaymentProviderError(Exception):
         retryable: bool = False,
         status_code: int | None = None,
     ):
+        """Capture a stable code, safe message, and retry classification."""
+
         super().__init__(message)
         self.code = code
         self.message = message
@@ -64,7 +66,11 @@ class PaymentProviderError(Exception):
 
 
 class UnsupportedProviderOperation(PaymentProviderError):
+    """Signal that a normalized operation has no provider implementation."""
+
     def __init__(self, operation: str):
+        """Describe an operation omitted by the selected provider."""
+
         super().__init__(
             "PROVIDER_OPERATION_UNSUPPORTED",
             f"The provider does not support {operation}.",
@@ -80,14 +86,20 @@ class PaymentProvider(ABC):
     @property
     @abstractmethod
     def configured(self) -> bool:
+        """Return whether every credential required for provider calls exists."""
+
         raise NotImplementedError
 
     @abstractmethod
     def initiate(self, payment: PaymentProviderRequest) -> PaymentProviderResult:
+        """Start a provider payment request for validated domain data."""
+
         raise NotImplementedError
 
     @abstractmethod
     def query(self, payment: PaymentProviderRequest) -> PaymentProviderResult:
+        """Return the provider's authoritative transaction state."""
+
         raise NotImplementedError
 
     def cancel(self, payment: PaymentProviderRequest) -> PaymentProviderResult:

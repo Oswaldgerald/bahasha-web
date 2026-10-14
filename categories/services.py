@@ -51,6 +51,8 @@ DEFAULT_CATEGORY_TEMPLATES = [
 
 
 def create_default_categories(church):
+    """Seed editable mobile contribution categories for a newly created church."""
+
     return [
         ContributionCategory.objects.get_or_create(
             church=church,

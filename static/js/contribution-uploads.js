@@ -1,3 +1,4 @@
+// Enhance contribution workbooks with drag-and-drop and selected-file feedback.
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.querySelector("[data-contribution-file-input]");
     const dropzone = document.querySelector("[data-contribution-file-dropzone]");
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    /** Convert byte counts into compact values suitable for the upload panel. */
     const formatFileSize = (bytes) => {
         if (bytes < 1024) {
             return `${bytes} B`;
@@ -20,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     };
 
+    /** Synchronize selected-file details and dropzone visual state. */
     const updateSelection = () => {
         const file = input.files?.[0];
         selection.hidden = !file;
@@ -50,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // DataTransfer assigns a dropped file to the native input so form submission
+    // continues to use normal browser multipart behavior.
     dropzone.addEventListener("drop", (event) => {
         const [file] = event.dataTransfer?.files || [];
         if (!file) {

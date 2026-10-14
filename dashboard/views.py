@@ -13,6 +13,8 @@ from web.access import scope_queryset_to_church, staff_dashboard_required
 
 @staff_dashboard_required
 def dashboard(request):
+    """Build church-scoped dashboard totals and category performance data."""
+
     targets = scope_queryset_to_church(MemberAnnualTarget.objects.all(), request.user)
     contributions = scope_queryset_to_church(
         Contribution.objects.all(), request.user

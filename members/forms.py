@@ -16,6 +16,8 @@ from .services import create_member, update_member
 
 
 class MemberCsvUploadForm(forms.Form):
+    """Validate member CSV size, extension, and content type."""
+
     file = forms.FileField(
         label="Member CSV file",
         widget=forms.FileInput(
@@ -31,6 +33,8 @@ class MemberCsvUploadForm(forms.Form):
     )
 
     def clean_file(self):
+        """Reject missing, oversized, or non-CSV member files."""
+
         uploaded_file = self.cleaned_data["file"]
         if not uploaded_file.name.lower().endswith(".csv"):
             raise forms.ValidationError("Upload a file with the .csv extension.")
@@ -40,6 +44,8 @@ class MemberCsvUploadForm(forms.Form):
 
 
 class MemberBaseForm(forms.Form):
+    """Collect and validate linked user and member profile fields."""
+
     profile_picture = forms.ImageField(
         required=False,
         widget=forms.FileInput(
@@ -84,6 +90,8 @@ class MemberBaseForm(forms.Form):
     approval_status = forms.ChoiceField(choices=Member.APPROVAL_STATUS)
 
     def __init__(self, *args, **kwargs):
+        """Initialize linked records, phone fields, and scoped relationships."""
+
         self.member = kwargs.pop("member", None)
         self.request_user = kwargs.pop("request_user", None)
         super().__init__(*args, **kwargs)
@@ -91,6 +99,8 @@ class MemberBaseForm(forms.Form):
         self._set_member_initial_values()
 
     def _selected_church_id(self):
+        """Resolve the submitted or existing church used for field scoping."""
+
         church_id = self.data.get("church") if self.is_bound else None
         if not church_id and self.member:
             church_id = self.member.church_id
@@ -104,6 +114,8 @@ class MemberBaseForm(forms.Form):
         return church_id
 
     def _scope_relationship_fields(self):
+        """Restrict church, Jumuiya, and group choices to authorized records."""
+
         church_queryset = Church.objects.filter(is_active=True)
         if self.request_user and not self.request_user.is_superuser:
             if self.request_user.church_id:
@@ -137,6 +149,8 @@ class MemberBaseForm(forms.Form):
             self.fields["church_groups"].queryset = ChurchGroup.objects.none()
 
     def _set_member_initial_values(self):
+        """Populate edit-form values from the linked user and member records."""
+
         if not self.member:
             return
 
@@ -156,6 +170,8 @@ class MemberBaseForm(forms.Form):
         self.fields["approval_status"].initial = self.member.approval_status
 
     def clean_username(self):
+        """Require a username unique outside the member currently being edited."""
+
         username = self.cleaned_data["username"].strip()
         queryset = User.objects.filter(username__iexact=username)
         if self.member:
@@ -165,6 +181,8 @@ class MemberBaseForm(forms.Form):
         return username
 
     def clean_phone_number(self):
+        """Normalize and enforce uniqueness of the member's phone number."""
+
         phone_number = normalize_phone_number(
             self.cleaned_data.get("phone_country_code"),
             self.cleaned_data.get("phone_number"),
@@ -179,6 +197,8 @@ class MemberBaseForm(forms.Form):
         return phone_number
 
     def clean_profile_picture(self):
+        """Validate an uploaded member photo against shared image rules."""
+
         current_picture = self.member.user.profile_picture if self.member else None
         return validate_profile_picture(
             self.cleaned_data.get("profile_picture"),
@@ -186,6 +206,8 @@ class MemberBaseForm(forms.Form):
         )
 
     def clean_bahasha_number(self):
+        """Require a Bahasha number unique outside the current member."""
+
         bahasha_number = self.cleaned_data["bahasha_number"].strip().upper()
         queryset = Member.objects.filter(bahasha_number__iexact=bahasha_number)
         if self.member:
@@ -195,6 +217,8 @@ class MemberBaseForm(forms.Form):
         return bahasha_number
 
     def clean(self):
+        """Validate cross-field church relationships after individual fields."""
+
         cleaned_data = super().clean()
         church = cleaned_data.get("church")
         jumuiya = cleaned_data.get("jumuiya")
@@ -213,6 +237,8 @@ class MemberBaseForm(forms.Form):
 
 
 class MemberCreateForm(MemberBaseForm):
+    """Create a member with a required initial password."""
+
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"})
     )
@@ -222,22 +248,32 @@ class MemberCreateForm(MemberBaseForm):
     )
 
     def clean_password(self):
+        """Apply Django password policy using the pending linked user."""
+
         password = self.cleaned_data["password"]
         validate_password(password)
         return password
 
     def save(self):
+        """Delegate linked-record creation to the transactional member service."""
+
         return create_member(self.cleaned_data)
 
 
 class MemberEditForm(MemberBaseForm):
+    """Edit an existing member without exposing password management."""
+
     remove_picture = forms.BooleanField(required=False)
     is_active = forms.BooleanField(required=False)
 
     def _set_member_initial_values(self):
+        """Extend base edit values with the member's active state."""
+
         super()._set_member_initial_values()
         if self.member:
             self.fields["is_active"].initial = self.member.is_active
 
     def save(self):
+        """Delegate linked-record updates to the transactional member service."""
+
         return update_member(self.member, self.cleaned_data)

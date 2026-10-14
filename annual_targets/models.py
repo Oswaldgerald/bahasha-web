@@ -9,6 +9,8 @@ from categories.models import ContributionCategory
 
 
 class MemberAnnualTarget(models.Model):
+    """Member contribution target and calculated progress for one year/category."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     member = models.ForeignKey(
         Member,
@@ -71,6 +73,8 @@ class MemberAnnualTarget(models.Model):
         ordering = ["member__user__full_name", "category__name"]
 
     def clean(self):
+        """Validate church ownership and non-negative target amounts."""
+
         super().clean()
         errors = {}
         if self.member_id and self.church_id and self.member.church_id != self.church_id:
@@ -91,6 +95,8 @@ class MemberAnnualTarget(models.Model):
             raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
+        """Validate the target before every persistence operation."""
+
         self.remaining_amount = self.target_amount - self.contributed_amount
 
         if self.target_amount > 0:
@@ -103,6 +109,8 @@ class MemberAnnualTarget(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        """Return a concise member, year, and category label."""
+
         return (
             f"{self.member.user.full_name} - "
             f"{self.category.name} - "

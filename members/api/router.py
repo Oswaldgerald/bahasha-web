@@ -21,6 +21,8 @@ router = Router(auth=member_bearer, tags=["member"])
 
 
 def hydrated_member(member):
+    """Reload a member with relationships required by API serializers."""
+
     return (
         type(member)
         .objects.select_related("user", "church", "jumuiya")
@@ -31,12 +33,16 @@ def hydrated_member(member):
 
 @router.get("/me", response=MemberSchema)
 def get_me(request):
+    """Return the authenticated member's current profile."""
+
     return member_payload(hydrated_member(request.auth.member))
 
 
 @router.patch("/me", response=MemberSchema)
 @transaction.atomic
 def update_me(request, payload: MemberUpdateSchema):
+    """Update permitted self-service profile fields and create an audit event."""
+
     user = request.auth.user
     values = payload.model_dump(exclude_unset=True)
     if "full_name" in values:
@@ -77,6 +83,8 @@ def update_me(request, payload: MemberUpdateSchema):
 
 @router.get("/me/photo", response=None)
 def get_photo(request):
+    """Return the authenticated member's private profile photo."""
+
     try:
         return profile_picture_response(request.auth.user)
     except Http404 as error:
@@ -89,6 +97,8 @@ def get_photo(request):
 
 @router.post("/me/photo", response=MemberSchema)
 def update_photo(request, photo: File[UploadedFile]):
+    """Validate and replace the authenticated member's profile photo."""
+
     try:
         cleaned_photo = forms.ImageField().clean(photo)
         validate_profile_picture(cleaned_photo)
@@ -118,6 +128,8 @@ def update_photo(request, photo: File[UploadedFile]):
 
 @router.delete("/me/photo", response={204: None})
 def delete_photo(request):
+    """Remove the authenticated member's profile photo idempotently."""
+
     user = request.auth.user
     if user.profile_picture:
         user.profile_picture.delete(save=False)
@@ -137,6 +149,8 @@ def delete_photo(request):
 
 @router.get("/bootstrap", response=BootstrapSchema)
 def bootstrap(request):
+    """Assemble the member dashboard, active period, cards, and capabilities."""
+
     member = hydrated_member(request.auth.member)
     active_year = (
         FinancialYear.objects.filter(church=member.church, is_active=True)

@@ -7,6 +7,8 @@ from .models import AuditLog
 
 @admin.register(AuditLog)
 class AuditLogAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure searchable, read-focused security and business events."""
+
     list_display = (
         "action",
         "user",

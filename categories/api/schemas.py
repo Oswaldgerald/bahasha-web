@@ -6,17 +6,23 @@ from api.common.schemas import MoneySchema, PageSchema
 
 
 class LabelsSchema(Schema):
+    """Provide default and Swahili category labels."""
+
     default: str
     sw: str
 
 
 class AmountGuidanceSchema(Schema):
+    """Describe optional suggested and allowed contribution amounts."""
+
     suggested: MoneySchema | None
     minimum: MoneySchema | None
     maximum: MoneySchema | None
 
 
 class CategoryCardSchema(Schema):
+    """Describe one configurable contribution card and member summary."""
+
     id: UUID
     key: str
     labels: LabelsSchema
@@ -33,10 +39,14 @@ class CategoryCardSchema(Schema):
 
 
 class CategoryListSchema(Schema):
+    """Wrap mobile contribution cards returned for a financial year."""
+
     items: list[CategoryCardSchema]
 
 
 class WeekSchema(Schema):
+    """Describe one contribution week's state and payment eligibility."""
+
     id: UUID
     week_number: int
     sunday_date: str
@@ -48,5 +58,7 @@ class WeekSchema(Schema):
 
 
 class WeekListSchema(Schema):
+    """Wrap a cursor-paginated category week schedule."""
+
     items: list[WeekSchema]
     page: PageSchema

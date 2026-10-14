@@ -10,9 +10,13 @@ from .profile_pictures import validate_profile_picture
 
 
 class PhoneNumberFormMixin:
+    """Share country-code parsing and canonical phone validation across forms."""
+
     phone_country_code = country_code_field()
 
     def _set_phone_initial(self):
+        """Populate split country and local fields from the stored number."""
+
         if self.is_bound or not getattr(self.instance, "phone_number", ""):
             return
         code, local_number = split_phone_number(self.instance.phone_number)
@@ -20,6 +24,8 @@ class PhoneNumberFormMixin:
         self.fields["phone_number"].initial = local_number
 
     def clean_phone_number(self):
+        """Combine split phone fields into the canonical stored representation."""
+
         phone_number = normalize_phone_number(
             self.cleaned_data.get("phone_country_code"),
             self.cleaned_data.get("phone_number"),
@@ -35,9 +41,13 @@ class PhoneNumberFormMixin:
 
 
 class UserForm(PhoneNumberFormMixin, forms.ModelForm):
+    """Edit user identity, role, church, and account availability."""
+
     phone_country_code = country_code_field()
 
     def __init__(self, *args, **kwargs):
+        """Initialize phone fields and limit church choices when appropriate."""
+
         request_user = kwargs.pop("request_user", None)
         super().__init__(*args, **kwargs)
         self._set_phone_initial()
@@ -64,6 +74,8 @@ class UserForm(PhoneNumberFormMixin, forms.ModelForm):
 
 
 class UserCreateForm(UserForm):
+    """Create a user only after both password fields pass Django validation."""
+
     password1 = forms.CharField(
         label="Password",
         strip=False,
@@ -86,6 +98,8 @@ class UserCreateForm(UserForm):
     )
 
     def clean(self):
+        """Ensure password confirmation matches and meets configured policy."""
+
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
@@ -108,6 +122,8 @@ class UserCreateForm(UserForm):
         return cleaned_data
 
     def save(self, commit=True):
+        """Hash the validated password before saving the new account."""
+
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
@@ -116,10 +132,14 @@ class UserCreateForm(UserForm):
 
 
 class ProfileUpdateForm(PhoneNumberFormMixin, forms.ModelForm):
+    """Update the current profile and support explicit picture removal."""
+
     phone_country_code = country_code_field()
     remove_picture = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
+        """Initialize profile phone and picture-removal fields."""
+
         super().__init__(*args, **kwargs)
         self._original_picture_name = (
             self.instance.profile_picture.name
@@ -129,12 +149,16 @@ class ProfileUpdateForm(PhoneNumberFormMixin, forms.ModelForm):
         self._set_phone_initial()
 
     def clean_profile_picture(self):
+        """Validate a newly uploaded picture or retain the current file."""
+
         return validate_profile_picture(
             self.cleaned_data.get("profile_picture"),
             self.instance.profile_picture,
         )
 
     def save(self, commit=True):
+        """Delete a removed picture from storage before saving profile changes."""
+
         user = super().save(commit=False)
         remove_picture = self.cleaned_data.get("remove_picture", False)
         has_new_picture = "profile_picture" in self.files

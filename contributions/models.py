@@ -12,6 +12,8 @@ from categories.models import ContributionCategory
 
 
 class Contribution(models.Model):
+    """Validated financial contribution posted for one member and period."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     SOURCE_CHOICES = [
         ("EXCEL_UPLOAD", "Excel Upload"),
@@ -107,6 +109,8 @@ class Contribution(models.Model):
         ]
 
     def clean(self):
+        """Validate amount, ownership, eligibility, period, and category rules."""
+
         super().clean()
         errors = {}
 
@@ -155,6 +159,8 @@ class Contribution(models.Model):
             raise ValidationError(errors)
 
     def __str__(self):
+        """Return a member, category, and amount display label."""
+
         return (
             f"{self.member.user.full_name} - "
             f"{self.category.name} - "

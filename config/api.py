@@ -18,6 +18,8 @@ api = NinjaAPI(
 
 @api.exception_handler(ApiError)
 def handle_api_error(request, exc):
+    """Serialize domain API errors without exposing internal exceptions."""
+
     return error_response(
         request,
         exc.code,
@@ -29,6 +31,8 @@ def handle_api_error(request, exc):
 
 @api.exception_handler(AuthenticationError)
 def handle_authentication_error(request, exc):
+    """Normalize Django Ninja authentication failures for mobile clients."""
+
     return error_response(
         request,
         "TOKEN_INVALID",
@@ -39,6 +43,8 @@ def handle_authentication_error(request, exc):
 
 @api.exception_handler(NinjaValidationError)
 def handle_validation_error(request, exc):
+    """Group Ninja validation details by request field."""
+
     raw_errors = exc.errors
     if callable(raw_errors):
         raw_errors = raw_errors()

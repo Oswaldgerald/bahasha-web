@@ -8,6 +8,8 @@ from .models import Member
 
 
 def validate_church_groups(church, church_groups):
+    """Ensure every selected group belongs to the member's church."""
+
     invalid_groups = [
         group.name for group in church_groups if group.church_id != church.id
     ]
@@ -19,6 +21,8 @@ def validate_church_groups(church, church_groups):
 
 @transaction.atomic
 def create_member(data):
+    """Atomically create a user, member profile, photo, and group memberships."""
+
     church_groups = list(data.get("church_groups") or [])
     validate_church_groups(data["church"], church_groups)
     is_approved = data["approval_status"] == "APPROVED"
@@ -62,6 +66,8 @@ def create_member(data):
 
 @transaction.atomic
 def update_member(member, data):
+    """Atomically update linked account and membership details."""
+
     church_groups = list(data.get("church_groups") or [])
     validate_church_groups(data["church"], church_groups)
     user = member.user
@@ -110,6 +116,8 @@ def update_member(member, data):
 
 @transaction.atomic
 def approve_member(member):
+    """Mark a member approved and record the approval timestamp."""
+
     member.approval_status = "APPROVED"
     member.approved_at = timezone.now()
     member.is_active = True
@@ -123,6 +131,8 @@ def approve_member(member):
 
 @transaction.atomic
 def reject_member(member):
+    """Reject a member and make the membership unavailable for sign-in."""
+
     member.approval_status = "REJECTED"
     member.approved_at = None
     member.is_active = False

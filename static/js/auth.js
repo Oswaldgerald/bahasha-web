@@ -1,3 +1,4 @@
+// Provide accessible show/hide behavior for authentication password fields.
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-password-toggle]").forEach((button) => {
         const input = document.getElementById(button.dataset.passwordToggle);

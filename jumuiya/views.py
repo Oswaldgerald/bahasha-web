@@ -10,6 +10,8 @@ from web.access import member_management_required, scope_queryset_to_church
 
 @member_management_required
 def jumuiya_list(request):
+    """List small Christian communities within the user's church scope."""
+
     jumuiya_list = Jumuiya.objects.select_related("church").order_by(
         "church__church_name", "name"
     )
@@ -21,6 +23,8 @@ def jumuiya_list(request):
 
 @member_management_required
 def jumuiya_create(request):
+    """Create a Jumuiya using church-scoped relationship choices."""
+
     if request.method == "POST":
         form = JumuiyaForm(request.POST, request_user=request.user)
 
@@ -36,6 +40,8 @@ def jumuiya_create(request):
 
 @member_management_required
 def jumuiya_edit(request, jumuiya_id):
+    """Edit an authorized Jumuiya without crossing church boundaries."""
+
     jumuiya = get_object_or_404(
         scope_queryset_to_church(Jumuiya.objects.all(), request.user),
         id=jumuiya_id,

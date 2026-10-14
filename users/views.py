@@ -19,12 +19,16 @@ from web.access import church_admin_required, scope_queryset_to_church
 
 
 def authenticated_home(user):
+    """Choose the correct landing page for an authenticated account role."""
+
     if user.role == "MEMBER" and not user.is_superuser:
         return "web_profile"
     return "web_dashboard"
 
 
 def login_view(request):
+    """Authenticate a browser session and honor only safe local redirects."""
+
     if request.user.is_authenticated:
         return redirect(authenticated_home(request.user))
 
@@ -66,12 +70,16 @@ def login_view(request):
 
 @require_POST
 def logout_view(request):
+    """End the current browser session through a POST-only action."""
+
     logout(request)
     return redirect("login")
 
 
 @church_admin_required
 def user_list(request):
+    """List and filter user accounts within the administrator's scope."""
+
     users = user_queryset_for_user(request.user)
     summary = users.aggregate(
         total=models.Count("id"),
@@ -116,12 +124,16 @@ def user_list(request):
 
 
 def user_queryset_for_user(user):
+    """Return accounts visible to a superuser or church administrator."""
+
     users = User.objects.select_related("church").order_by("full_name")
     return scope_queryset_to_church(users, user)
 
 
 @church_admin_required
 def user_create(request):
+    """Create a user with a validated password, role, and church assignment."""
+
     if request.method == "POST":
         form = UserCreateForm(request.POST, request_user=request.user)
 
@@ -140,6 +152,8 @@ def user_create(request):
 
 @church_admin_required
 def user_edit(request, user_id):
+    """Update an authorized user account without exposing password fields."""
+
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
     if request.method == "POST":
@@ -161,6 +175,8 @@ def user_edit(request, user_id):
 @church_admin_required
 @require_POST
 def user_reset_password(request, user_id):
+    """Send a secure password-reset link without replacing the password directly."""
+
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
     if not user.email:
         messages.error(
@@ -198,6 +214,8 @@ def user_reset_password(request, user_id):
 @church_admin_required
 @require_POST
 def user_activate(request, user_id):
+    """Reactivate an authorized account through a POST-only operation."""
+
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
     user.is_active = True
     user.save()
@@ -210,6 +228,8 @@ def user_activate(request, user_id):
 @church_admin_required
 @require_POST
 def user_deactivate(request, user_id):
+    """Deactivate an authorized account and trigger API-session revocation."""
+
     user = get_object_or_404(user_queryset_for_user(request.user), id=user_id)
 
     if user == request.user:
@@ -226,6 +246,8 @@ def user_deactivate(request, user_id):
 
 @login_required(login_url="login")
 def profile_view(request):
+    """Display and update the signed-in user's profile and optional photo."""
+
     if request.method == "POST":
         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
 
@@ -241,11 +263,15 @@ def profile_view(request):
 
 @login_required(login_url="login")
 def profile_picture_view(request):
+    """Return the signed-in user's private profile image response."""
+
     return profile_picture_response(request.user)
 
 
 @login_required(login_url="login")
 def change_password_view(request):
+    """Change the current password while preserving the browser session."""
+
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
 

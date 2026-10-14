@@ -5,6 +5,8 @@ from churches.models import Church
 
 
 class FinancialYear(models.Model):
+    """Church-owned accounting period used by weeks, targets, and contributions."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
@@ -27,4 +29,6 @@ class FinancialYear(models.Model):
         unique_together = ("church", "year")
 
     def __str__(self):
+        """Return the church and calendar year display label."""
+
         return f"{self.church.church_name} - {self.year}"

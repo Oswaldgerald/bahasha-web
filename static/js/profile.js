@@ -1,3 +1,4 @@
+// Preview profile-picture changes and release temporary browser object URLs.
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.querySelector(".profile-file-input");
     const previewImage = document.querySelector("[data-preview-image]");
@@ -11,11 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let objectUrl = null;
     const originalSource = previewImage.dataset.originalSrc || "";
 
+    /** Display the profile initials fallback. */
     const showFallback = () => {
         previewImage.hidden = true;
         fallback.hidden = false;
     };
 
+    /** Display a selected or persisted profile picture. */
     const showImage = (source) => {
         previewImage.src = source;
         previewImage.hidden = false;

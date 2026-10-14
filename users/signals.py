@@ -8,6 +8,8 @@ from users.models import ApiTokenSession, User
 
 
 def revoke_user_sessions(user_id):
+    """Revoke every active mobile session for one user account."""
+
     ApiTokenSession.objects.filter(
         user_id=user_id,
         revoked_at__isnull=True,
@@ -16,6 +18,8 @@ def revoke_user_sessions(user_id):
 
 @receiver(pre_save, sender=User)
 def remember_user_security_state(sender, instance, **kwargs):
+    """Capture persisted security fields before a user update is saved."""
+
     if not instance.pk:
         instance._previous_api_security_state = None
         return
@@ -28,6 +32,8 @@ def remember_user_security_state(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def revoke_sessions_after_user_security_change(sender, instance, created, **kwargs):
+    """Revoke mobile sessions after password or active-state changes."""
+
     previous = getattr(instance, "_previous_api_security_state", None)
     if created or not previous:
         return
@@ -41,12 +47,16 @@ def revoke_sessions_after_user_security_change(sender, instance, created, **kwar
 
 @receiver(post_save, sender=Member)
 def revoke_sessions_for_ineligible_member(sender, instance, **kwargs):
+    """Revoke sessions when membership becomes inactive or unapproved."""
+
     if not instance.is_active or instance.approval_status != "APPROVED":
         revoke_user_sessions(instance.user_id)
 
 
 @receiver(post_save, sender=Church)
 def revoke_sessions_for_inactive_church(sender, instance, **kwargs):
+    """Revoke member sessions when their church is deactivated."""
+
     if not instance.is_active:
         ApiTokenSession.objects.filter(
             user__church=instance,

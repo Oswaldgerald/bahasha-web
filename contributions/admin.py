@@ -7,6 +7,8 @@ from .models import Contribution
 
 @admin.register(Contribution)
 class ContributionAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure contribution search, financial filters, and row actions."""
+
     list_display = (
         "reference_number",
         "member",

@@ -1,3 +1,4 @@
+// Manage the mobile drawer, desktop collapse state, and collapsible menu groups.
 document.addEventListener("DOMContentLoaded", () => {
     const body = document.body;
     const navigation = document.querySelector("#main-navigation");
@@ -11,11 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    /** Close the mobile navigation and synchronize its expanded state. */
     const closeMobileNavigation = () => {
         body.classList.remove("navigation-open");
         mobileToggle.setAttribute("aria-expanded", "false");
     };
 
+    /** Open the mobile navigation and synchronize its expanded state. */
     const openMobileNavigation = () => {
         body.classList.add("navigation-open");
         mobileToggle.setAttribute("aria-expanded", "true");
@@ -52,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Storage can be unavailable in privacy-restricted browsers.
         }
 
+        /** Synchronize desktop collapse controls with the body state. */
         const syncCollapseState = () => {
             const isCollapsed = body.classList.contains("sidebar-collapsed");
             collapseButton.setAttribute("aria-expanded", String(!isCollapsed));
@@ -78,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         collapsedSections = [];
     }
 
+    /** Persist collapsed menu groups when browser storage is available. */
     const saveCollapsedSections = () => {
         const sectionIds = Array.from(sectionToggles)
             .filter((button) => button.closest(".nav-group")?.classList.contains("is-collapsed"))

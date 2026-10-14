@@ -23,6 +23,8 @@ router = Router(auth=member_bearer, tags=["contributions"])
 
 
 def year_payload(year):
+    """Serialize a financial year using public identifiers."""
+
     return {
         "id": year.public_id,
         "year": year.year,
@@ -33,6 +35,8 @@ def year_payload(year):
 
 
 def category_reference(category):
+    """Serialize the stable category identity embedded in contribution payloads."""
+
     return {
         "id": category.public_id,
         "key": category.key,
@@ -41,6 +45,8 @@ def category_reference(category):
 
 
 def contribution_payload(contribution):
+    """Serialize one contribution without exposing database identifiers."""
+
     return {
         "id": contribution.public_id,
         "reference": contribution.reference_number,
@@ -60,6 +66,8 @@ def contribution_payload(contribution):
 
 @router.get("/financial-years", response=YearListSchema)
 def financial_years(request):
+    """List financial years belonging to the authenticated member's church."""
+
     years = FinancialYear.objects.filter(church=request.auth.member.church).order_by(
         "-year"
     )
@@ -74,6 +82,8 @@ def targets(
     cursor: str | None = None,
     page_size: int = 20,
 ):
+    """Return cursor-paginated annual targets owned by the member."""
+
     queryset = MemberAnnualTarget.objects.filter(
         member=request.auth.member,
         church=request.auth.member.church,
@@ -113,6 +123,8 @@ def contributions(
     cursor: str | None = None,
     page_size: int = 20,
 ):
+    """Return filtered contribution history scoped to member and church."""
+
     queryset = Contribution.objects.filter(
         member=request.auth.member,
         church=request.auth.member.church,
@@ -153,6 +165,8 @@ def contributions(
     response={200: ContributionDetailSchema, 404: ErrorSchema},
 )
 def contribution_detail(request, contribution_id: UUID):
+    """Return one contribution only when it belongs to the authenticated member."""
+
     try:
         contribution = Contribution.objects.select_related(
             "category",

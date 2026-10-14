@@ -17,11 +17,17 @@ STAFF_DASHBOARD_ROLES = REPORT_ACCESS_ROLES
 
 
 def role_required(*roles):
+    """Restrict a browser view to authenticated users with approved roles."""
+
     allowed_roles = set(roles)
 
     def decorator(view_func):
+        """Wrap a view with authentication and role authorization checks."""
+
         @wraps(view_func)
         def wrapped(request, *args, **kwargs):
+            """Authorize the request before delegating to the original view."""
+
             if not request.user.is_authenticated:
                 return redirect_to_login(request.get_full_path(), login_url="login")
             if request.user.is_superuser or request.user.role in allowed_roles:
@@ -34,8 +40,12 @@ def role_required(*roles):
 
 
 def superuser_required(view_func):
+    """Restrict a browser view to authenticated Django superusers."""
+
     @wraps(view_func)
     def wrapped(request, *args, **kwargs):
+        """Authorize superuser access before calling the wrapped view."""
+
         if not request.user.is_authenticated:
             return redirect_to_login(request.get_full_path(), login_url="login")
         if request.user.is_superuser:
@@ -55,6 +65,8 @@ staff_dashboard_required = role_required(*STAFF_DASHBOARD_ROLES)
 
 
 def scope_queryset_to_church(queryset, user, church_field="church"):
+    """Apply a reusable church filter while leaving superusers unrestricted."""
+
     if user.is_superuser:
         return queryset
     if not user.church_id:

@@ -53,13 +53,19 @@ CATEGORY_SETTINGS = {
 
 
 class Command(BaseCommand):
+    """Seed a deterministic approved member and realistic contribution history."""
+
     help = "Create idempotent mobile demo contributions for an approved member."
 
     def add_arguments(self, parser):
+        """Register optional credentials and reset flags for demo seeding."""
+
         parser.add_argument("username", help="Username of the approved member")
 
     @transaction.atomic
     def handle(self, *args, **options):
+        """Create deterministic mobile demo data for local development."""
+
         username = options["username"].strip()
         try:
             member = Member.objects.select_related("user", "church").get(

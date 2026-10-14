@@ -7,6 +7,8 @@ from .models import ContributionCategory
 
 @admin.register(ContributionCategory)
 class ContributionCategoryAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure category business rules and mobile presentation in admin."""
+
     list_display = (
         "name",
         "church",

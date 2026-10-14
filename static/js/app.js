@@ -1,8 +1,10 @@
+// Initialize shared icons, bounded progress indicators, and print actions.
 document.addEventListener("DOMContentLoaded", () => {
     if (window.lucide) {
         window.lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
     }
 
+    // Clamp server-provided percentages so malformed values cannot break layout.
     document.querySelectorAll("[data-progress]").forEach((progressBar) => {
         const rawValue = Number.parseFloat(progressBar.dataset.progress);
         const value = Number.isFinite(rawValue) ? rawValue : 0;

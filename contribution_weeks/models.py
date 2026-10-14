@@ -6,6 +6,8 @@ from financial_years.models import FinancialYear
 
 
 class ContributionWeek(models.Model):
+    """One dated collection period belonging to a church financial year."""
+
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     church = models.ForeignKey(
         Church,
@@ -34,8 +36,12 @@ class ContributionWeek(models.Model):
         unique_together = ("church", "financial_year", "week_number")
 
     def __str__(self):
+        """Return a church, week number, and date display label."""
+
         return f"{self.church.church_name} - Week {self.week_number} ({self.sunday_date})"
     def save(self, *args, **kwargs):
+        """Ensure only one contribution week is active per church."""
+
         if self.is_active:
             ContributionWeek.objects.filter(
                 church=self.church

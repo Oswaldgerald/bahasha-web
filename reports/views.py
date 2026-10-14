@@ -15,6 +15,8 @@ from web.access import report_access_required, scope_queryset_to_church
 
 @report_access_required
 def contribution_summary_report(request):
+    """Aggregate targets, contributions, balances, and completion by category."""
+
     church_id = request.GET.get("church")
     financial_year_id = request.GET.get("financial_year")
     category_id = request.GET.get("category")
@@ -85,6 +87,8 @@ def contribution_summary_report(request):
 
 @report_access_required
 def member_statement_report(request):
+    """Build a filtered contribution statement for one authorized member."""
+
     member_id = request.GET.get("member")
 
     members = scope_queryset_to_church(
@@ -132,6 +136,8 @@ def member_statement_report(request):
 
 @report_access_required
 def weekly_collection_report(request):
+    """Summarize contribution collections by week and category."""
+
     week_id = request.GET.get("week")
 
     weeks = ContributionWeek.objects.select_related(

@@ -8,6 +8,8 @@ from .models import ContributionCategory
 
 
 class ContributionCategoryForm(forms.ModelForm):
+    """Configure church-owned category behavior and mobile presentation."""
+
     class Meta:
         model = ContributionCategory
         fields = [
@@ -44,6 +46,8 @@ class ContributionCategoryForm(forms.ModelForm):
         }
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope the church field and apply reusable form-control styling."""
+
         super().__init__(*args, **kwargs)
         self.request_user = request_user
         churches = Church.objects.filter(is_active=True).order_by("church_name")
@@ -57,6 +61,8 @@ class ContributionCategoryForm(forms.ModelForm):
         self.fields["key"].required = False
 
     def clean_church(self):
+        """Prevent non-superusers from assigning categories to another church."""
+
         church = self.cleaned_data["church"]
         if (
             self.request_user
@@ -68,6 +74,8 @@ class ContributionCategoryForm(forms.ModelForm):
         return church
 
     def clean_key(self):
+        """Normalize and enforce a unique category key within the church."""
+
         key = slugify(
             self.cleaned_data.get("key")
             or self.cleaned_data.get("code")
@@ -87,5 +95,7 @@ class ContributionCategoryForm(forms.ModelForm):
         return key
 
     def clean_code(self):
+        """Normalize and enforce an optional unique church category code."""
+
         code = self.cleaned_data.get("code")
         return code.strip().upper() if code else None

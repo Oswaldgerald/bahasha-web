@@ -11,6 +11,8 @@ def create_audit_log(
     entity_id=None,
     request=None
 ):
+    """Record a security or business event with optional request provenance."""
+
     ip_address = None
 
     if request:

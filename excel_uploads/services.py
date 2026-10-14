@@ -13,6 +13,8 @@ from .models import ExcelUpload, ExcelUploadRow
 
 
 def create_excel_upload(form, uploaded_by):
+    """Persist upload metadata, then parse its rows for administrator review."""
+
     upload = form.save(commit=False)
     upload.uploaded_by = uploaded_by
     upload.file_name = upload.file.name
@@ -23,6 +25,8 @@ def create_excel_upload(form, uploaded_by):
 
 @transaction.atomic
 def process_excel_upload(upload: ExcelUpload):
+    """Validate workbook rows and store their normalized processing results."""
+
     upload.rows.all().delete()
 
     upload.file.open("rb")
@@ -118,6 +122,8 @@ def process_excel_upload(upload: ExcelUpload):
 
 @transaction.atomic
 def approve_excel_upload(upload: ExcelUpload, approved_by):
+    """Atomically convert valid, unposted upload rows into contributions."""
+
     upload = ExcelUpload.objects.select_for_update().get(pk=upload.pk)
     if upload.status != "VALIDATED":
         raise ValueError("Only validated uploads can be approved.")

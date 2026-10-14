@@ -48,11 +48,15 @@ class MpesaConfig:
 
     @classmethod
     def from_django_settings(cls):
+        """Build immutable adapter configuration from Django settings."""
+
         values = settings.MPESA
         return cls(**values)
 
     @property
     def configured(self):
+        """Return whether M-Pesa is enabled and all credentials are present."""
+
         return bool(
             self.enabled
             and self.base_url
@@ -66,6 +70,8 @@ class JsonHttpTransport:
     """Small injectable JSON transport that keeps provider tests off the network."""
 
     def post(self, url, *, headers, payload, timeout):
+        """POST JSON and translate network failures to sanitized provider errors."""
+
         request = Request(
             url,
             data=json.dumps(payload).encode("utf-8"),
@@ -113,11 +119,15 @@ class MpesaProvider(PaymentProvider):
     display_name = "Vodacom M-Pesa"
 
     def __init__(self, config=None, transport=None):
+        """Create the adapter with injectable configuration and HTTP transport."""
+
         self.config = config or MpesaConfig.from_django_settings()
         self.transport = transport or JsonHttpTransport()
 
     @property
     def configured(self):
+        """Expose the configuration readiness required by provider selection."""
+
         return self.config.configured
 
     def initiate(self, payment):
@@ -182,6 +192,8 @@ class MpesaProvider(PaymentProvider):
         return base64.b64encode(encrypted_key).decode("ascii")
 
     def _require_configured(self):
+        """Stop before network access when M-Pesa credentials are incomplete."""
+
         if not self.config.configured:
             raise PaymentProviderError(
                 "MPESA_NOT_CONFIGURED",
@@ -189,6 +201,8 @@ class MpesaProvider(PaymentProvider):
             )
 
     def _validate_payment(self, payment):
+        """Validate currency, amount, and payer number before provider access."""
+
         if payment.currency != self.config.currency:
             raise PaymentProviderError(
                 "MPESA_CURRENCY_UNSUPPORTED",
@@ -203,10 +217,14 @@ class MpesaProvider(PaymentProvider):
 
     @staticmethod
     def _amount(amount):
+        """Format a decimal using M-Pesa's two-place amount representation."""
+
         return format(amount.quantize(Decimal("0.01")), "f")
 
     @staticmethod
     def _msisdn(phone_number):
+        """Normalize a Tanzanian local or international number to provider digits."""
+
         digits = "".join(character for character in phone_number if character.isdigit())
         if digits.startswith("0"):
             digits = f"255{digits[1:]}"

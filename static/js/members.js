@@ -1,3 +1,4 @@
+// Coordinate member CSV uploads, photo previews, confirmations, and relationships.
 document.addEventListener("DOMContentLoaded", () => {
     const csvInput = document.querySelector("[data-member-csv-input]");
     const csvDropzone = document.querySelector("[data-member-csv-dropzone]");
@@ -6,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const csvSize = document.querySelector("[data-member-csv-size]");
     const csvRemove = document.querySelector("[data-member-csv-remove]");
 
+    /** Convert member CSV byte counts into compact display values. */
     const formatFileSize = (bytes) => {
         if (bytes < 1024) {
             return `${bytes} B`;
@@ -16,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     };
 
+    /** Synchronize selected CSV details and dropzone state. */
     const updateCsvSelection = () => {
         const file = csvInput?.files?.[0];
         if (!csvSelection || !csvName || !csvSize) {
@@ -74,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const removePhoto = document.querySelector('[name="remove_picture"]');
     let photoObjectUrl = null;
 
+    /** Display initials when no usable member photograph is selected. */
     const showPhotoFallback = () => {
         if (photoImage && photoFallback) {
             photoImage.hidden = true;
@@ -81,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    /** Display the selected or existing member photograph. */
     const showPhoto = (source) => {
         if (photoImage && photoFallback) {
             photoImage.src = source;
@@ -143,6 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // Relationship choices are fetched again when church ownership changes so
+    // stale Jumuiya or group IDs cannot remain selected in the browser.
     churchSelect.addEventListener("change", async () => {
         const endpoint = new URL(memberForm.dataset.jumuiyaUrl, window.location.origin);
         endpoint.searchParams.set("church_id", churchSelect.value);

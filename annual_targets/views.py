@@ -10,6 +10,8 @@ from web.access import finance_management_required, scope_queryset_to_church
 
 @finance_management_required
 def annual_target_list(request):
+    """Display annual member targets visible to the requesting user."""
+
     targets = MemberAnnualTarget.objects.select_related(
         "member",
         "member__user",
@@ -29,6 +31,8 @@ def annual_target_list(request):
 
 @finance_management_required
 def annual_target_create(request):
+    """Create an annual target from church-scoped member and category choices."""
+
     if request.method == "POST":
         form = MemberAnnualTargetForm(request.POST, request_user=request.user)
 
@@ -44,6 +48,8 @@ def annual_target_create(request):
 
 @finance_management_required
 def annual_target_edit(request, target_id):
+    """Update an annual target while preserving church ownership."""
+
     target = get_object_or_404(
         scope_queryset_to_church(MemberAnnualTarget.objects.all(), request.user),
         id=target_id,

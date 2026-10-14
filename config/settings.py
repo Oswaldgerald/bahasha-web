@@ -5,6 +5,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 def env_bool(name, default=False):
+    """Read a conventional truthy environment flag with a safe default."""
+
     value = os.getenv(name)
     if value is None:
         return default
@@ -12,11 +14,15 @@ def env_bool(name, default=False):
 
 
 def env_list(name, default=""):
+    """Read a comma-separated environment value as a trimmed list."""
+
     value = os.getenv(name, default)
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
 def required_env(name):
+    """Read a required setting or stop startup with an actionable error."""
+
     value = os.getenv(name)
     if value:
         return value

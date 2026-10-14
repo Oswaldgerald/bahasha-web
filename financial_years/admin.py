@@ -7,6 +7,8 @@ from .models import FinancialYear
 
 @admin.register(FinancialYear)
 class FinancialYearAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure financial-year administration and status filtering."""
+
     list_display = (
         "church",
         "year",

@@ -34,12 +34,16 @@ MEMBER_CSV_ROLES = {"ADMIN", "MAIN_PASTOR"}
 
 
 def require_member_csv_access(user):
+    """Reject CSV operations for roles that cannot manage member records."""
+
     if not user.is_superuser and user.role not in MEMBER_CSV_ROLES:
         raise PermissionDenied("You do not have permission to exchange member data.")
 
 
 @member_management_required
 def member_card(request, member_id):
+    """Render a compact member card used by list and detail interfaces."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     return render(request, "members/card.html", {"member": member})
@@ -47,6 +51,8 @@ def member_card(request, member_id):
 
 @member_management_required
 def member_list(request):
+    """List and filter members within the user's authorized church scope."""
+
     members = Member.objects.select_related(
         "user", "church", "jumuiya"
     ).prefetch_related("church_groups")
@@ -95,6 +101,8 @@ def member_list(request):
 
 
 def member_queryset_for_user(user):
+    """Build the optimized, church-scoped queryset shared by member views."""
+
     queryset = Member.objects.select_related(
         "user", "church", "jumuiya"
     ).prefetch_related("church_groups")
@@ -103,6 +111,8 @@ def member_queryset_for_user(user):
 
 @member_management_required
 def member_csv_import(request):
+    """Validate and import a UTF-8 member CSV as one transactional operation."""
+
     require_member_csv_access(request.user)
     import_errors = []
     if request.method == "POST":
@@ -140,6 +150,8 @@ def member_csv_import(request):
 
 @member_management_required
 def member_csv_export(request):
+    """Stream authorized member records as a spreadsheet-safe CSV file."""
+
     require_member_csv_access(request.user)
     response = HttpResponse(content_type="text/csv; charset=utf-8")
     response["Content-Disposition"] = 'attachment; filename="bahasha-members.csv"'
@@ -151,6 +163,8 @@ def member_csv_export(request):
 
 @member_management_required
 def member_csv_template(request):
+    """Download an empty member import template with canonical headers."""
+
     require_member_csv_access(request.user)
     response = HttpResponse(content_type="text/csv; charset=utf-8")
     response["Content-Disposition"] = 'attachment; filename="member-import-template.csv"'
@@ -161,6 +175,8 @@ def member_csv_template(request):
 
 @member_management_required
 def member_jumuiya_options(request):
+    """Return Jumuiya options for the selected authorized church."""
+
     church_id = request.GET.get("church_id")
     if not church_id or not church_id.isdigit():
         return JsonResponse({"options": [], "groups": []})
@@ -188,6 +204,8 @@ def member_jumuiya_options(request):
 @member_management_required
 @require_POST
 def approve_member(request, member_id):
+    """Approve a pending member and record the administrative action."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
     approve_member_record(member)
     create_audit_log(
@@ -208,6 +226,8 @@ def approve_member(request, member_id):
 @member_management_required
 @require_POST
 def reject_member(request, member_id):
+    """Reject a pending member and revoke mobile eligibility."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
     reject_member_record(member)
     create_audit_log(
@@ -227,6 +247,8 @@ def reject_member(request, member_id):
 
 @member_management_required
 def member_detail(request, member_id):
+    """Display one member and their church, group, and contribution context."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     targets = MemberAnnualTarget.objects.filter(member=member).select_related(
@@ -265,12 +287,16 @@ def member_detail(request, member_id):
 
 @member_management_required
 def member_profile_picture(request, member_id):
+    """Return an authorized member's private profile picture."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
     return profile_picture_response(member.user)
 
 
 @member_management_required
 def member_create(request):
+    """Create the linked user and member records through the domain service."""
+
     if request.method == "POST":
         form = MemberCreateForm(
             request.POST,
@@ -299,6 +325,8 @@ def member_create(request):
 
 @member_management_required
 def member_edit(request, member_id):
+    """Update a member and linked account while enforcing church ownership."""
+
     member = get_object_or_404(member_queryset_for_user(request.user), id=member_id)
 
     if request.method == "POST":

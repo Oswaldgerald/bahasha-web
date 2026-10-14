@@ -14,7 +14,11 @@ from users.models import User
 
 
 class JumuiyaForm(forms.ModelForm):
+    """Edit a Jumuiya with church choices scoped to the requesting user."""
+
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope church choices for the requesting user."""
+
         super().__init__(*args, **kwargs)
         scope_church_field(self, request_user)
 
@@ -34,7 +38,11 @@ class JumuiyaForm(forms.ModelForm):
 
 
 class FinancialYearForm(forms.ModelForm):
+    """Edit financial years using only churches visible to the requester."""
+
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope financial-year church choices for the requesting user."""
+
         super().__init__(*args, **kwargs)
         scope_church_field(self, request_user)
 
@@ -55,7 +63,11 @@ class FinancialYearForm(forms.ModelForm):
 
 
 class ContributionWeekForm(forms.ModelForm):
+    """Edit one contribution week with scoped church and year choices."""
+
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope church and financial-year choices consistently."""
+
         super().__init__(*args, **kwargs)
         scope_church_field(self, request_user)
         scope_related_field(self, "financial_year", request_user)
@@ -77,16 +89,22 @@ class ContributionWeekForm(forms.ModelForm):
 
 
 class GenerateWeeksForm(forms.Form):
+    """Collect and validate a date range used to generate weekly periods."""
+
     church = forms.ModelChoiceField(queryset=Church.objects.filter(is_active=True))
 
     financial_year = forms.ModelChoiceField(queryset=FinancialYear.objects.all())
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope the generation form's financial year choices."""
+
         super().__init__(*args, **kwargs)
         scope_church_field(self, request_user)
         scope_related_field(self, "financial_year", request_user)
 
     def clean(self):
+        """Ensure the requested generation range is chronological and in-year."""
+
         cleaned_data = super().clean()
         church = cleaned_data.get("church")
         financial_year = cleaned_data.get("financial_year")
@@ -99,6 +117,8 @@ class GenerateWeeksForm(forms.Form):
 
 
 class MemberAnnualTargetForm(forms.ModelForm):
+    """Edit a member target with church-scoped related choices."""
+
     class Meta:
         model = MemberAnnualTarget
         fields = [
@@ -111,11 +131,15 @@ class MemberAnnualTargetForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope all target relationships to the requesting user's church."""
+
         super().__init__(*args, **kwargs)
         scope_financial_form_fields(self, request_user)
 
 
 class ContributionForm(forms.ModelForm):
+    """Edit contribution details using only authorized financial records."""
+
     class Meta:
         model = Contribution
         fields = [
@@ -136,12 +160,16 @@ class ContributionForm(forms.ModelForm):
         }
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope contribution relationships and apply shared widget styling."""
+
         super().__init__(*args, **kwargs)
         scope_financial_form_fields(self, request_user)
 
 
 # Excel Upload Form
 class ExcelUploadForm(forms.ModelForm):
+    """Collect contribution workbook context and validate the uploaded file."""
+
     class Meta:
         model = ExcelUpload
         fields = [
@@ -161,10 +189,14 @@ class ExcelUploadForm(forms.ModelForm):
         }
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope upload context fields to records the user may manage."""
+
         super().__init__(*args, **kwargs)
         scope_financial_form_fields(self, request_user)
 
     def clean_file(self):
+        """Require a supported Excel workbook within the upload size limit."""
+
         uploaded_file = self.cleaned_data["file"]
         if not uploaded_file.name.lower().endswith(".xlsx"):
             raise forms.ValidationError("Upload an Excel file with the .xlsx extension.")
@@ -174,6 +206,8 @@ class ExcelUploadForm(forms.ModelForm):
 
 
 def scope_financial_form_fields(form, request_user):
+    """Scope church, period, category, and member choices consistently."""
+
     if not request_user or request_user.is_superuser:
         return
 
@@ -211,6 +245,8 @@ def scope_financial_form_fields(form, request_user):
 
 
 def scope_church_field(form, request_user):
+    """Restrict a form's church field for non-superusers."""
+
     if "church" not in form.fields or not request_user or request_user.is_superuser:
         return
     if not request_user.church_id:
@@ -221,6 +257,8 @@ def scope_church_field(form, request_user):
 
 
 def scope_related_field(form, field_name, request_user):
+    """Restrict a related model field using its church ownership path."""
+
     if field_name not in form.fields or not request_user or request_user.is_superuser:
         return
     field = form.fields[field_name]
@@ -232,6 +270,8 @@ def scope_related_field(form, field_name, request_user):
 
 # Church Management Form
 class ChurchForm(forms.ModelForm):
+    """Create or edit core church identity and location details."""
+
     class Meta:
         model = Church
         fields = [
@@ -246,11 +286,15 @@ class ChurchForm(forms.ModelForm):
 
 # Notification Form
 class NotificationForm(forms.ModelForm):
+    """Compose a notification with church choices scoped to the requester."""
+
     target_role = forms.ChoiceField(
         choices=[("", "All Users")] + list(User.ROLE_CHOICES), required=False
     )
 
     def __init__(self, *args, request_user=None, **kwargs):
+        """Scope notification church choices to the requesting user."""
+
         super().__init__(*args, **kwargs)
         scope_church_field(self, request_user)
 

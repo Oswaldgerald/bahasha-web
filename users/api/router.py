@@ -27,6 +27,8 @@ router = Router(tags=["authentication"])
 
 
 def user_for_identifier(identifier):
+    """Resolve an active account by username or normalized phone number."""
+
     identifier = identifier.strip()
     phone_candidates = {identifier.replace(" ", "").replace("-", "")}
     if identifier.startswith("0") and len(identifier) > 1:
@@ -42,6 +44,8 @@ def user_for_identifier(identifier):
     response={200: TokenResponseSchema, 401: ErrorSchema, 403: ErrorSchema},
 )
 def create_token(request, payload: TokenRequestSchema):
+    """Authenticate an approved member and issue a device-bound token pair."""
+
     if payload.device.platform not in dict(ApiTokenSession.PLATFORM_CHOICES):
         raise ApiError(
             "VALIDATION_ERROR",
@@ -81,11 +85,15 @@ def create_token(request, payload: TokenRequestSchema):
     response={200: TokenResponseSchema, 401: ErrorSchema, 403: ErrorSchema},
 )
 def refresh_token(request, payload: RefreshRequestSchema):
+    """Rotate a valid refresh token and invalidate its predecessor."""
+
     return rotate_refresh_token(payload.refresh_token)
 
 
 @router.post("/logout", auth=logout_bearer, response={204: None})
 def logout(request):
+    """Revoke the presented API session while remaining safe to repeat."""
+
     session = request.auth
     ApiTokenSession.objects.filter(
         pk=session.pk,
@@ -110,6 +118,8 @@ def logout(request):
     response={202: MessageSchema},
 )
 def forgot_password(request, payload: PasswordForgotSchema):
+    """Send recovery mail without revealing whether an account exists."""
+
     form = PasswordResetForm({"email": payload.email.strip()})
     if form.is_valid():
         form.save(

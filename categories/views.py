@@ -9,12 +9,16 @@ from web.access import church_admin_required, scope_queryset_to_church
 
 
 def category_queryset_for_user(user):
+    """Return contribution categories allowed for the current user."""
+
     categories = ContributionCategory.objects.select_related("church")
     return scope_queryset_to_church(categories, user)
 
 
 @church_admin_required
 def category_list(request):
+    """Display configurable contribution categories in mobile display order."""
+
     categories = category_queryset_for_user(request.user)
     categories = paginate_queryset(request, categories, per_page=12)
 
@@ -23,6 +27,8 @@ def category_list(request):
 
 @church_admin_required
 def category_create(request):
+    """Create a church-owned contribution category and mobile-card settings."""
+
     if request.method == "POST":
         form = ContributionCategoryForm(request.POST, request_user=request.user)
 
@@ -38,6 +44,8 @@ def category_create(request):
 
 @church_admin_required
 def category_edit(request, category_id):
+    """Update a category after restricting it to the user's church scope."""
+
     category = get_object_or_404(category_queryset_for_user(request.user), id=category_id)
 
     if request.method == "POST":

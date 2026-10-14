@@ -179,6 +179,8 @@ COUNTRY_CALLING_CODES = [
 
 
 def country_code_field():
+    """Create the searchable country-code choice field shared by user forms."""
+
     return forms.ChoiceField(
         choices=COUNTRY_CALLING_CODES,
         initial="255",
@@ -193,6 +195,8 @@ def country_code_field():
 
 
 def split_phone_number(value):
+    """Split a stored international number into country code and local digits."""
+
     digits = re.sub(r"\D", "", value or "")
     for code, _label in sorted(
         COUNTRY_CALLING_CODES,
@@ -205,6 +209,8 @@ def split_phone_number(value):
 
 
 def normalize_phone_number(country_code, local_number):
+    """Validate and return one canonical E.164-style phone number."""
+
     code = re.sub(r"\D", "", country_code or "255")
     local = re.sub(r"\D", "", local_number or "").lstrip("0")
     if local.startswith(code) and len(local) - len(code) >= 7:

@@ -70,5 +70,7 @@ def save_contributions(contributions, previous_target_keys=()):
 
 
 def save_contribution(contribution, previous_target_key=None):
+    """Save one contribution through the shared batch transaction path."""
+
     previous_keys = [previous_target_key] if previous_target_key else []
     return save_contributions([contribution], previous_keys)[0]

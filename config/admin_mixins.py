@@ -6,12 +6,16 @@ class RowDeleteActionMixin:
     """Expose Django's protected delete confirmation from each admin list row."""
 
     def get_list_display(self, request):
+        """Append a permission-aware delete action to the admin list display."""
+
         list_display = tuple(super().get_list_display(request))
 
         if not self.has_delete_permission(request):
             return list_display
 
         def delete_record(obj):
+            """Render the delete link only when this object may be removed."""
+
             if not self.has_delete_permission(request, obj):
                 return ""
 

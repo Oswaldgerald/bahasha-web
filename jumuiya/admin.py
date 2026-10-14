@@ -7,6 +7,8 @@ from .models import Jumuiya
 
 @admin.register(Jumuiya)
 class JumuiyaAdmin(RowDeleteActionMixin, admin.ModelAdmin):
+    """Configure Jumuiya administration within church ownership."""
+
     list_display = (
         "name",
         "church",

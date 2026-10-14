@@ -181,6 +181,44 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", default=False)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Bahasha <noreply@localhost>")
 
+# Payment provider requests are server-to-server. Keep all provider credentials out
+# of the mobile application and enable the public payment flow only after sandbox
+# settlement and failure-path tests pass.
+PAYMENT_PROVIDER = os.getenv("PAYMENT_PROVIDER", "vodacom_m_pesa")
+PAYMENTS_ENABLED = env_bool("PAYMENTS_ENABLED", default=False)
+MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT", "sandbox").lower()
+MPESA_DEFAULT_BASE_URLS = {
+    "sandbox": "https://openapi.m-pesa.com/sandbox/",
+    "production": "https://openapi.m-pesa.com/openapi/",
+}
+if MPESA_ENVIRONMENT not in MPESA_DEFAULT_BASE_URLS:
+    raise ImproperlyConfigured(
+        "MPESA_ENVIRONMENT must be either sandbox or production."
+    )
+MPESA = {
+    "enabled": env_bool("MPESA_ENABLED", default=False),
+    "environment": MPESA_ENVIRONMENT,
+    "base_url": os.getenv(
+        "MPESA_BASE_URL",
+        MPESA_DEFAULT_BASE_URLS[MPESA_ENVIRONMENT],
+    ),
+    "api_key": os.getenv("MPESA_API_KEY", ""),
+    "public_key": os.getenv("MPESA_PUBLIC_KEY", "").replace("\\n", "\n"),
+    "service_provider_code": os.getenv("MPESA_SERVICE_PROVIDER_CODE", ""),
+    "market": os.getenv("MPESA_MARKET", "vodacomTZN"),
+    "country": os.getenv("MPESA_COUNTRY", "TZN"),
+    "currency": os.getenv("MPESA_CURRENCY", "TZS"),
+    "c2b_path": os.getenv(
+        "MPESA_C2B_PATH",
+        "ipg/v2/{market}/c2bPayment/singleStage/",
+    ),
+    "query_path": os.getenv(
+        "MPESA_QUERY_PATH",
+        "ipg/v2/{market}/queryTransactionStatus/",
+    ),
+    "timeout_seconds": float(os.getenv("MPESA_TIMEOUT_SECONDS", "20")),
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 

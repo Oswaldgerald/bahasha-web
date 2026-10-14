@@ -64,7 +64,10 @@ The normative mobile HTTP contract is documented in
 [`docs/API_V1.md`](docs/API_V1.md). Architecture, authorization boundaries,
 prerequisite model work, and the phased Django Ninja rollout are documented in
 [`docs/API_DESIGN.md`](docs/API_DESIGN.md). Mobile payment methods and intents are
-deliberately disabled until a Tanzania payment provider is selected and verified.
+deliberately disabled until settlement persistence and reconciliation are complete.
+Vodacom Tanzania is encapsulated behind the provider-neutral payment interface; its
+configuration and activation gates are documented in
+[`docs/MPESA_PROVIDER.md`](docs/MPESA_PROVIDER.md).
 
 Contribution categories are already church-specific and configurable in the web
 application. Administrators can control each mobile card's labels, icon, color,

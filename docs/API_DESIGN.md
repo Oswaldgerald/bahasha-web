@@ -581,7 +581,8 @@ church-scoped.
 
 ### Phase 5: Payments
 
-- Select a provider and document its state machine and signature rules.
+- Completed: select Vodacom Tanzania and isolate its C2B and transaction-query
+  protocol behind the provider-neutral `MpesaProvider` adapter.
 - Add payment models, multi-week allocations, idempotent intent creation, webhooks,
   reconciliation, and atomic contribution posting.
 - Enable `payments_enabled` only after sandbox and failure-path testing succeeds.

@@ -527,7 +527,9 @@ future work.
 5. Add per-user notification receipts; the current notification model cannot track
    read state for individual users.
 6. Add `PaymentIntent`, `PaymentIntentAllocation`, `PaymentAttempt`, and
-   `PaymentWebhookEvent` models before enabling mobile payments.
+   `PaymentWebhookEvent` models before enabling mobile payments. Provider adapters
+   exist for Vodacom M-Pesa and Airtel Money; the Mixx adapter requires the exact
+   merchant-onboarding contract before activation.
 7. Link each payment allocation to at most one contribution and enforce uniqueness
    for intent, category, and selected contribution week.
 8. Add an optional weekly expectation/commitment model if the product must

@@ -65,9 +65,11 @@ The normative mobile HTTP contract is documented in
 prerequisite model work, and the phased Django Ninja rollout are documented in
 [`docs/API_DESIGN.md`](docs/API_DESIGN.md). Mobile payment methods and intents are
 deliberately disabled until settlement persistence and reconciliation are complete.
-Vodacom Tanzania is encapsulated behind the provider-neutral payment interface; its
-configuration and activation gates are documented in
-[`docs/MPESA_PROVIDER.md`](docs/MPESA_PROVIDER.md).
+Vodacom M-Pesa, Airtel Money, and Mixx by Yas are encapsulated behind the same
+provider-neutral payment interface. Provider selection, configuration, and
+activation gates are documented in
+[`docs/PAYMENT_PROVIDERS.md`](docs/PAYMENT_PROVIDERS.md); M-Pesa-specific details
+remain in [`docs/MPESA_PROVIDER.md`](docs/MPESA_PROVIDER.md).
 
 Contribution categories are already church-specific and configurable in the web
 application. Administrators can control each mobile card's labels, icon, color,

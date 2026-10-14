@@ -225,6 +225,56 @@ MPESA = {
     "timeout_seconds": float(os.getenv("MPESA_TIMEOUT_SECONDS", "20")),
 }
 
+AIRTEL_MONEY_ENVIRONMENT = os.getenv(
+    "AIRTEL_MONEY_ENVIRONMENT", "sandbox"
+).lower()
+AIRTEL_MONEY_DEFAULT_BASE_URLS = {
+    "sandbox": "https://openapiuat.airtel.africa/",
+    "production": "https://openapi.airtel.africa/",
+}
+if AIRTEL_MONEY_ENVIRONMENT not in AIRTEL_MONEY_DEFAULT_BASE_URLS:
+    raise ImproperlyConfigured(
+        "AIRTEL_MONEY_ENVIRONMENT must be either sandbox or production."
+    )
+AIRTEL_MONEY = {
+    "enabled": env_bool("AIRTEL_MONEY_ENABLED", default=False),
+    "environment": AIRTEL_MONEY_ENVIRONMENT,
+    "base_url": os.getenv(
+        "AIRTEL_MONEY_BASE_URL",
+        AIRTEL_MONEY_DEFAULT_BASE_URLS[AIRTEL_MONEY_ENVIRONMENT],
+    ),
+    "client_id": os.getenv("AIRTEL_MONEY_CLIENT_ID", ""),
+    "client_secret": os.getenv("AIRTEL_MONEY_CLIENT_SECRET", ""),
+    "country": os.getenv("AIRTEL_MONEY_COUNTRY", "TZ"),
+    "currency": os.getenv("AIRTEL_MONEY_CURRENCY", "TZS"),
+    "token_path": os.getenv("AIRTEL_MONEY_TOKEN_PATH", "auth/oauth2/token"),
+    "collection_path": os.getenv(
+        "AIRTEL_MONEY_COLLECTION_PATH", "merchant/v1/payments/"
+    ),
+    "query_path": os.getenv(
+        "AIRTEL_MONEY_QUERY_PATH", "standard/v1/payments/{transaction_id}"
+    ),
+    "timeout_seconds": float(os.getenv("AIRTEL_MONEY_TIMEOUT_SECONDS", "20")),
+}
+
+# Mixx supplies its technical endpoints during merchant onboarding. There are no
+# guessed defaults here: the adapter cannot become configured until every approved
+# path and credential is explicitly present in the deployment environment.
+MIXX = {
+    "enabled": env_bool("MIXX_ENABLED", default=False),
+    "environment": os.getenv("MIXX_ENVIRONMENT", "sandbox").lower(),
+    "base_url": os.getenv("MIXX_BASE_URL", ""),
+    "client_id": os.getenv("MIXX_CLIENT_ID", ""),
+    "client_secret": os.getenv("MIXX_CLIENT_SECRET", ""),
+    "merchant_code": os.getenv("MIXX_MERCHANT_CODE", ""),
+    "token_path": os.getenv("MIXX_TOKEN_PATH", ""),
+    "collection_path": os.getenv("MIXX_COLLECTION_PATH", ""),
+    "query_path": os.getenv("MIXX_QUERY_PATH", ""),
+    "country": os.getenv("MIXX_COUNTRY", "TZ"),
+    "currency": os.getenv("MIXX_CURRENCY", "TZS"),
+    "timeout_seconds": float(os.getenv("MIXX_TIMEOUT_SECONDS", "20")),
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 

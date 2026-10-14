@@ -637,8 +637,9 @@ Implemented:
 
 Still required before mobile payments can be enabled:
 
-1. Select the first Tanzania payment provider and document signatures, timeout,
-   retry, reconciliation, and sandbox behavior.
+1. Validate the selected `vodacom_m_pesa`, `airtel_money`, or `mixx_by_yas`
+   adapter against its approved operator sandbox contract and document signatures,
+   timeout, retry, and reconciliation behavior.
 2. Add payment intent, allocation, attempt, and webhook-event models.
 3. Add shared production-cache throttling for authentication and payment routes.
 4. Add idempotency, callback replay, and payment failure-path tests.

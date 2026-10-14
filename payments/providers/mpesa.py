@@ -5,13 +5,9 @@ the provider-neutral request and result types from ``payments.providers.base``.
 """
 
 import base64
-import json
-import logging
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -24,9 +20,7 @@ from .base import (
     PaymentProviderResult,
     PaymentProviderStatus,
 )
-
-
-logger = logging.getLogger(__name__)
+from .http import JsonHttpTransport
 
 
 @dataclass(frozen=True)
@@ -66,52 +60,6 @@ class MpesaConfig:
         )
 
 
-class JsonHttpTransport:
-    """Small injectable JSON transport that keeps provider tests off the network."""
-
-    def post(self, url, *, headers, payload, timeout):
-        """POST JSON and translate network failures to sanitized provider errors."""
-
-        request = Request(
-            url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json", **headers},
-            method="POST",
-        )
-        try:
-            with urlopen(request, timeout=timeout) as response:
-                body = response.read().decode("utf-8")
-                return json.loads(body) if body else {}
-        except HTTPError as error:
-            # Consume the response but never log its body; provider responses can
-            # contain customer or transaction information.
-            error.read()
-            logger.warning(
-                "M-Pesa returned HTTP %s for %s",
-                error.code,
-                url,
-            )
-            raise PaymentProviderError(
-                "MPESA_HTTP_ERROR",
-                "M-Pesa rejected the payment request.",
-                retryable=error.code >= 500,
-                status_code=error.code,
-            ) from error
-        except (TimeoutError, URLError) as error:
-            logger.warning("M-Pesa request failed for %s: %s", url, type(error).__name__)
-            raise PaymentProviderError(
-                "MPESA_UNAVAILABLE",
-                "M-Pesa could not be reached. Try again shortly.",
-                retryable=True,
-            ) from error
-        except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise PaymentProviderError(
-                "MPESA_INVALID_RESPONSE",
-                "M-Pesa returned an invalid response.",
-                retryable=True,
-            ) from error
-
-
 class MpesaProvider(PaymentProvider):
     """Translate Bahasha payment operations to Vodacom M-Pesa C2B calls."""
 
@@ -122,7 +70,7 @@ class MpesaProvider(PaymentProvider):
         """Create the adapter with injectable configuration and HTTP transport."""
 
         self.config = config or MpesaConfig.from_django_settings()
-        self.transport = transport or JsonHttpTransport()
+        self.transport = transport or JsonHttpTransport("MPESA", "M-Pesa")
 
     @property
     def configured(self):

@@ -1,3 +1,5 @@
+"""Transactional contribution persistence and annual-target synchronization."""
+
 from decimal import Decimal
 
 from django.db import transaction
@@ -9,6 +11,8 @@ from .models import Contribution
 
 
 def contribution_target_key(contribution):
+    """Identify the single annual target affected by a contribution."""
+
     return (
         contribution.member_id,
         contribution.church_id,
@@ -18,6 +22,8 @@ def contribution_target_key(contribution):
 
 
 def recalculate_target(key):
+    """Recalculate one locked target from posted contributions only."""
+
     member_id, church_id, financial_year_id, category_id = key
     target = MemberAnnualTarget.objects.select_for_update().filter(
         member_id=member_id,
@@ -43,6 +49,8 @@ def recalculate_target(key):
 
 @transaction.atomic
 def save_contributions(contributions, previous_target_keys=()):
+    """Validate and save a batch, then refresh every affected annual target."""
+
     affected_targets = set(previous_target_keys)
     saved_contributions = []
 

@@ -1,3 +1,5 @@
+"""Opaque access-token issuance, validation support, and refresh rotation."""
+
 import hashlib
 import secrets
 from dataclasses import dataclass
@@ -23,6 +25,8 @@ class ApiPrincipal:
 
 
 def hash_token(token):
+    """Hash a bearer token so raw credentials are never persisted."""
+
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
@@ -31,6 +35,8 @@ def random_token():
 
 
 def active_member_for_user(user):
+    """Enforce the complete account, member, and church eligibility boundary."""
+
     if not user.is_active:
         raise ApiError(
             "ACCOUNT_INACTIVE",
@@ -67,6 +73,8 @@ def active_member_for_user(user):
 
 
 def issue_token_pair(user, device, *, family_id=None):
+    """Issue a short access token and longer rotating refresh token."""
+
     now = timezone.now()
     access_token = random_token()
     refresh_token = random_token()
@@ -104,6 +112,8 @@ def token_response(member, access_token, refresh_token):
 
 
 def rotate_refresh_token(raw_refresh_token):
+    """Rotate once and revoke the entire family when reuse is detected."""
+
     now = timezone.now()
     deferred_error = None
     response = None
@@ -121,6 +131,8 @@ def rotate_refresh_token(raw_refresh_token):
             ) from error
 
         if session.revoked_at:
+            # A second use indicates replay or a client race. Revoking the family
+            # prevents a stolen older token from minting more sessions.
             ApiTokenSession.objects.filter(
                 family_id=session.family_id,
                 revoked_at__isnull=True,

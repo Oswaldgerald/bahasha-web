@@ -1,3 +1,9 @@
+"""Provider-neutral payment contracts used by the Bahasha payment service.
+
+Domain code depends on these types instead of importing an M-Pesa-specific client.
+That keeps intent validation and contribution posting reusable for future providers.
+"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from decimal import Decimal
@@ -6,6 +12,8 @@ from typing import Any
 
 
 class PaymentProviderStatus(StrEnum):
+    """Normalized states returned by every external payment provider."""
+
     PENDING_CUSTOMER_ACTION = "pending_customer_action"
     PROCESSING = "processing"
     SUCCEEDED = "succeeded"
@@ -14,6 +22,8 @@ class PaymentProviderStatus(StrEnum):
 
 @dataclass(frozen=True)
 class PaymentProviderRequest:
+    """Validated payment data passed from Bahasha to a provider adapter."""
+
     amount: Decimal
     currency: str
     payer_phone_number: str
@@ -24,6 +34,8 @@ class PaymentProviderRequest:
 
 @dataclass(frozen=True)
 class PaymentProviderResult:
+    """Provider response translated into Bahasha's normalized state model."""
+
     status: PaymentProviderStatus
     provider_reference: str | None = None
     conversation_id: str | None = None
@@ -34,6 +46,8 @@ class PaymentProviderResult:
 
 
 class PaymentProviderError(Exception):
+    """Safe provider failure that may be exposed without leaking credentials."""
+
     def __init__(
         self,
         code: str,
@@ -58,6 +72,8 @@ class UnsupportedProviderOperation(PaymentProviderError):
 
 
 class PaymentProvider(ABC):
+    """Interface implemented by each supported mobile-money provider."""
+
     key: str
     display_name: str
 
@@ -75,4 +91,6 @@ class PaymentProvider(ABC):
         raise NotImplementedError
 
     def cancel(self, payment: PaymentProviderRequest) -> PaymentProviderResult:
+        """Cancel an unsettled request when the provider supports cancellation."""
+
         raise UnsupportedProviderOperation("payment cancellation")

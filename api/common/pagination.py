@@ -1,3 +1,5 @@
+"""Tamper-resistant cursor pagination shared by mobile list endpoints."""
+
 from django.core import signing
 
 from api.common.errors import ApiError
@@ -9,6 +11,8 @@ MAX_PAGE_SIZE = 50
 
 
 def decode_cursor(cursor):
+    """Validate a signed, short-lived cursor and return its list offset."""
+
     if not cursor:
         return 0
     try:
@@ -32,6 +36,8 @@ def decode_cursor(cursor):
 
 
 def paginate(sequence, *, cursor=None, page_size=DEFAULT_PAGE_SIZE):
+    """Return one page and an opaque cursor without exposing database offsets."""
+
     if page_size < 1 or page_size > MAX_PAGE_SIZE:
         raise ApiError(
             "VALIDATION_ERROR",
@@ -41,6 +47,7 @@ def paginate(sequence, *, cursor=None, page_size=DEFAULT_PAGE_SIZE):
         )
 
     offset = decode_cursor(cursor)
+    # Fetch one extra item so ``has_more`` does not require a separate count query.
     values = list(sequence[offset : offset + page_size + 1])
     has_more = len(values) > page_size
     items = values[:page_size]

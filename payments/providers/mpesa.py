@@ -1,3 +1,9 @@
+"""Vodacom Tanzania M-Pesa Open API adapter.
+
+Only this module knows M-Pesa field names and authorization details. Callers use
+the provider-neutral request and result types from ``payments.providers.base``.
+"""
+
 import base64
 import json
 import logging
@@ -25,6 +31,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class MpesaConfig:
+    """Immutable M-Pesa configuration loaded from private server settings."""
+
     enabled: bool
     environment: str
     base_url: str
@@ -55,6 +63,8 @@ class MpesaConfig:
 
 
 class JsonHttpTransport:
+    """Small injectable JSON transport that keeps provider tests off the network."""
+
     def post(self, url, *, headers, payload, timeout):
         request = Request(
             url,
@@ -67,6 +77,8 @@ class JsonHttpTransport:
                 body = response.read().decode("utf-8")
                 return json.loads(body) if body else {}
         except HTTPError as error:
+            # Consume the response but never log its body; provider responses can
+            # contain customer or transaction information.
             error.read()
             logger.warning(
                 "M-Pesa returned HTTP %s for %s",
@@ -95,6 +107,8 @@ class JsonHttpTransport:
 
 
 class MpesaProvider(PaymentProvider):
+    """Translate Bahasha payment operations to Vodacom M-Pesa C2B calls."""
+
     key = "vodacom_m_pesa"
     display_name = "Vodacom M-Pesa"
 
@@ -107,6 +121,8 @@ class MpesaProvider(PaymentProvider):
         return self.config.configured
 
     def initiate(self, payment):
+        """Request a single-stage C2B prompt on the payer's M-Pesa phone."""
+
         self._require_configured()
         self._validate_payment(payment)
         payload = {
@@ -123,6 +139,8 @@ class MpesaProvider(PaymentProvider):
         return self._result(response, initiation=True)
 
     def query(self, payment):
+        """Ask M-Pesa for the authoritative state of an existing transaction."""
+
         self._require_configured()
         payload = {
             "input_QueryReference": payment.reference,
@@ -134,6 +152,8 @@ class MpesaProvider(PaymentProvider):
         return self._result(response, initiation=False)
 
     def _post(self, path, payload):
+        """Send one authenticated request to a configured M-Pesa endpoint."""
+
         endpoint = path.format(market=self.config.market).lstrip("/")
         url = f"{self.config.base_url.rstrip('/')}/{endpoint}"
         return self.transport.post(
@@ -144,6 +164,8 @@ class MpesaProvider(PaymentProvider):
         )
 
     def _authorization_token(self):
+        """Encrypt the API key using the public key supplied by M-Pesa."""
+
         try:
             public_key = serialization.load_pem_public_key(
                 self.config.public_key.encode("utf-8")
@@ -197,9 +219,13 @@ class MpesaProvider(PaymentProvider):
 
     @staticmethod
     def _result(response: dict[str, Any], *, initiation):
+        """Map provider fields to stable states understood by Bahasha clients."""
+
         response_code = str(response.get("output_ResponseCode", ""))
         transaction_id = response.get("output_TransactionID") or None
         if response_code == "0":
+            # A successful initiation only means that M-Pesa accepted the prompt.
+            # Settlement must still be confirmed by a later authoritative query.
             status = (
                 PaymentProviderStatus.PENDING_CUSTOMER_ACTION
                 if initiation

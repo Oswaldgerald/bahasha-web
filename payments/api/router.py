@@ -1,3 +1,10 @@
+"""Member payment HTTP contract.
+
+Routes remain unavailable until payment-intent persistence, idempotency, and
+verified settlement are implemented. The provider adapter alone is not sufficient
+to safely create posted contributions.
+"""
+
 from uuid import UUID
 
 from ninja import Body, Router
@@ -12,6 +19,8 @@ router = Router(auth=member_bearer, tags=["payments"])
 
 
 def payments_unavailable():
+    """Return a stable error while the payment safety boundary is incomplete."""
+
     raise ApiError(
         "PAYMENTS_UNAVAILABLE",
         "Mobile payments are not configured yet.",

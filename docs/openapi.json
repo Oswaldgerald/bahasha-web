@@ -16,6 +16,7 @@
                         "description": "OK"
                     }
                 },
+                "description": "Verify database access and report API readiness and version.",
                 "tags": [
                     "platform"
                 ]
@@ -58,6 +59,7 @@
                         }
                     }
                 },
+                "description": "Authenticate an approved member and issue a device-bound token pair.",
                 "tags": [
                     "authentication"
                 ],
@@ -110,6 +112,7 @@
                         }
                     }
                 },
+                "description": "Rotate a valid refresh token and invalidate its predecessor.",
                 "tags": [
                     "authentication"
                 ],
@@ -135,6 +138,7 @@
                         "description": "No Content"
                     }
                 },
+                "description": "Revoke the presented API session while remaining safe to repeat.",
                 "tags": [
                     "authentication"
                 ],
@@ -162,6 +166,7 @@
                         }
                     }
                 },
+                "description": "Send recovery mail without revealing whether an account exists.",
                 "tags": [
                     "authentication"
                 ],
@@ -194,6 +199,7 @@
                         }
                     }
                 },
+                "description": "Return the authenticated member's current profile.",
                 "tags": [
                     "member"
                 ],
@@ -219,6 +225,7 @@
                         }
                     }
                 },
+                "description": "Update permitted self-service profile fields and create an audit event.",
                 "tags": [
                     "member"
                 ],
@@ -249,6 +256,7 @@
                         "description": "OK"
                     }
                 },
+                "description": "Return the authenticated member's private profile photo.",
                 "tags": [
                     "member"
                 ],
@@ -274,6 +282,7 @@
                         }
                     }
                 },
+                "description": "Validate and replace the authenticated member's profile photo.",
                 "tags": [
                     "member"
                 ],
@@ -313,6 +322,7 @@
                         "description": "No Content"
                     }
                 },
+                "description": "Remove the authenticated member's profile photo idempotently.",
                 "tags": [
                     "member"
                 ],
@@ -340,6 +350,7 @@
                         }
                     }
                 },
+                "description": "Assemble the member dashboard, active period, cards, and capabilities.",
                 "tags": [
                     "member"
                 ],
@@ -385,6 +396,7 @@
                         }
                     }
                 },
+                "description": "Return configurable category cards for the selected financial year.",
                 "tags": [
                     "contribution categories"
                 ],
@@ -450,6 +462,7 @@
                         }
                     }
                 },
+                "description": "Return one member-scoped category card and its calculated summary.",
                 "tags": [
                     "contribution categories"
                 ],
@@ -557,6 +570,7 @@
                         }
                     }
                 },
+                "description": "Return paid, missing, and upcoming weeks for one weekly category.",
                 "tags": [
                     "contribution categories"
                 ],
@@ -584,6 +598,7 @@
                         }
                     }
                 },
+                "description": "List financial years belonging to the authenticated member's church.",
                 "tags": [
                     "contributions"
                 ],
@@ -672,6 +687,7 @@
                         }
                     }
                 },
+                "description": "Return cursor-paginated annual targets owned by the member.",
                 "tags": [
                     "contributions"
                 ],
@@ -827,6 +843,7 @@
                         }
                     }
                 },
+                "description": "Return filtered contribution history scoped to member and church.",
                 "tags": [
                     "contributions"
                 ],
@@ -875,6 +892,7 @@
                         }
                     }
                 },
+                "description": "Return one contribution only when it belongs to the authenticated member.",
                 "tags": [
                     "contributions"
                 ],
@@ -939,6 +957,7 @@
                         }
                     }
                 },
+                "description": "Return cursor-paginated notifications with per-member read state.",
                 "tags": [
                     "notifications"
                 ],
@@ -980,6 +999,7 @@
                         }
                     }
                 },
+                "description": "Mark one visible notification read using an idempotent receipt update.",
                 "tags": [
                     "notifications"
                 ],
@@ -1017,6 +1037,7 @@
                         }
                     }
                 },
+                "description": "Register or rotate a push token for one app installation.",
                 "tags": [
                     "notifications"
                 ],
@@ -1068,6 +1089,7 @@
                         }
                     }
                 },
+                "description": "Deactivate a member-owned device registration idempotently.",
                 "tags": [
                     "notifications"
                 ],
@@ -1095,6 +1117,7 @@
                         }
                     }
                 },
+                "description": "List providers available under the enabled payment mode.",
                 "tags": [
                     "payments"
                 ],
@@ -1109,8 +1132,58 @@
             "post": {
                 "operationId": "payments_api_router_create_payment_intent",
                 "summary": "Create Payment Intent",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "Idempotency-Key",
+                        "schema": {
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
                 "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentIntentSchema"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
                     "503": {
                         "description": "Service Unavailable",
                         "content": {
@@ -1122,6 +1195,7 @@
                         }
                     }
                 },
+                "description": "Create an idempotent intent and request a mobile-money prompt.",
                 "tags": [
                     "payments"
                 ],
@@ -1129,9 +1203,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "additionalProperties": true,
-                                "title": "Payload",
-                                "type": "object"
+                                "$ref": "#/components/schemas/PaymentIntentCreateSchema"
                             }
                         }
                     },
@@ -1146,7 +1218,34 @@
             "get": {
                 "operationId": "payments_api_router_payment_intents",
                 "summary": "Payment Intents",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "cursor",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Cursor"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "page_size",
+                        "schema": {
+                            "default": 20,
+                            "title": "Page Size",
+                            "type": "integer"
+                        },
+                        "required": false
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1157,8 +1256,19 @@
                                 }
                             }
                         }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
                     }
                 },
+                "description": "Return recent member-owned payment requests and their current states.",
                 "tags": [
                     "payments"
                 ],
@@ -1186,6 +1296,46 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentIntentSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
                     "503": {
                         "description": "Service Unavailable",
                         "content": {
@@ -1197,6 +1347,7 @@
                         }
                     }
                 },
+                "description": "Poll payment state and reconcile the deterministic mock provider.",
                 "tags": [
                     "payments"
                 ],
@@ -1224,6 +1375,36 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentIntentSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorSchema"
+                                }
+                            }
+                        }
+                    },
                     "503": {
                         "description": "Service Unavailable",
                         "content": {
@@ -1235,6 +1416,7 @@
                         }
                     }
                 },
+                "description": "Cancel a member-owned intent while it is still awaiting authorization.",
                 "tags": [
                     "payments"
                 ],
@@ -1249,6 +1431,7 @@
     "components": {
         "schemas": {
             "TokenMemberSchema": {
+                "description": "Provide compact member identity in authentication responses.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1273,6 +1456,7 @@
                 "type": "object"
             },
             "TokenResponseSchema": {
+                "description": "Describe issued opaque credentials and their access lifetime.",
                 "properties": {
                     "access_token": {
                         "title": "Access Token",
@@ -1305,6 +1489,7 @@
                 "type": "object"
             },
             "ErrorDetailSchema": {
+                "description": "Describe the stable details nested inside an API error response.",
                 "properties": {
                     "code": {
                         "title": "Code",
@@ -1347,6 +1532,7 @@
                 "type": "object"
             },
             "ErrorSchema": {
+                "description": "Wrap standardized error details for Django Ninja responses.",
                 "properties": {
                     "error": {
                         "$ref": "#/components/schemas/ErrorDetailSchema"
@@ -1359,6 +1545,7 @@
                 "type": "object"
             },
             "DeviceSchema": {
+                "description": "Describe registered device metadata safe to return to clients.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1394,6 +1581,7 @@
                 "type": "object"
             },
             "TokenRequestSchema": {
+                "description": "Validate member credentials and device metadata for sign-in.",
                 "properties": {
                     "identifier": {
                         "title": "Identifier",
@@ -1416,6 +1604,7 @@
                 "type": "object"
             },
             "RefreshRequestSchema": {
+                "description": "Validate a refresh-token rotation request.",
                 "properties": {
                     "refresh_token": {
                         "title": "Refresh Token",
@@ -1429,6 +1618,7 @@
                 "type": "object"
             },
             "MessageSchema": {
+                "description": "Represent a simple human-readable API acknowledgement.",
                 "properties": {
                     "message": {
                         "title": "Message",
@@ -1442,6 +1632,7 @@
                 "type": "object"
             },
             "PasswordForgotSchema": {
+                "description": "Validate the email used for a non-enumerating recovery request.",
                 "properties": {
                     "email": {
                         "title": "Email",
@@ -1455,6 +1646,7 @@
                 "type": "object"
             },
             "ChurchReferenceSchema": {
+                "description": "Extend a named reference with the church's stable code.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1479,6 +1671,7 @@
                 "type": "object"
             },
             "MemberSchema": {
+                "description": "Describe the authenticated member profile returned to mobile.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1582,6 +1775,7 @@
                 "type": "object"
             },
             "NamedReferenceSchema": {
+                "description": "Represent a related object by public ID and display name.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1601,6 +1795,7 @@
                 "type": "object"
             },
             "MemberUpdateSchema": {
+                "description": "Limit member self-service updates to approved profile fields.",
                 "properties": {
                     "full_name": {
                         "anyOf": [
@@ -1629,6 +1824,7 @@
                 "type": "object"
             },
             "ActivePeriodSchema": {
+                "description": "Group optional active year and week records.",
                 "properties": {
                     "financial_year": {
                         "anyOf": [
@@ -1659,6 +1855,7 @@
                 "type": "object"
             },
             "ActiveWeekSchema": {
+                "description": "Describe the active contribution week in bootstrap data.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1688,6 +1885,7 @@
                 "type": "object"
             },
             "ActiveYearSchema": {
+                "description": "Identify the active financial year in bootstrap data.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1707,6 +1905,7 @@
                 "type": "object"
             },
             "AmountGuidanceSchema": {
+                "description": "Describe optional suggested and allowed contribution amounts.",
                 "properties": {
                     "suggested": {
                         "anyOf": [
@@ -1748,6 +1947,7 @@
                 "type": "object"
             },
             "BootstrapSchema": {
+                "description": "Describe the complete initial payload required by the mobile home screen.",
                 "properties": {
                     "member": {
                         "$ref": "#/components/schemas/MemberSchema"
@@ -1781,6 +1981,7 @@
                 "type": "object"
             },
             "CapabilitySchema": {
+                "description": "Advertise server features currently safe for the mobile client.",
                 "properties": {
                     "payments_enabled": {
                         "title": "Payments Enabled",
@@ -1804,6 +2005,7 @@
                 "type": "object"
             },
             "CategoryCardSchema": {
+                "description": "Describe one configurable contribution card and member summary.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -1875,6 +2077,7 @@
                 "type": "object"
             },
             "LabelsSchema": {
+                "description": "Provide default and Swahili category labels.",
                 "properties": {
                     "default": {
                         "type": "string",
@@ -1893,6 +2096,7 @@
                 "type": "object"
             },
             "MoneySchema": {
+                "description": "Represent money as an exact decimal string and ISO currency code.",
                 "properties": {
                     "amount": {
                         "title": "Amount",
@@ -1911,6 +2115,7 @@
                 "type": "object"
             },
             "CategoryListSchema": {
+                "description": "Wrap mobile contribution cards returned for a financial year.",
                 "properties": {
                     "items": {
                         "items": {
@@ -1927,6 +2132,7 @@
                 "type": "object"
             },
             "PageSchema": {
+                "description": "Describe cursor pagination state returned by list endpoints.",
                 "properties": {
                     "next_cursor": {
                         "anyOf": [
@@ -1951,6 +2157,7 @@
                 "type": "object"
             },
             "WeekListSchema": {
+                "description": "Wrap a cursor-paginated category week schedule.",
                 "properties": {
                     "items": {
                         "items": {
@@ -1971,6 +2178,7 @@
                 "type": "object"
             },
             "WeekSchema": {
+                "description": "Describe one contribution week's state and payment eligibility.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2031,6 +2239,7 @@
                 "type": "object"
             },
             "YearListSchema": {
+                "description": "Wrap financial years visible to the authenticated member.",
                 "properties": {
                     "items": {
                         "items": {
@@ -2047,6 +2256,7 @@
                 "type": "object"
             },
             "YearSchema": {
+                "description": "Describe a church financial year using a public identifier.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2081,6 +2291,7 @@
                 "type": "object"
             },
             "CategoryReferenceSchema": {
+                "description": "Embed compact category identity in contribution responses.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2105,6 +2316,7 @@
                 "type": "object"
             },
             "TargetListSchema": {
+                "description": "Wrap cursor-paginated annual targets.",
                 "properties": {
                     "items": {
                         "items": {
@@ -2125,6 +2337,7 @@
                 "type": "object"
             },
             "TargetSchema": {
+                "description": "Describe annual target progress for one contribution category.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2166,6 +2379,7 @@
                 "type": "object"
             },
             "ContributionListSchema": {
+                "description": "Wrap cursor-paginated member contribution history.",
                 "properties": {
                     "items": {
                         "items": {
@@ -2186,6 +2400,7 @@
                 "type": "object"
             },
             "ContributionSchema": {
+                "description": "Describe one member contribution in a list response.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2237,6 +2452,7 @@
                 "type": "object"
             },
             "WeekReferenceSchema": {
+                "description": "Embed compact week identity in contribution responses.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2261,6 +2477,7 @@
                 "type": "object"
             },
             "ContributionDetailSchema": {
+                "description": "Extend a contribution with financial, church, and remark details.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2327,6 +2544,7 @@
                 "type": "object"
             },
             "NotificationListSchema": {
+                "description": "Wrap cursor-paginated member notifications.",
                 "properties": {
                     "items": {
                         "items": {
@@ -2347,6 +2565,7 @@
                 "type": "object"
             },
             "NotificationSchema": {
+                "description": "Describe a visible notification and its member-specific read state.",
                 "properties": {
                     "id": {
                         "format": "uuid",
@@ -2407,6 +2626,7 @@
                 "type": "object"
             },
             "DeviceRequestSchema": {
+                "description": "Validate mobile installation and push-token registration data.",
                 "properties": {
                     "installation_id": {
                         "format": "uuid",
@@ -2436,11 +2656,11 @@
                 "type": "object"
             },
             "PaymentMethodListSchema": {
+                "description": "Wrap payment methods currently enabled for a member.",
                 "properties": {
                     "items": {
                         "items": {
-                            "additionalProperties": true,
-                            "type": "object"
+                            "$ref": "#/components/schemas/PaymentMethodSchema"
                         },
                         "title": "Items",
                         "type": "array"
@@ -2452,12 +2672,326 @@
                 "title": "PaymentMethodListSchema",
                 "type": "object"
             },
+            "PaymentMethodSchema": {
+                "description": "Describe one enabled payment method and its available providers.",
+                "properties": {
+                    "key": {
+                        "title": "Key",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "providers": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Providers",
+                        "type": "array"
+                    },
+                    "currency": {
+                        "title": "Currency",
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "title": "Enabled",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "key",
+                    "name",
+                    "providers",
+                    "currency",
+                    "enabled"
+                ],
+                "title": "PaymentMethodSchema",
+                "type": "object"
+            },
+            "PaymentAllocationSchema": {
+                "description": "Describe one persisted payment allocation and posted contribution.",
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "week": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PaymentWeekReferenceSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "contribution_id": {
+                        "anyOf": [
+                            {
+                                "format": "uuid",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Contribution Id"
+                    }
+                },
+                "required": [
+                    "id",
+                    "week",
+                    "amount",
+                    "contribution_id"
+                ],
+                "title": "PaymentAllocationSchema",
+                "type": "object"
+            },
+            "PaymentCategoryReferenceSchema": {
+                "description": "Identify the contribution category selected for payment.",
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "key": {
+                        "title": "Key",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "key",
+                    "name"
+                ],
+                "title": "PaymentCategoryReferenceSchema",
+                "type": "object"
+            },
+            "PaymentIntentSchema": {
+                "description": "Expose member-safe payment state without internal database identifiers.",
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "reference": {
+                        "title": "Reference",
+                        "type": "string"
+                    },
+                    "status": {
+                        "title": "Status",
+                        "type": "string"
+                    },
+                    "provider": {
+                        "title": "Provider",
+                        "type": "string"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/MoneySchema"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/PaymentCategoryReferenceSchema"
+                    },
+                    "allocations": {
+                        "items": {
+                            "$ref": "#/components/schemas/PaymentAllocationSchema"
+                        },
+                        "title": "Allocations",
+                        "type": "array"
+                    },
+                    "provider_reference": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Provider Reference"
+                    },
+                    "contribution_ids": {
+                        "items": {
+                            "format": "uuid",
+                            "type": "string"
+                        },
+                        "title": "Contribution Ids",
+                        "type": "array"
+                    },
+                    "expires_at": {
+                        "title": "Expires At",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string"
+                    },
+                    "next_action": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PaymentNextActionSchema"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "status",
+                    "provider",
+                    "amount",
+                    "category",
+                    "allocations",
+                    "provider_reference",
+                    "contribution_ids",
+                    "expires_at",
+                    "created_at",
+                    "next_action"
+                ],
+                "title": "PaymentIntentSchema",
+                "type": "object"
+            },
+            "PaymentNextActionSchema": {
+                "description": "Tell the mobile client what the member should do next.",
+                "properties": {
+                    "type": {
+                        "title": "Type",
+                        "type": "string"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "message"
+                ],
+                "title": "PaymentNextActionSchema",
+                "type": "object"
+            },
+            "PaymentWeekReferenceSchema": {
+                "description": "Identify a weekly contribution period inside an allocation.",
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "number": {
+                        "title": "Number",
+                        "type": "integer"
+                    },
+                    "sunday_date": {
+                        "title": "Sunday Date",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "sunday_date"
+                ],
+                "title": "PaymentWeekReferenceSchema",
+                "type": "object"
+            },
+            "PaymentAllocationCreateSchema": {
+                "description": "Allocate part of a payment to one weekly contribution period.",
+                "properties": {
+                    "contribution_week_id": {
+                        "anyOf": [
+                            {
+                                "format": "uuid",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Contribution Week Id"
+                    },
+                    "amount": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ],
+                        "title": "Amount"
+                    }
+                },
+                "required": [
+                    "amount"
+                ],
+                "title": "PaymentAllocationCreateSchema",
+                "type": "object"
+            },
+            "PaymentIntentCreateSchema": {
+                "description": "Validate the member-controlled portion of a payment request.",
+                "properties": {
+                    "category_id": {
+                        "format": "uuid",
+                        "title": "Category Id",
+                        "type": "string"
+                    },
+                    "financial_year_id": {
+                        "format": "uuid",
+                        "title": "Financial Year Id",
+                        "type": "string"
+                    },
+                    "payment_method": {
+                        "default": "mobile_money",
+                        "title": "Payment Method",
+                        "type": "string"
+                    },
+                    "provider": {
+                        "title": "Provider",
+                        "type": "string"
+                    },
+                    "payer_phone_number": {
+                        "title": "Payer Phone Number",
+                        "type": "string"
+                    },
+                    "allocations": {
+                        "items": {
+                            "$ref": "#/components/schemas/PaymentAllocationCreateSchema"
+                        },
+                        "title": "Allocations",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "category_id",
+                    "financial_year_id",
+                    "provider",
+                    "payer_phone_number",
+                    "allocations"
+                ],
+                "title": "PaymentIntentCreateSchema",
+                "type": "object"
+            },
             "PaymentIntentListSchema": {
+                "description": "Wrap cursor-paginated payment intents owned by one member.",
                 "properties": {
                     "items": {
                         "items": {
-                            "additionalProperties": true,
-                            "type": "object"
+                            "$ref": "#/components/schemas/PaymentIntentSchema"
                         },
                         "title": "Items",
                         "type": "array"

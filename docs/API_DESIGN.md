@@ -1,6 +1,7 @@
 # Bahasha Mobile API Design
 
-Status: phases 1-4 implemented; payment processing pending provider selection
+Status: phases 1-4 implemented; local payment simulation implemented; live provider
+settlement remains gated
 Target framework: Django Ninja  
 Initial client: Bahasha congregation-member mobile application
 
@@ -293,9 +294,10 @@ Example weekly schedule item:
 
 ### Payments and making a contribution
 
-These endpoints are designed and their durable payment models now exist. Public
-access remains disabled until provider initiation, verified settlement, atomic
-contribution posting, and operational controls are complete.
+These endpoints and their durable payment models are implemented for authenticated
+members. Public access is enabled only by `PAYMENTS_ENABLED`; local development can
+use JSON-backed settlement simulation, while live activation remains gated by
+provider verification and operational controls.
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
@@ -315,8 +317,9 @@ Payment intent request:
 ```json
 {
   "category_id": "c74f9636-90c5-47b4-a854-e4515feb4907",
-  "currency": "TZS",
+  "financial_year_id": "7cc609fd-ddc5-44cd-94e5-67664cc468aa",
   "payment_method": "mobile_money",
+  "provider": "vodacom_m_pesa",
   "payer_phone_number": "+255700000000",
   "allocations": [
     {
@@ -356,11 +359,13 @@ All allocations in one intent belong to the same category, member, church, and
 financial year. The server verifies that allocation amounts sum to the intent total
 and that every selected week is payment-eligible before contacting the provider.
 
-Only a verified provider callback may change a payment to `SUCCEEDED`. On that
-transition, the payment service atomically creates one `ONLINE_PAYMENT` contribution
-per allocation and calls `save_contributions`. Each posted record preserves its own
-week while sharing the payment intent reference. Duplicate callbacks must never
-create duplicate contributions.
+Only verified settlement evidence may change a payment to `SUCCEEDED`. During local
+development this evidence is an authoritative result from the JSON mock provider;
+live operation will require a signed callback or authoritative operator query. On
+that transition, the payment service atomically creates one `ONLINE_PAYMENT`
+contribution per allocation and calls `save_contributions`. Each posted record
+preserves its own week while sharing the payment intent reference. Duplicate
+callbacks or polls must never create duplicate contributions.
 
 Payment intent states are `created`, `pending_customer_action`, `processing`,
 `succeeded`, `failed`, `expired`, and `cancelled`. Only the server-side payment
@@ -591,8 +596,10 @@ church-scoped.
   and replay-protected callback storage.
 - Completed: guarded payment-state transitions, provider initiation, sanitized
   attempt results, expiry handling, and transition audit events.
-- Add provider-specific webhook verification, authoritative status polling,
-  reconciliation, and atomic contribution posting.
+- Completed: development-only JSON scenarios, authenticated payment routes,
+  authoritative mock polling, and idempotent weekly contribution posting.
+- Add provider-specific webhook verification and scheduled live reconciliation;
+  extend settlement posting to non-weekly categories.
 - Enable `payments_enabled` only after sandbox and failure-path testing succeeds.
 
 ## 13. Definition of Ready for API Coding
@@ -609,5 +616,5 @@ Implementation starts after these product decisions are confirmed:
 - Mobile deep-link domains for password recovery and payment return paths.
 - Retention periods for token sessions, webhook events, and device registrations.
 
-Until those decisions are made, the safest first implementation is foundation plus
-read-only member data. Payment endpoints remain documented but disabled.
+Live payment activation remains gated by those decisions. Local development may use
+the JSON-backed mock provider, which is rejected when Django debug mode is disabled.

@@ -16,6 +16,29 @@ Set `PAYMENT_PROVIDER` to one of these keys to select an adapter. Selection does
 not enable public payment endpoints. `PAYMENTS_ENABLED` and the selected
 provider's own `*_ENABLED` flag remain independent safety gates.
 
+## Local JSON simulation
+
+Local Flutter development can exercise the complete weekly payment journey without
+operator credentials:
+
+```dotenv
+DJANGO_DEBUG=True
+PAYMENTS_ENABLED=True
+PAYMENT_PROVIDER=vodacom_m_pesa
+PAYMENT_PROVIDER_MODE=mock
+PAYMENT_MOCK_SCENARIO=success
+```
+
+Scenarios live in `payments/fixtures/mock_provider_scenarios.json`. The included
+`success`, `declined`, and `timeout` scenarios control initiation and query results.
+The intent retains the selected real provider key, while the factory substitutes
+`MockPaymentProvider` and performs no network access. Mock mode is rejected during
+startup when `DJANGO_DEBUG=False`.
+
+In the success scenario, `POST /api/v1/payment-intents` returns a pending prompt.
+The first detail poll queries the fixture, marks verified mock settlement, and
+atomically posts the weekly allocation as an `ONLINE_PAYMENT` contribution.
+
 ## Airtel Money
 
 Register the application through the Airtel Tanzania developer portal and place
@@ -64,6 +87,8 @@ operator sandbox.
 Do not enable member payments merely because an adapter is configured. Intent
 persistence, idempotency, allocation uniqueness, attempt history, and callback
 replay storage are complete. Guarded state changes and provider initiation are also
-implemented, and initiation cannot mark an intent as succeeded. Verified callbacks
-or polling, atomic contribution posting, reconciliation, and throttling still must
-be completed. An accepted handset prompt is not evidence of settlement.
+implemented, and initiation cannot mark an intent as succeeded. JSON simulation now
+proves authoritative polling and atomic weekly contribution posting locally. Signed
+live callbacks, scheduled reconciliation, non-weekly contribution posting, and
+throttling still must be completed. An accepted handset prompt is not evidence of
+settlement.

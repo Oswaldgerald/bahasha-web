@@ -5,6 +5,7 @@ from django.conf import settings
 from .airtel import AirtelMoneyProvider
 from .base import PaymentProviderError
 from .mixx import MixxProvider
+from .mock import MockPaymentProvider
 from .mpesa import MpesaProvider
 
 
@@ -17,6 +18,12 @@ def get_payment_provider(provider_key=None):
         MixxProvider.key: MixxProvider,
         MpesaProvider.key: MpesaProvider,
     }
+    if settings.PAYMENT_PROVIDER_MODE == "mock" and selected in providers:
+        return MockPaymentProvider(
+            provider_key=selected,
+            scenario_name=settings.PAYMENT_MOCK_SCENARIO,
+            fixture_path=settings.PAYMENT_MOCK_FIXTURE,
+        )
     provider_class = providers.get(selected)
     if provider_class:
         return provider_class()

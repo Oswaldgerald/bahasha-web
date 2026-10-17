@@ -13,6 +13,8 @@ from django.utils import timezone
 from audit_logs.services import create_audit_log
 from categories.models import ContributionCategory
 from contribution_weeks.models import ContributionWeek
+from contributions.models import Contribution
+from contributions.services import save_contributions
 from financial_years.models import FinancialYear
 from members.models import Member
 
@@ -263,6 +265,23 @@ def validate_payment_scope(
                 raise PaymentServiceError(
                     "CATEGORY_CATCH_UP_DISABLED",
                     "This contribution category does not allow payments for earlier weeks.",
+                )
+            if Contribution.objects.filter(
+                member=member,
+                church=member.church,
+                financial_year=financial_year,
+                category=category,
+                contribution_week=week,
+                status="POSTED",
+            ).exists():
+                raise PaymentServiceError(
+                    "PAYMENT_WEEK_ALREADY_PAID",
+                    f"Week {week.week_number} already has a posted contribution.",
+                    fields={
+                        f"allocations.{index}.contribution_week_id": [
+                            "Select a missing contribution week."
+                        ]
+                    },
                 )
 
     if not is_weekly and len(allocations) != 1:
@@ -610,20 +629,194 @@ def initiate_payment_intent(payment_intent, *, provider_adapter=None):
             "PAYMENT_EXPIRED",
             "This payment request has expired.",
         )
-    provider_request = PaymentProviderRequest(
-        amount=prepared_intent.amount,
-        currency=prepared_intent.currency,
-        payer_phone_number=prepared_intent.payer_phone_number,
-        reference=prepared_intent.reference,
-        description=f"{prepared_intent.category.name} contribution",
-        conversation_id=str(prepared_intent.public_id),
-    )
+    provider_request = payment_provider_request(prepared_intent)
     try:
         result = adapter.initiate(provider_request)
     except PaymentProviderError as error:
         _store_provider_error(prepared_intent, attempt, error)
         raise
     return _store_provider_result(prepared_intent, attempt, result)
+
+
+def payment_provider_request(payment_intent):
+    """Build the provider-neutral request shared by initiation and reconciliation."""
+
+    return PaymentProviderRequest(
+        amount=payment_intent.amount,
+        currency=payment_intent.currency,
+        payer_phone_number=payment_intent.payer_phone_number,
+        reference=payment_intent.reference,
+        description=f"{payment_intent.category.name} contribution",
+        conversation_id=str(payment_intent.public_id),
+    )
+
+
+def _copy_provider_result(payment_intent, result):
+    """Copy sanitized provider identifiers and response details onto an intent."""
+
+    payment_intent.provider_reference = result.provider_reference or ""
+    payment_intent.provider_conversation_id = result.conversation_id or ""
+    payment_intent.provider_transaction_id = result.transaction_id or ""
+    payment_intent.response_code = result.response_code or ""
+    payment_intent.response_description = (result.response_description or "")[:500]
+    payment_intent.failure_code = ""
+    payment_intent.save(
+        update_fields=[
+            "provider_reference",
+            "provider_conversation_id",
+            "provider_transaction_id",
+            "response_code",
+            "response_description",
+            "failure_code",
+            "updated_at",
+        ]
+    )
+
+
+@transaction.atomic
+def settle_payment_intent(payment_intent, result):
+    """Post every weekly allocation and mark a verified payment successful once."""
+
+    locked_intent = (
+        PaymentIntent.objects.select_for_update()
+        .select_related("member__user", "church", "category", "financial_year")
+        .get(pk=payment_intent.pk)
+    )
+    if locked_intent.status == "succeeded":
+        return locked_intent
+    if locked_intent.status not in {"pending_customer_action", "processing"}:
+        raise PaymentServiceError(
+            "PAYMENT_STATUS_CONFLICT",
+            f"Payment cannot settle from {locked_intent.status}.",
+        )
+
+    allocations = list(
+        locked_intent.allocations.select_for_update().order_by("created_at")
+    )
+    if any(allocation.contribution_week_id is None for allocation in allocations):
+        raise PaymentServiceError(
+            "PAYMENT_PERIOD_UNSUPPORTED",
+            "Simulated settlement currently requires weekly contribution periods.",
+        )
+
+    pending_allocations = [
+        allocation for allocation in allocations if allocation.contribution_id is None
+    ]
+    contributions = [
+        Contribution(
+            church=locked_intent.church,
+            member=locked_intent.member,
+            bahasha_number=locked_intent.member.bahasha_number,
+            financial_year=locked_intent.financial_year,
+            contribution_week=allocation.contribution_week,
+            category=locked_intent.category,
+            amount=allocation.amount,
+            contribution_date=allocation.contribution_week.sunday_date,
+            source="ONLINE_PAYMENT",
+            status="POSTED",
+            reference_number=(
+                f"{locked_intent.reference}-{allocation.public_id.hex[:8].upper()}"
+            ),
+            posted_by=locked_intent.member.user,
+            remarks=f"Mobile payment {locked_intent.reference}",
+        )
+        for allocation in pending_allocations
+    ]
+    saved_contributions = save_contributions(contributions)
+    for allocation, contribution in zip(
+        pending_allocations,
+        saved_contributions,
+        strict=True,
+    ):
+        allocation.contribution = contribution
+        allocation.save(update_fields=["contribution", "updated_at"])
+
+    _copy_provider_result(locked_intent, result)
+    latest_attempt = locked_intent.attempts.select_for_update().order_by(
+        "-attempt_number"
+    ).first()
+    if latest_attempt:
+        latest_attempt.status = "succeeded"
+        latest_attempt.provider_reference = result.provider_reference or ""
+        latest_attempt.provider_conversation_id = result.conversation_id or ""
+        latest_attempt.provider_transaction_id = result.transaction_id or ""
+        latest_attempt.response_code = result.response_code or ""
+        latest_attempt.response_description = (result.response_description or "")[:500]
+        latest_attempt.completed_at = timezone.now()
+        latest_attempt.save(
+            update_fields=[
+                "status",
+                "provider_reference",
+                "provider_conversation_id",
+                "provider_transaction_id",
+                "response_code",
+                "response_description",
+                "completed_at",
+                "updated_at",
+            ]
+        )
+    _apply_locked_status_transition(
+        locked_intent,
+        "succeeded",
+        settlement_verified=True,
+    )
+    return locked_intent
+
+
+def reconcile_payment_intent(payment_intent, *, provider_adapter=None):
+    """Query an authoritative provider and safely persist the normalized result."""
+
+    current = PaymentIntent.objects.select_related("category").get(pk=payment_intent.pk)
+    if current.status in {"succeeded", "failed", "expired", "cancelled"}:
+        return current
+    if current.expires_at <= timezone.now():
+        return transition_payment_intent(current, "expired")
+    if current.status not in {"pending_customer_action", "processing"}:
+        raise PaymentServiceError(
+            "PAYMENT_NOT_STARTED",
+            "The payment must be started before its status can be checked.",
+        )
+
+    adapter = provider_adapter or get_payment_provider(current.provider)
+    if adapter.key != current.provider:
+        raise PaymentServiceError(
+            "PAYMENT_PROVIDER_MISMATCH",
+            "The payment adapter does not match the selected provider.",
+        )
+    result = adapter.query(payment_provider_request(current))
+    provider_status = PaymentProviderStatus(result.status)
+    if provider_status == PaymentProviderStatus.SUCCEEDED:
+        return settle_payment_intent(current, result)
+
+    target_status = {
+        PaymentProviderStatus.PENDING_CUSTOMER_ACTION: "pending_customer_action",
+        PaymentProviderStatus.PROCESSING: "processing",
+        PaymentProviderStatus.FAILED: "failed",
+    }[provider_status]
+    with transaction.atomic():
+        locked_intent = PaymentIntent.objects.select_for_update().get(pk=current.pk)
+        _copy_provider_result(locked_intent, result)
+        _apply_locked_status_transition(locked_intent, target_status)
+        latest_attempt = locked_intent.attempts.select_for_update().order_by(
+            "-attempt_number"
+        ).first()
+        if latest_attempt:
+            latest_attempt.status = target_status
+            latest_attempt.response_code = result.response_code or ""
+            latest_attempt.response_description = (
+                result.response_description or ""
+            )[:500]
+            latest_attempt.completed_at = timezone.now()
+            latest_attempt.save(
+                update_fields=[
+                    "status",
+                    "response_code",
+                    "response_description",
+                    "completed_at",
+                    "updated_at",
+                ]
+            )
+        return locked_intent
 
 
 def webhook_payload_hash(raw_body):

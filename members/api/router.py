@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
@@ -203,7 +204,7 @@ def bootstrap(request):
         "categories": category_cards(member, active_year),
         "unread_notifications_count": unread_count,
         "capabilities": {
-            "payments_enabled": False,
+            "payments_enabled": settings.PAYMENTS_ENABLED,
             "profile_photo_upload": True,
             "push_notifications": False,
         },

@@ -192,6 +192,20 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Bahasha <noreply@localhost
 # settlement and failure-path tests pass.
 PAYMENT_PROVIDER = os.getenv("PAYMENT_PROVIDER", "vodacom_m_pesa")
 PAYMENTS_ENABLED = env_bool("PAYMENTS_ENABLED", default=False)
+PAYMENT_PROVIDER_MODE = os.getenv("PAYMENT_PROVIDER_MODE", "live").lower()
+if PAYMENT_PROVIDER_MODE not in {"live", "mock"}:
+    raise ImproperlyConfigured("PAYMENT_PROVIDER_MODE must be either live or mock.")
+if PAYMENT_PROVIDER_MODE == "mock" and not DEBUG:
+    raise ImproperlyConfigured(
+        "PAYMENT_PROVIDER_MODE=mock is only allowed when DJANGO_DEBUG=True."
+    )
+PAYMENT_MOCK_SCENARIO = os.getenv("PAYMENT_MOCK_SCENARIO", "success")
+PAYMENT_MOCK_FIXTURE = Path(
+    os.getenv(
+        "PAYMENT_MOCK_FIXTURE",
+        BASE_DIR / "payments" / "fixtures" / "mock_provider_scenarios.json",
+    )
+)
 MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT", "sandbox").lower()
 MPESA_DEFAULT_BASE_URLS = {
     "sandbox": "https://openapi.m-pesa.com/sandbox/",

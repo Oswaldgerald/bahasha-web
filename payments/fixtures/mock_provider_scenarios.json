@@ -1,0 +1,47 @@
+{
+  "scenarios": {
+    "success": {
+      "initiate": {
+        "status": "pending_customer_action",
+        "response_code": "MOCK_PROMPT_SENT",
+        "response_description": "Approve the simulated payment on your phone."
+      },
+      "query": {
+        "status": "succeeded",
+        "response_code": "MOCK_SETTLED",
+        "response_description": "The simulated payment was settled successfully."
+      },
+      "cancel": {
+        "status": "failed",
+        "response_code": "MOCK_CANCELLED",
+        "response_description": "The simulated payment was cancelled."
+      }
+    },
+    "declined": {
+      "initiate": {
+        "status": "failed",
+        "response_code": "MOCK_DECLINED",
+        "response_description": "The simulated customer declined the payment."
+      },
+      "query": {
+        "status": "failed",
+        "response_code": "MOCK_DECLINED",
+        "response_description": "The simulated payment was declined."
+      }
+    },
+    "timeout": {
+      "initiate": {
+        "error": {
+          "code": "MOCK_TIMEOUT",
+          "message": "The simulated provider did not respond.",
+          "retryable": true
+        }
+      },
+      "query": {
+        "status": "succeeded",
+        "response_code": "MOCK_RECONCILED",
+        "response_description": "The ambiguous simulated payment was later confirmed."
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ from .base import (
 )
 from .factory import get_payment_provider
 from .mixx import MixxConfig, MixxProvider
+from .mock import MockPaymentProvider
 from .mpesa import MpesaConfig, MpesaProvider
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "AirtelMoneyProvider",
     "MixxConfig",
     "MixxProvider",
+    "MockPaymentProvider",
     "MpesaConfig",
     "MpesaProvider",
     "PaymentProvider",

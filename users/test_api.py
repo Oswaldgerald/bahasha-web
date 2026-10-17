@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from categories.models import ContributionCategory
@@ -17,6 +17,7 @@ from users.models import ApiTokenSession, User
 from users.tokens import hash_token
 
 
+@override_settings(PAYMENTS_ENABLED=False, PAYMENT_PROVIDER_MODE="live")
 class MemberApiTests(TestCase):
     password = "Strong-Test-Password-982!"
 
@@ -303,10 +304,26 @@ class MemberApiTests(TestCase):
         self.assertEqual(methods.status_code, 200)
         self.assertEqual(methods.json(), {"items": []})
 
-        create = self.post_json(
+        create = self.client.post(
             "/api/v1/payment-intents",
-            {"amount": "1000.00"},
-            token=tokens["access_token"],
+            data=json.dumps(
+                {
+                    "category_id": str(self.category.public_id),
+                    "financial_year_id": str(self.year.public_id),
+                    "payment_method": "mobile_money",
+                    "provider": "vodacom_m_pesa",
+                    "payer_phone_number": "+255700000001",
+                    "allocations": [
+                        {
+                            "contribution_week_id": str(self.current_week.public_id),
+                            "amount": "1000.00",
+                        }
+                    ],
+                }
+            ),
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {tokens['access_token']}",
+            HTTP_IDEMPOTENCY_KEY=str(uuid.uuid4()),
         )
         self.assertEqual(create.status_code, 503)
         self.assertEqual(create.json()["error"]["code"], "PAYMENTS_UNAVAILABLE")

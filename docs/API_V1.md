@@ -1,7 +1,7 @@
 # Bahasha API v1 Contract
 
-Status: implemented through member read experience and notification/device state;
-payment processing remains disabled pending provider selection
+Status: member experience implemented; JSON-backed payment simulation is available
+for local Flutter development while live provider settlement remains disabled
 
 Base path: `/api/v1`
 
@@ -593,10 +593,15 @@ created -> pending_customer_action -> processing -> succeeded
 stored, and idempotently processed. Duplicate callbacks must not duplicate
 contributions. Every successful allocation maps to exactly one contribution.
 
-Payment persistence and idempotency are implemented, but payment endpoints remain
-disabled until verified settlement and contribution posting are complete. While disabled,
-`capabilities.payments_enabled` is false, payment methods are empty, and intent
-creation returns `503 PAYMENTS_UNAVAILABLE`.
+Payment persistence, idempotency, and a development-only JSON simulator are
+implemented. With `PAYMENT_PROVIDER_MODE=mock`, creating an intent returns a pending
+prompt and polling its detail reconciles the configured scenario. A successful mock
+query atomically posts each weekly allocation as one `ONLINE_PAYMENT` contribution.
+Repeated polling and idempotent retries do not duplicate contributions.
+
+Live mode remains disabled until operator settlement verification is complete. When
+`PAYMENTS_ENABLED=False`, `capabilities.payments_enabled` is false, payment methods
+are empty, and intent creation returns `503 PAYMENTS_UNAVAILABLE`.
 
 ## 11. Caching, Rate Limits, and Observability
 
@@ -638,14 +643,16 @@ Implemented:
    idempotency enforcement, and replay-protected webhook-event storage.
 7. Guarded payment-state transitions and provider initiation that never treats an
    accepted handset prompt as verified settlement.
+8. Development-only JSON provider scenarios, authenticated intent routes,
+   authoritative mock polling, and idempotent weekly contribution posting.
 
 Still required before mobile payments can be enabled:
 
 1. Validate the selected `vodacom_m_pesa`, `airtel_money`, or `mixx_by_yas`
    adapter against its approved operator sandbox contract and document signatures,
    timeout, retry, and reconciliation behavior.
-2. Implement signed callback verification, authoritative status polling, atomic
-   contribution posting, and reconciliation.
+2. Implement signed callback verification and scheduled reconciliation for live
+   providers, reusing the atomic contribution-posting path proven by mock mode.
 3. Add shared production-cache throttling for authentication and payment routes.
 4. Add provider callback, reconciliation, and payment failure-path tests.
 

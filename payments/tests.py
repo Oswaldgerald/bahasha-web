@@ -155,11 +155,14 @@ class MpesaProviderTests(SimpleTestCase):
         self.assertEqual(raised.exception.code, "MPESA_PHONE_INVALID")
         self.assertEqual(transport.calls, [])
 
-    @override_settings(PAYMENT_PROVIDER="vodacom_m_pesa")
+    @override_settings(
+        PAYMENT_PROVIDER="vodacom_m_pesa",
+        PAYMENT_PROVIDER_MODE="live",
+    )
     def test_factory_returns_mpesa_adapter(self):
         self.assertIsInstance(get_payment_provider(), MpesaProvider)
 
-    @override_settings(PAYMENT_PROVIDER="unknown")
+    @override_settings(PAYMENT_PROVIDER="unknown", PAYMENT_PROVIDER_MODE="live")
     def test_factory_rejects_unknown_provider(self):
         with self.assertRaises(PaymentProviderError) as raised:
             get_payment_provider()
@@ -250,7 +253,7 @@ class AirtelMoneyProviderTests(SimpleTestCase):
         self.assertEqual(raised.exception.code, "AIRTEL_NOT_CONFIGURED")
         self.assertEqual(transport.calls, [])
 
-    @override_settings(PAYMENT_PROVIDER="airtel_money")
+    @override_settings(PAYMENT_PROVIDER="airtel_money", PAYMENT_PROVIDER_MODE="live")
     def test_factory_returns_airtel_adapter(self):
         self.assertIsInstance(get_payment_provider(), AirtelMoneyProvider)
 
@@ -344,6 +347,6 @@ class MixxProviderTests(SimpleTestCase):
         self.assertEqual(raised.exception.code, "MIXX_NOT_CONFIGURED")
         self.assertEqual(transport.calls, [])
 
-    @override_settings(PAYMENT_PROVIDER="mixx_by_yas")
+    @override_settings(PAYMENT_PROVIDER="mixx_by_yas", PAYMENT_PROVIDER_MODE="live")
     def test_factory_returns_mixx_adapter(self):
         self.assertIsInstance(get_payment_provider(), MixxProvider)

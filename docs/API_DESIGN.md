@@ -293,8 +293,9 @@ Example weekly schedule item:
 
 ### Payments and making a contribution
 
-These endpoints are designed now but implemented only after a payment provider is
-selected and the payment models exist.
+These endpoints are designed and their durable payment models now exist. Public
+access remains disabled until provider initiation, verified settlement, atomic
+contribution posting, and operational controls are complete.
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
@@ -526,8 +527,9 @@ future work.
 4. Add mobile-device records for push tokens and platform metadata.
 5. Add per-user notification receipts; the current notification model cannot track
    read state for individual users.
-6. Add `PaymentIntent`, `PaymentIntentAllocation`, `PaymentAttempt`, and
-   `PaymentWebhookEvent` models before enabling mobile payments. Provider adapters
+6. Completed: `PaymentIntent`, `PaymentAllocation`, `PaymentAttempt`, and
+   `PaymentWebhookEvent` provide idempotent intent creation, exact allocations,
+   sanitized attempt history, and callback replay protection. Provider adapters
    exist for Vodacom M-Pesa and Airtel Money; the Mixx adapter requires the exact
    merchant-onboarding contract before activation.
 7. Link each payment allocation to at most one contribution and enforce uniqueness
@@ -585,7 +587,9 @@ church-scoped.
 
 - Completed: select Vodacom Tanzania and isolate its C2B and transaction-query
   protocol behind the provider-neutral `MpesaProvider` adapter.
-- Add payment models, multi-week allocations, idempotent intent creation, webhooks,
+- Completed: payment models, multi-week allocations, idempotent intent creation,
+  and replay-protected callback storage.
+- Add provider-specific webhook verification, guarded state transitions,
   reconciliation, and atomic contribution posting.
 - Enable `payments_enabled` only after sandbox and failure-path testing succeeds.
 

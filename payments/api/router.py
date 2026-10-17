@@ -1,8 +1,8 @@
 """Member payment HTTP contract.
 
-Routes remain unavailable until payment-intent persistence, idempotency, and
-verified settlement are implemented. The provider adapter alone is not sufficient
-to safely create posted contributions.
+Durable, idempotent payment-intent persistence exists, but routes remain unavailable
+until verified settlement, contribution posting, and operational controls are
+implemented. Persistence and provider adapters alone cannot prove money was received.
 """
 
 from uuid import UUID
@@ -37,14 +37,14 @@ def payment_methods(request):
 
 @router.post("/payment-intents", response={503: ErrorSchema})
 def create_payment_intent(request, payload: Body[dict]):
-    """Reject intent creation until durable, idempotent persistence exists."""
+    """Reject intent creation until the complete settlement path is available."""
 
     payments_unavailable()
 
 
 @router.get("/payment-intents", response=PaymentIntentListSchema)
 def payment_intents(request):
-    """Return the empty intent history while mobile payments remain disabled."""
+    """Return no history while public mobile-payment access remains disabled."""
 
     return {
         "items": [],

@@ -593,8 +593,8 @@ created -> pending_customer_action -> processing -> succeeded
 stored, and idempotently processed. Duplicate callbacks must not duplicate
 contributions. Every successful allocation maps to exactly one contribution.
 
-Payment endpoints are part of the contract but remain disabled until a provider is
-selected and payment persistence is implemented. While disabled,
+Payment persistence and idempotency are implemented, but payment endpoints remain
+disabled until verified settlement and contribution posting are complete. While disabled,
 `capabilities.payments_enabled` is false, payment methods are empty, and intent
 creation returns `503 PAYMENTS_UNAVAILABLE`.
 
@@ -634,15 +634,18 @@ Implemented:
 4. Member profile, protected photo, bootstrap, configurable categories, weeks,
    targets, contribution history, notification receipts, and device registration.
 5. Cross-member and cross-church ownership enforcement with API behavior tests.
+6. Durable payment intents, exact allocations, sequential provider attempts,
+   idempotency enforcement, and replay-protected webhook-event storage.
 
 Still required before mobile payments can be enabled:
 
 1. Validate the selected `vodacom_m_pesa`, `airtel_money`, or `mixx_by_yas`
    adapter against its approved operator sandbox contract and document signatures,
    timeout, retry, and reconciliation behavior.
-2. Add payment intent, allocation, attempt, and webhook-event models.
+2. Implement signed callback verification, guarded payment state transitions,
+   atomic contribution posting, and reconciliation.
 3. Add shared production-cache throttling for authentication and payment routes.
-4. Add idempotency, callback replay, and payment failure-path tests.
+4. Add provider callback, reconciliation, and payment failure-path tests.
 
 Category public UUIDs and configurable mobile-card/payment fields already exist.
 The API must reuse contribution services and must not update annual-target totals

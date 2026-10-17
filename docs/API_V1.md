@@ -636,14 +636,16 @@ Implemented:
 5. Cross-member and cross-church ownership enforcement with API behavior tests.
 6. Durable payment intents, exact allocations, sequential provider attempts,
    idempotency enforcement, and replay-protected webhook-event storage.
+7. Guarded payment-state transitions and provider initiation that never treats an
+   accepted handset prompt as verified settlement.
 
 Still required before mobile payments can be enabled:
 
 1. Validate the selected `vodacom_m_pesa`, `airtel_money`, or `mixx_by_yas`
    adapter against its approved operator sandbox contract and document signatures,
    timeout, retry, and reconciliation behavior.
-2. Implement signed callback verification, guarded payment state transitions,
-   atomic contribution posting, and reconciliation.
+2. Implement signed callback verification, authoritative status polling, atomic
+   contribution posting, and reconciliation.
 3. Add shared production-cache throttling for authentication and payment routes.
 4. Add provider callback, reconciliation, and payment failure-path tests.
 

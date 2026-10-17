@@ -66,7 +66,8 @@ prerequisite model work, and the phased Django Ninja rollout are documented in
 [`docs/API_DESIGN.md`](docs/API_DESIGN.md). Mobile payment methods and intents are
 deliberately disabled until verified settlement, contribution posting, and
 reconciliation are complete. Durable payment intents, allocations, provider
-attempts, and replay-protected callback records are already implemented.
+attempts, replay-protected callback records, guarded state changes, and safe
+provider initiation are already implemented.
 Vodacom M-Pesa, Airtel Money, and Mixx by Yas are encapsulated behind the same
 provider-neutral payment interface. Provider selection, configuration, and
 activation gates are documented in

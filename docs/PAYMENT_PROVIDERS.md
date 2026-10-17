@@ -63,6 +63,7 @@ operator sandbox.
 
 Do not enable member payments merely because an adapter is configured. Intent
 persistence, idempotency, allocation uniqueness, attempt history, and callback
-replay storage are complete. Verified callbacks or polling, guarded state changes,
-atomic contribution posting, reconciliation, throttling, and audit events still
-must be completed. An accepted handset prompt is not evidence of settlement.
+replay storage are complete. Guarded state changes and provider initiation are also
+implemented, and initiation cannot mark an intent as succeeded. Verified callbacks
+or polling, atomic contribution posting, reconciliation, and throttling still must
+be completed. An accepted handset prompt is not evidence of settlement.

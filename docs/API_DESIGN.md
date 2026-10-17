@@ -589,7 +589,9 @@ church-scoped.
   protocol behind the provider-neutral `MpesaProvider` adapter.
 - Completed: payment models, multi-week allocations, idempotent intent creation,
   and replay-protected callback storage.
-- Add provider-specific webhook verification, guarded state transitions,
+- Completed: guarded payment-state transitions, provider initiation, sanitized
+  attempt results, expiry handling, and transition audit events.
+- Add provider-specific webhook verification, authoritative status polling,
   reconciliation, and atomic contribution posting.
 - Enable `payments_enabled` only after sandbox and failure-path testing succeeds.
 

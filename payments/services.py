@@ -10,10 +10,18 @@ from django.db import IntegrityError, transaction
 from django.db.models import Max
 from django.utils import timezone
 
+from audit_logs.services import create_audit_log
 from categories.models import ContributionCategory
 from contribution_weeks.models import ContributionWeek
 from financial_years.models import FinancialYear
 from members.models import Member
+
+from .providers import (
+    PaymentProviderError,
+    PaymentProviderRequest,
+    PaymentProviderStatus,
+    get_payment_provider,
+)
 
 from .models import (
     PAYMENT_PROVIDER_CHOICES,
@@ -27,6 +35,32 @@ from .models import (
 PAYMENT_INTENT_LIFETIME = timedelta(minutes=15)
 MONEY_QUANTUM = Decimal("0.01")
 SUPPORTED_PROVIDERS = {key for key, _label in PAYMENT_PROVIDER_CHOICES}
+PAYMENT_STATUS_TRANSITIONS = {
+    "created": {
+        "pending_customer_action",
+        "processing",
+        "failed",
+        "expired",
+        "cancelled",
+    },
+    "pending_customer_action": {
+        "processing",
+        "succeeded",
+        "failed",
+        "expired",
+        "cancelled",
+    },
+    "processing": {
+        "pending_customer_action",
+        "succeeded",
+        "failed",
+        "expired",
+    },
+    "succeeded": set(),
+    "failed": set(),
+    "expired": set(),
+    "cancelled": set(),
+}
 
 
 class PaymentServiceError(Exception):
@@ -349,17 +383,247 @@ def create_payment_attempt(payment_intent):
     """Create the next sequential provider attempt under an intent row lock."""
 
     locked_intent = PaymentIntent.objects.select_for_update().get(pk=payment_intent.pk)
-    latest_number = locked_intent.attempts.aggregate(number=Max("attempt_number"))[
+    return _create_locked_attempt(locked_intent)
+
+
+def _create_locked_attempt(payment_intent, *, initiated_at=None):
+    """Create the next attempt for an intent already locked by the caller."""
+
+    latest_number = payment_intent.attempts.aggregate(number=Max("attempt_number"))[
         "number"
     ] or 0
     attempt = PaymentAttempt(
-        payment_intent=locked_intent,
+        payment_intent=payment_intent,
         attempt_number=latest_number + 1,
-        provider=locked_intent.provider,
+        provider=payment_intent.provider,
+        initiated_at=initiated_at,
     )
     attempt.full_clean()
     attempt.save()
     return attempt
+
+
+def _record_status_transition(payment_intent, previous_status, new_status):
+    """Write an audit event without exposing a phone number or provider payload."""
+
+    create_audit_log(
+        user=payment_intent.member.user,
+        church=payment_intent.church,
+        action="PAYMENT_STATUS_CHANGED",
+        description=(
+            f"Payment {payment_intent.reference} changed from "
+            f"{previous_status} to {new_status}."
+        ),
+        entity_type="PaymentIntent",
+        entity_id=str(payment_intent.public_id),
+    )
+
+
+def _apply_locked_status_transition(
+    payment_intent,
+    new_status,
+    *,
+    settlement_verified=False,
+):
+    """Apply one legal transition to an intent already locked by the caller."""
+
+    previous_status = payment_intent.status
+    if previous_status == new_status:
+        return False
+    if new_status not in dict(PaymentIntent.STATUS_CHOICES):
+        raise PaymentServiceError(
+            "PAYMENT_STATUS_UNKNOWN",
+            "The requested payment status is not supported.",
+        )
+    if new_status == "succeeded" and not settlement_verified:
+        raise PaymentServiceError(
+            "PAYMENT_SETTLEMENT_UNVERIFIED",
+            "A payment cannot succeed until provider settlement is verified.",
+        )
+    if new_status not in PAYMENT_STATUS_TRANSITIONS.get(previous_status, set()):
+        raise PaymentServiceError(
+            "PAYMENT_STATUS_CONFLICT",
+            f"Payment cannot change from {previous_status} to {new_status}.",
+        )
+
+    now = timezone.now()
+    payment_intent.status = new_status
+    update_fields = ["status", "updated_at"]
+    if new_status == "succeeded":
+        payment_intent.succeeded_at = now
+        update_fields.append("succeeded_at")
+    elif new_status == "failed":
+        payment_intent.failed_at = now
+        update_fields.append("failed_at")
+    elif new_status == "cancelled":
+        payment_intent.cancelled_at = now
+        update_fields.append("cancelled_at")
+    payment_intent.save(update_fields=update_fields)
+    _record_status_transition(payment_intent, previous_status, new_status)
+    return True
+
+
+@transaction.atomic
+def transition_payment_intent(
+    payment_intent,
+    new_status,
+    *,
+    settlement_verified=False,
+):
+    """Lock an intent and enforce its server-controlled state machine."""
+
+    locked_intent = PaymentIntent.objects.select_for_update().get(pk=payment_intent.pk)
+    _apply_locked_status_transition(
+        locked_intent,
+        new_status,
+        settlement_verified=settlement_verified,
+    )
+    return locked_intent
+
+
+def _prepare_provider_attempt(payment_intent):
+    """Lock a fresh intent, mark initiation in progress, and create its attempt."""
+
+    with transaction.atomic():
+        locked_intent = (
+            PaymentIntent.objects.select_for_update()
+            .select_related("member__user", "church", "category")
+            .get(pk=payment_intent.pk)
+        )
+        if locked_intent.expires_at <= timezone.now():
+            _apply_locked_status_transition(locked_intent, "expired")
+            return locked_intent, None
+        if locked_intent.status != "created":
+            raise PaymentServiceError(
+                "PAYMENT_ALREADY_STARTED",
+                "This payment request has already been started.",
+            )
+        attempt = _create_locked_attempt(
+            locked_intent,
+            initiated_at=timezone.now(),
+        )
+        _apply_locked_status_transition(locked_intent, "processing")
+        return locked_intent, attempt
+
+
+def _store_provider_error(payment_intent, attempt, error):
+    """Persist a sanitized provider failure while preserving ambiguous payments."""
+
+    with transaction.atomic():
+        locked_intent = PaymentIntent.objects.select_for_update().get(
+            pk=payment_intent.pk
+        )
+        locked_attempt = PaymentAttempt.objects.select_for_update().get(pk=attempt.pk)
+        locked_attempt.status = "processing" if error.retryable else "failed"
+        locked_attempt.response_code = error.code
+        locked_attempt.response_description = error.message[:500]
+        locked_attempt.retryable = error.retryable
+        locked_attempt.completed_at = timezone.now()
+        locked_attempt.save(
+            update_fields=[
+                "status",
+                "response_code",
+                "response_description",
+                "retryable",
+                "completed_at",
+                "updated_at",
+            ]
+        )
+        locked_intent.failure_code = error.code
+        locked_intent.response_description = error.message[:500]
+        locked_intent.save(
+            update_fields=["failure_code", "response_description", "updated_at"]
+        )
+        if not error.retryable:
+            _apply_locked_status_transition(locked_intent, "failed")
+
+
+def _store_provider_result(payment_intent, attempt, result):
+    """Persist normalized initiation output without accepting unverified success."""
+
+    provider_status = PaymentProviderStatus(result.status)
+    target_status = {
+        PaymentProviderStatus.PENDING_CUSTOMER_ACTION: "pending_customer_action",
+        PaymentProviderStatus.PROCESSING: "processing",
+        PaymentProviderStatus.FAILED: "failed",
+        # Initiation success is still not settlement evidence. Leave the intent
+        # processing until a verified callback or authoritative query confirms it.
+        PaymentProviderStatus.SUCCEEDED: "processing",
+    }[provider_status]
+    with transaction.atomic():
+        locked_intent = PaymentIntent.objects.select_for_update().get(
+            pk=payment_intent.pk
+        )
+        locked_attempt = PaymentAttempt.objects.select_for_update().get(pk=attempt.pk)
+        locked_attempt.status = target_status
+        locked_attempt.provider_reference = result.provider_reference or ""
+        locked_attempt.provider_conversation_id = result.conversation_id or ""
+        locked_attempt.provider_transaction_id = result.transaction_id or ""
+        locked_attempt.response_code = result.response_code or ""
+        locked_attempt.response_description = (result.response_description or "")[:500]
+        locked_attempt.completed_at = timezone.now()
+        locked_attempt.save(
+            update_fields=[
+                "status",
+                "provider_reference",
+                "provider_conversation_id",
+                "provider_transaction_id",
+                "response_code",
+                "response_description",
+                "completed_at",
+                "updated_at",
+            ]
+        )
+        locked_intent.provider_reference = result.provider_reference or ""
+        locked_intent.provider_conversation_id = result.conversation_id or ""
+        locked_intent.provider_transaction_id = result.transaction_id or ""
+        locked_intent.response_code = result.response_code or ""
+        locked_intent.response_description = (result.response_description or "")[:500]
+        locked_intent.failure_code = ""
+        locked_intent.save(
+            update_fields=[
+                "provider_reference",
+                "provider_conversation_id",
+                "provider_transaction_id",
+                "response_code",
+                "response_description",
+                "failure_code",
+                "updated_at",
+            ]
+        )
+        _apply_locked_status_transition(locked_intent, target_status)
+        return locked_intent, locked_attempt
+
+
+def initiate_payment_intent(payment_intent, *, provider_adapter=None):
+    """Start one provider prompt and persist its normalized, non-settled result."""
+
+    adapter = provider_adapter or get_payment_provider(payment_intent.provider)
+    if adapter.key != payment_intent.provider:
+        raise PaymentServiceError(
+            "PAYMENT_PROVIDER_MISMATCH",
+            "The payment adapter does not match the selected provider.",
+        )
+    prepared_intent, attempt = _prepare_provider_attempt(payment_intent)
+    if attempt is None:
+        raise PaymentServiceError(
+            "PAYMENT_EXPIRED",
+            "This payment request has expired.",
+        )
+    provider_request = PaymentProviderRequest(
+        amount=prepared_intent.amount,
+        currency=prepared_intent.currency,
+        payer_phone_number=prepared_intent.payer_phone_number,
+        reference=prepared_intent.reference,
+        description=f"{prepared_intent.category.name} contribution",
+        conversation_id=str(prepared_intent.public_id),
+    )
+    try:
+        result = adapter.initiate(provider_request)
+    except PaymentProviderError as error:
+        _store_provider_error(prepared_intent, attempt, error)
+        raise
+    return _store_provider_result(prepared_intent, attempt, result)
 
 
 def webhook_payload_hash(raw_body):

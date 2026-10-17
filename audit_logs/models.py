@@ -22,6 +22,7 @@ class AuditLog(models.Model):
         ("LOGOUT", "Logout"),
         ("PROFILE_UPDATED", "Profile Updated"),
         ("DEVICE_REGISTERED", "Device Registered"),
+        ("PAYMENT_STATUS_CHANGED", "Payment Status Changed"),
         ("OTHER", "Other"),
     ]
 

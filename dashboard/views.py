@@ -79,7 +79,6 @@ def dashboard(request):
         "total_contributions": contributions.filter(status="POSTED").count(),
         "total_contributed": total_contributed,
         "total_target": total_target,
-        "total_remaining": max(total_target - total_contributed, 0),
         "overall_completion": overall_completion,
         "total_uploads": uploads.count(),
         "pending_uploads": uploads.filter(

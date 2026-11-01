@@ -10,7 +10,7 @@
 
 .category-page-heading p,
 .category-list-toolbar p {
-    color: #6b6571;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -23,7 +23,7 @@
 
 .category-editor {
     background: #fff;
-    border: 1px solid #e6e3ea;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     box-shadow: 0 4px 18px rgba(35, 27, 54, 0.06);
     overflow: hidden;
@@ -39,7 +39,7 @@
 }
 
 .category-form-section {
-    border-bottom: 1px solid #ece9ef;
+    border-bottom: 1px solid var(--color-border);
     padding: 28px;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .section-heading p {
-    color: #756f7b;
+    color: var(--color-text-muted);
     margin: 3px 0 0;
 }
 
@@ -89,14 +89,14 @@
 }
 
 .form-field label span {
-    color: #817a87;
+    color: var(--color-text-subtle);
     font-size: 11px;
     font-weight: 650;
     margin-left: 4px;
 }
 
 .form-field > small {
-    color: #7b7482;
+    color: var(--color-text-muted);
     display: block;
     font-size: 11px;
     margin-top: 6px;
@@ -125,7 +125,7 @@
 }
 
 .color-field output {
-    color: #554e5c;
+    color: var(--color-text-muted);
     font-size: 12px;
     font-weight: 700;
 }
@@ -139,7 +139,7 @@
 
 .setting-switch {
     align-items: flex-start;
-    border: 1px solid #e1dee6;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -148,7 +148,7 @@
 }
 
 .setting-switch:hover {
-    background: #faf9fc;
+    background: var(--color-surface-muted);
     border-color: #cfc9da;
 }
 
@@ -167,19 +167,19 @@
 }
 
 .setting-switch strong {
-    color: #312b37;
+    color: var(--color-text);
     font-size: 13px;
 }
 
 .setting-switch small {
-    color: #7a7480;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin-top: 3px;
 }
 
 .category-preview-panel {
-    background: #f6f5f8;
-    border-left: 1px solid #e6e3ea;
+    background: var(--color-surface-muted);
+    border-left: 1px solid var(--color-border);
     padding: 28px 22px;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .preview-heading p {
-    color: #4e4756;
+    color: var(--color-text-muted);
     font-size: 12px;
     font-weight: 800;
     margin: 0;
@@ -238,15 +238,15 @@
 }
 
 .preview-note {
-    color: #79727f;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin: 18px 2px 0;
 }
 
 .category-form-actions {
     align-items: center;
-    background: #faf9fb;
-    border-top: 1px solid #e6e3ea;
+    background: var(--color-surface-muted);
+    border-top: 1px solid var(--color-border);
     display: flex;
     gap: 10px;
     justify-content: flex-end;
@@ -269,7 +269,7 @@
 .category-admin-card {
     --category-color: #0f5c5e;
     background: #fff;
-    border: 1px solid #e5e2e9;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     box-shadow: 0 3px 12px rgba(35, 27, 54, 0.05);
     overflow: hidden;
@@ -319,21 +319,21 @@
 }
 
 .category-card-header p {
-    color: #79727f;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin-top: 2px;
 }
 
 .category-description {
-    color: #6f6876;
+    color: var(--color-text-muted);
     font-size: 12px;
     min-height: 35px;
     margin: 16px 0;
 }
 
 .category-card-details {
-    border-bottom: 1px solid #ece9ef;
-    border-top: 1px solid #ece9ef;
+    border-bottom: 1px solid var(--color-border);
+    border-top: 1px solid var(--color-border);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin: 0;
@@ -346,14 +346,14 @@
 }
 
 .category-card-details dt {
-    color: #8a838f;
+    color: var(--color-text-subtle);
     font-size: 9px;
     font-weight: 800;
     text-transform: uppercase;
 }
 
 .category-card-details dd {
-    color: #3d3743;
+    color: var(--color-text);
     font-size: 11px;
     font-weight: 700;
     margin: 2px 0 0;
@@ -382,7 +382,7 @@
 .category-empty-state {
     align-items: center;
     background: #fff;
-    border: 1px solid #e5e2e9;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -401,7 +401,7 @@
 }
 
 .category-empty-state p {
-    color: #746d79;
+    color: var(--color-text-muted);
     margin: 0 0 18px;
 }
 
@@ -422,7 +422,7 @@
 
     .category-preview-panel {
         border-left: 0;
-        border-top: 1px solid #e6e3ea;
+        border-top: 1px solid var(--color-border);
     }
 
     .mobile-category-card {

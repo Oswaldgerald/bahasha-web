@@ -7,7 +7,7 @@
 }
 
 .user-form-intro p {
-    color: #67616f;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -21,7 +21,7 @@
 .user-summary > div {
     align-items: center;
     background: white;
-    border: 1px solid #ebeaf0;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     box-shadow: 0 2px 9px rgba(33, 25, 57, 0.05);
     display: flex;
@@ -67,7 +67,7 @@
 }
 
 .user-summary small {
-    color: #716b78;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin-bottom: 2px;
 }
@@ -80,7 +80,7 @@
 .user-filters {
     align-items: center;
     background: white;
-    border: 1px solid #ebeaf0;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     display: grid;
     gap: 10px;
@@ -99,7 +99,7 @@
 }
 
 .user-search-field > svg {
-    color: #7c7685;
+    color: var(--color-text-muted);
     height: 18px;
     left: 12px;
     pointer-events: none;
@@ -114,7 +114,7 @@
 }
 
 .user-clear-filter {
-    color: #6a6374;
+    color: var(--color-text-muted);
     font-size: 13px;
     font-weight: 700;
     padding: 8px;
@@ -154,13 +154,13 @@
 
 .user-identity small,
 .user-contact small {
-    color: #756f7c;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin-top: 3px;
 }
 
 .user-role {
-    background: #f1eff6;
+    background: var(--color-surface-muted);
     border-radius: 20px;
     color: #4a3e6d;
     display: inline-block;
@@ -200,13 +200,13 @@
 }
 
 .user-account-state.is-inactive {
-    color: #8a858e;
+    color: var(--color-text-subtle);
 }
 
 .user-current-account {
-    background: #f2f0f6;
+    background: var(--color-surface-muted);
     border-radius: 20px;
-    color: #6d6776;
+    color: var(--color-text-muted);
     font-size: 10px;
     font-weight: 700;
     padding: 5px 8px;
@@ -219,7 +219,7 @@
 }
 
 .user-form-section {
-    border: 1px solid #ebeaf0;
+    border: 1px solid var(--color-border);
     box-shadow: 0 2px 9px rgba(33, 25, 57, 0.04);
 }
 
@@ -252,7 +252,7 @@
 }
 
 .user-section-heading p {
-    color: #79737f;
+    color: var(--color-text-muted);
     font-size: 12px;
     margin: 4px 0 0;
 }
@@ -268,21 +268,21 @@
 }
 
 .user-phone-field > small {
-    color: #746e79;
+    color: var(--color-text-muted);
     display: block;
     font-size: 11px;
     margin-top: 6px;
 }
 
 .user-password-field > label small {
-    color: #7b7484;
+    color: var(--color-text-muted);
     font-size: 10px;
     font-weight: 600;
     margin-left: 4px;
 }
 
 .user-password-field > small {
-    color: #746e79;
+    color: var(--color-text-muted);
     display: block;
     font-size: 11px;
     line-height: 1.4;
@@ -335,14 +335,14 @@
 }
 
 .user-optional {
-    color: #88828d;
+    color: var(--color-text-subtle);
     font-size: 11px;
     font-weight: 500;
 }
 
 .user-active-field {
     align-items: center;
-    border: 1px solid #dedbe5;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     display: flex;
     gap: 10px;

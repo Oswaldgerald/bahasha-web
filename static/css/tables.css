@@ -7,7 +7,7 @@
 }
 
 .list-toolbar p {
-    color: #67616f;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -58,17 +58,19 @@
 }
 
 .data-table th {
-    background: #f4f5f8;
-    color: #625d69;
+    background: var(--color-surface-muted);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
     font-size: 11px;
     font-weight: 700;
-    padding: 13px 14px;
+    letter-spacing: 0.04em;
+    padding: 12px 14px;
     text-align: left;
     text-transform: uppercase;
 }
 
 .data-table td {
-    border-bottom: 1px solid #eeecf1;
+    border-bottom: 1px solid var(--color-border);
     padding: 14px;
     vertical-align: middle;
 }
@@ -78,7 +80,7 @@
 }
 
 .data-table tbody tr:hover {
-    background: #faf9fc;
+    background: var(--color-surface-muted);
 }
 
 .data-table tbody tr:last-child td {
@@ -100,13 +102,13 @@
 }
 
 .table-primary strong {
-    color: #282331;
+    color: var(--color-text);
     font-size: 13px;
 }
 
 .table-primary small,
 .table-muted {
-    color: #756f7c;
+    color: var(--color-text-muted);
     font-size: 11px;
     margin-top: 3px;
 }
@@ -149,8 +151,8 @@
 }
 
 .status-badge.is-neutral {
-    background: #f0eff2;
-    color: #6d6776;
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
 }
 
 .status-text {
@@ -230,13 +232,13 @@
 }
 
 .empty-state {
-    color: #6d6776;
+    color: var(--color-text-muted);
     padding: 20px !important;
     text-align: center;
 }
 
 .table-empty {
-    color: #6d6776;
+    color: var(--color-text-muted);
     padding: 42px 20px !important;
     text-align: center;
 }
@@ -256,12 +258,12 @@
 }
 
 .table-empty strong {
-    color: #302a3a;
+    color: var(--color-text);
 }
 
 .list-pagination {
     align-items: center;
-    border-top: 1px solid #ebe9ef;
+    border-top: 1px solid var(--color-border);
     display: flex;
     gap: 18px;
     justify-content: space-between;
@@ -269,7 +271,7 @@
 }
 
 .list-pagination p {
-    color: #716b78;
+    color: var(--color-text-muted);
     font-size: 12px;
     margin: 0;
 }
@@ -312,7 +314,7 @@
 }
 
 .pagination-arrow.is-disabled {
-    background: #f4f3f6;
+    background: var(--color-surface-muted);
     color: #aaa5af;
 }
 
@@ -322,7 +324,7 @@
 }
 
 .pagination-ellipsis {
-    color: #817b87;
+    color: var(--color-text-subtle);
     padding: 0 3px;
 }
 
@@ -384,7 +386,7 @@
     }
 
     .responsive-table td {
-        border-bottom: 1px solid #f0eef4;
+        border-bottom: 1px solid var(--color-border);
         box-sizing: border-box;
         display: grid;
         gap: 12px;
@@ -394,7 +396,7 @@
     }
 
     .responsive-table td::before {
-        color: #7a7481;
+        color: var(--color-text-muted);
         content: attr(data-label);
         font-size: 10px;
         font-weight: 700;

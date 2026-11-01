@@ -164,7 +164,8 @@
 
 .sidebar a.active {
     background: white;
-    color: #0f5c5e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    color: var(--color-brand);
     font-weight: 700;
 }
 
@@ -298,17 +299,18 @@
 
 .topbar {
     align-items: center;
-    background: white;
-    border: 1px solid #e5e2ec;
-    border-top: 3px solid #0a4a4c;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    -webkit-backdrop-filter: saturate(160%) blur(10px);
+    backdrop-filter: saturate(160%) blur(10px);
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
     display: flex;
     gap: 18px;
     justify-content: space-between;
     margin-bottom: 24px;
-    min-height: 66px;
-    padding: 8px 12px 8px 14px;
+    min-height: 64px;
+    padding: 8px 10px 8px 14px;
     position: sticky;
     top: 12px;
     z-index: 18;
@@ -316,8 +318,9 @@
 
 .topbar-page-title {
     align-items: center;
-    color: #292431;
+    color: var(--color-text);
     display: flex;
+    flex: 1;
     gap: 11px;
     min-width: 0;
     text-decoration: none;
@@ -325,8 +328,8 @@
 
 .topbar-context-icon {
     align-items: center;
-    background: #e7f2f1;
-    border-radius: 7px;
+    background: var(--color-brand-soft);
+    border-radius: 8px;
     color: #0a4a4c;
     display: inline-flex;
     flex: 0 0 38px;
@@ -346,9 +349,10 @@
 }
 
 .topbar-title-copy small {
-    color: #7a7482;
+    color: var(--color-text-subtle);
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.06em;
     line-height: 1.1;
     text-transform: uppercase;
 }
@@ -356,6 +360,8 @@
 .topbar-page-title strong {
     font-size: 17px;
     line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
@@ -367,9 +373,9 @@
 .account-menu-trigger {
     align-items: center;
     background: transparent;
-    border: 1px solid #dedce7;
-    border-radius: 8px;
-    color: #443b5f;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
     cursor: pointer;
     display: inline-flex;
     gap: 7px;
@@ -379,13 +385,13 @@
 }
 
 .account-trigger-identity {
-    align-items: center;
+    align-items: flex-end;
     align-self: stretch;
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-width: 0;
-    text-align: center;
+    text-align: right;
 }
 
 .account-trigger-identity strong,
@@ -398,13 +404,13 @@
 }
 
 .account-trigger-identity strong {
-    color: #2e2935;
+    color: var(--color-text);
     font-size: 13px;
     line-height: 1.2;
 }
 
 .account-trigger-identity small {
-    color: #77717e;
+    color: var(--color-text-subtle);
     font-size: 10px;
     line-height: 1.2;
     margin-top: 2px;
@@ -412,8 +418,8 @@
 
 .account-menu-trigger:hover,
 .account-menu.is-open .account-menu-trigger {
-    background: #f5f3fb;
-    border-color: #a99ed0;
+    background: var(--color-surface-muted);
+    border-color: var(--color-border);
 }
 
 .account-menu-trigger > svg {
@@ -429,10 +435,10 @@
 
 .user-avatar {
     align-items: center;
-    background: #0f5c5e;
+    background: linear-gradient(135deg, #1a7577, var(--color-brand-strong));
     border: 2px solid white;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px #d8d4e8;
+    box-shadow: 0 0 0 1px var(--color-border-strong);
     color: white;
     display: inline-flex;
     flex: 0 0 38px;
@@ -459,9 +465,9 @@
 
 .account-dropdown {
     background: white;
-    border: 1px solid #e4e2ea;
-    border-radius: 8px;
-    box-shadow: 0 18px 42px rgba(31, 22, 64, 0.18);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 42px rgba(16, 33, 36, 0.16);
     min-width: 280px;
     opacity: 0;
     overflow: hidden;
@@ -484,8 +490,8 @@
 
 .account-dropdown-header {
     align-items: center;
-    background: #f7f6fa;
-    border-bottom: 1px solid #ebe9ef;
+    background: var(--color-surface-muted);
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     gap: 12px;
     padding: 16px;
@@ -508,7 +514,7 @@
 }
 
 .account-identity span {
-    color: #6a6672;
+    color: var(--color-text-muted);
     font-size: 13px;
     margin-top: 3px;
 }
@@ -524,7 +530,7 @@
     border: 0;
     border-radius: 6px;
     box-sizing: border-box;
-    color: #27232e;
+    color: var(--color-text);
     cursor: pointer;
     display: flex;
     font: inherit;
@@ -539,8 +545,8 @@
 
 .account-dropdown-links a:hover,
 .account-dropdown-logout button:hover {
-    background: #ecf5f4;
-    color: #0f5c5e;
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
 }
 
 .account-dropdown-links svg,
@@ -550,13 +556,18 @@
 }
 
 .account-dropdown-logout {
-    border-top: 1px solid #ebe9ef;
+    border-top: 1px solid var(--color-border);
     margin: 0;
     padding: 8px;
 }
 
 .account-dropdown-logout button {
-    color: #a52820;
+    color: var(--color-danger);
+}
+
+.account-dropdown-logout button:hover {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
 }
 
 .page-header {
@@ -572,21 +583,19 @@
 }
 
 .page-header p {
-    color: #666;
+    color: var(--color-text-muted);
     margin: 6px 0 0;
 }
 
 .site-footer {
     align-items: center;
-    background: #083f41;
-    border: 1px solid #0a4a4c;
-    border-radius: 8px;
-    color: #d5e9e7;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
     display: flex;
     gap: 24px;
     justify-content: space-between;
-    margin-top: 36px;
-    padding: 18px 20px;
+    margin-top: 40px;
+    padding: 18px 2px 4px;
 }
 
 .footer-brand {
@@ -596,20 +605,20 @@
 }
 
 .footer-mark {
-    background: white;
-    border-radius: 7px;
-    color: #0f5c5e;
+    background: var(--color-brand-soft);
+    border-radius: 8px;
+    color: var(--color-brand);
     display: inline-grid;
-    flex: 0 0 36px;
-    height: 36px;
+    flex: 0 0 32px;
+    height: 32px;
     line-height: 0;
     place-items: center;
 }
 
 .footer-mark svg {
     display: block;
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
 }
 
 .footer-brand strong,
@@ -618,8 +627,8 @@
 }
 
 .footer-brand strong {
-    color: white;
-    font-size: 14px;
+    color: var(--color-text);
+    font-size: 13px;
 }
 
 .footer-brand div > span,
@@ -637,7 +646,7 @@
 
 .footer-trust {
     align-items: center;
-    color: #ecf5f4;
+    color: var(--color-text-muted);
     display: inline-flex;
     font-size: 11px;
     font-weight: 700;
@@ -645,7 +654,7 @@
 }
 
 .footer-trust svg {
-    color: #336f4f;
+    color: var(--color-success);
     height: 15px;
     width: 15px;
 }
@@ -694,20 +703,20 @@
 
     .sidebar-toggle {
         align-items: center;
-        background: #0c4f52;
+        background: var(--color-brand);
         border: 0;
-        border-radius: 7px;
+        border-radius: 8px;
         color: white;
         cursor: pointer;
         display: inline-flex;
-        height: 42px;
+        flex: 0 0 40px;
+        height: 40px;
         justify-content: center;
-        left: 16px;
         padding: 0;
-        position: fixed;
-        top: 14px;
-        width: 42px;
-        z-index: 35;
+    }
+
+    .sidebar-toggle:hover {
+        background: var(--color-brand-strong);
     }
 
     .sidebar-toggle svg {
@@ -741,7 +750,7 @@
     .content,
     .sidebar-collapsed .content {
         margin-left: 0;
-        padding: 70px 18px 18px;
+        padding: 12px 16px 18px;
     }
 
     .page-header {
@@ -749,10 +758,11 @@
     }
 
     .topbar {
-        gap: 12px;
+        gap: 10px;
+        margin-bottom: 18px;
         min-height: 56px;
-        padding: 7px 9px 7px 10px;
-        top: 68px;
+        padding: 7px 8px;
+        top: 8px;
     }
 
     .account-menu-trigger {
@@ -760,8 +770,7 @@
     }
 
     .topbar-context-icon {
-        flex-basis: 34px;
-        height: 34px;
+        display: none;
     }
 
     .topbar-page-title strong {

@@ -62,9 +62,9 @@
                     {% for item in summary %}
                     <tr>
                         <td class="table-primary"><strong>{{ item.category__name }}</strong></td>
-                        <td class="report-number">{{ item.total_target|floatformat:2 }}</td>
-                        <td class="report-number report-positive">{{ item.total_contributed|floatformat:2 }}</td>
-                        <td class="report-number">{{ item.total_remaining|floatformat:2 }}</td>
+                        <td class="report-number">{{ item.total_target|floatformat:"2g" }}</td>
+                        <td class="report-number report-positive">{{ item.total_contributed|floatformat:"2g" }}</td>
+                        <td class="report-number">{{ item.total_remaining|floatformat:"2g" }}</td>
                         <td><strong class="report-percentage">{{ item.completion_percentage }}%</strong><div class="progress-track" role="progressbar" aria-label="{{ item.category__name }} completion" aria-valuenow="{{ item.completion_percentage }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div></div></td>
                     </tr>
                     {% empty %}

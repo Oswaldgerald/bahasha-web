@@ -11,7 +11,7 @@ label {
 }
 
 input[type="checkbox"] {
-    accent-color: #0f5c5e;
+    accent-color: var(--color-brand);
     border-radius: 4px;
     margin: 0;
     min-height: 18px;
@@ -22,10 +22,11 @@ input[type="checkbox"] {
 input,
 select,
 textarea {
-    background: white;
-    border: 1px solid #ddd;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
     border-radius: 8px;
     box-sizing: border-box;
+    color: var(--color-text);
     font: inherit;
     margin-top: 6px;
     min-height: 44px;
@@ -34,16 +35,35 @@ textarea {
     width: 100%;
 }
 
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: #a9b5bb;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--color-text-subtle);
+}
+
 input:focus,
 select:focus,
 textarea:focus {
     border-color: #2f7d7f;
-    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.14);
+    box-shadow: var(--focus-ring);
     outline: 0;
 }
 
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background: var(--color-surface-muted);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+}
+
 .errorlist {
-    color: #b42318;
+    color: var(--color-danger);
     list-style: none;
     margin: 6px 0 0;
     padding: 0;
@@ -122,7 +142,7 @@ textarea {
 }
 
 .choices.is-disabled .choices__inner {
-    background: #f2f2f4;
+    background: var(--color-surface-muted);
 }
 
 .form-page {
@@ -132,14 +152,14 @@ textarea {
 }
 
 .form-page-lead {
-    color: #676271;
+    color: var(--color-text-muted);
     font-size: 15px;
     margin: 0 0 18px;
     max-width: 720px;
 }
 
 .standard-form-card {
-    border: 1px solid #e5e2ec;
+    border: 1px solid var(--color-border);
     box-shadow: 0 8px 24px rgba(35, 25, 73, 0.06);
     margin-top: 0;
     padding: 0;
@@ -147,20 +167,20 @@ textarea {
 
 .form-section-header {
     align-items: center;
-    border-bottom: 1px solid #ece9f1;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     gap: 14px;
     padding: 20px 22px;
 }
 
 .form-section-header h2 {
-    color: #27232f;
+    color: var(--color-text);
     font-size: 17px;
     margin: 0;
 }
 
 .form-section-header p {
-    color: #77717f;
+    color: var(--color-text-muted);
     font-size: 13px;
     margin: 2px 0 0;
 }
@@ -198,25 +218,25 @@ textarea {
 }
 
 .form-field label {
-    color: #302b37;
+    color: var(--color-text);
     margin-bottom: 1px;
 }
 
 .field-translation {
-    color: #7b7483;
+    color: var(--color-text-muted);
     font-size: 12px;
     font-weight: 600;
     margin-left: 5px;
 }
 
 .field-help {
-    color: #77717f;
+    color: var(--color-text-muted);
     font-size: 12px;
     margin: 6px 0 0;
 }
 
 .form-settings-grid {
-    border-top: 1px solid #ece9f1;
+    border-top: 1px solid var(--color-border);
     display: grid;
     gap: 12px;
     grid-column: 1 / -1;
@@ -231,7 +251,7 @@ textarea {
 
 .form-toggle {
     align-items: center;
-    background: #faf9fc;
+    background: var(--color-surface-muted);
     border: 1px solid #e1dde9;
     border-radius: 8px;
     cursor: pointer;
@@ -243,7 +263,7 @@ textarea {
 }
 
 .form-toggle:hover {
-    background: #f6f3fc;
+    background: var(--color-surface-muted);
     border-color: #bbb2d2;
 }
 
@@ -298,7 +318,7 @@ textarea {
 }
 
 .form-toggle-copy strong {
-    color: #302b37;
+    color: var(--color-text);
     font-size: 13px;
 }
 
@@ -307,7 +327,7 @@ textarea {
 }
 
 .form-toggle-copy small {
-    color: #77717f;
+    color: var(--color-text-muted);
     font-size: 12px;
     font-weight: 500;
     margin-top: 2px;
@@ -315,7 +335,7 @@ textarea {
 
 .form-submit-row {
     align-items: center;
-    border-top: 1px solid #ece9f1;
+    border-top: 1px solid var(--color-border);
     display: flex;
     gap: 10px;
     justify-content: flex-end;
@@ -333,7 +353,7 @@ textarea {
 
 .form-guidance {
     align-items: flex-start;
-    background: #f6f3fc;
+    background: var(--color-surface-muted);
     border: 1px solid #ded7ef;
     border-radius: 8px;
     color: #554c68;

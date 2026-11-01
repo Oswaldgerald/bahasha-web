@@ -2,190 +2,214 @@
 
 {% block content %}
 
-<div class="dashboard-toolbar">
-    <div class="dashboard-actions">
-        <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary">
-            <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
-            <span>View Report</span>
-        </a>
-        <a href="{% url 'web_contribution_create' %}" class="btn-primary">
-            <i data-lucide="plus" aria-hidden="true"></i>
-            <span>Record Contribution</span>
-        </a>
-    </div>
-</div>
+<section class="dashboard-hero" aria-labelledby="collection-progress-title">
+    <div class="hero-progress">
+        <p class="hero-eyebrow" id="collection-progress-title">
+            <i data-lucide="wallet-cards" aria-hidden="true"></i>
+            <span>Collection progress{% if active_year %} &middot; FY {{ active_year.year }}{% endif %}</span>
+        </p>
 
-<section class="dashboard-grid" aria-label="System overview">
-    <article class="metric-card metric-card-blue">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="landmark" aria-hidden="true"></i></span>
-            <span class="metric-label">Total Churches</span>
-        </div>
-        <strong class="metric-value">{{ total_churches }}</strong>
-        <span class="metric-context">Registered congregations</span>
-    </article>
+        <strong class="hero-amount"><small>TZS</small> {{ total_contributed|floatformat:"0g" }}</strong>
+        <p class="hero-caption">
+            collected of <strong>TZS {{ total_target|floatformat:"0g" }}</strong> combined annual target
+        </p>
 
-    <article class="metric-card metric-card-violet">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
-            <span class="metric-label">Total Members</span>
-        </div>
-        <strong class="metric-value">{{ total_members }}</strong>
-        <span class="metric-context">All member records</span>
-    </article>
-
-    <article class="metric-card metric-card-green">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="user-check" aria-hidden="true"></i></span>
-            <span class="metric-label">Approved Members</span>
-        </div>
-        <strong class="metric-value">{{ approved_members }}</strong>
-        <span class="metric-context">Ready for contributions</span>
-    </article>
-
-    <article class="metric-card metric-card-amber">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="clock" aria-hidden="true"></i></span>
-            <span class="metric-label">Pending Approvals</span>
-        </div>
-        <strong class="metric-value">{{ pending_members }}</strong>
-        <span class="metric-context">Awaiting review</span>
-    </article>
-
-    <article class="metric-card metric-card-indigo">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
-            <span class="metric-label">Contributions</span>
-        </div>
-        <strong class="metric-value">{{ total_contributions }}</strong>
-        <span class="metric-context">Posted transactions</span>
-    </article>
-
-    <article class="metric-card metric-card-emerald">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="wallet-cards" aria-hidden="true"></i></span>
-            <span class="metric-label">Total Collected</span>
-        </div>
-        <strong class="metric-value metric-money"><small>TZS</small> {{ total_contributed|floatformat:"0g" }}</strong>
-        <span class="metric-context">Posted contribution value</span>
-    </article>
-
-    <article class="metric-card metric-card-cyan">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="goal" aria-hidden="true"></i></span>
-            <span class="metric-label">Annual Target</span>
-        </div>
-        <strong class="metric-value metric-money"><small>TZS</small> {{ total_target|floatformat:"0g" }}</strong>
-        <span class="metric-context">Combined member targets</span>
-    </article>
-
-    <article class="metric-card metric-card-purple">
-        <div class="metric-card-heading">
-            <span class="metric-icon"><i data-lucide="gauge" aria-hidden="true"></i></span>
-            <span class="metric-label">Overall Completion</span>
-        </div>
-        <strong class="metric-value">{{ overall_completion|floatformat:"-2" }}%</strong>
-        <div class="metric-progress" aria-label="{{ overall_completion }} percent complete">
+        <div class="hero-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ overall_completion|floatformat:'0' }}" aria-label="Overall target completion">
             <div class="progress-track">
                 <div class="progress-bar" data-progress="{{ overall_completion }}"></div>
             </div>
-            <span>Target progress</span>
         </div>
-    </article>
-</section>
 
-<section class="card dashboard-period" aria-labelledby="active-period-title">
-    <div class="period-heading">
-        <span class="period-heading-icon"><i data-lucide="calendar-clock" aria-hidden="true"></i></span>
-        <div>
-            <h2 id="active-period-title">Active Period</h2>
-            <p>Current reporting window for contribution activity.</p>
-        </div>
+        <dl class="hero-stats">
+            <div>
+                <dt>Completion</dt>
+                <dd>{{ overall_completion|floatformat:"-2" }}%</dd>
+            </div>
+            <div>
+                <dt>Remaining</dt>
+                <dd>TZS {{ total_remaining|floatformat:"0g" }}</dd>
+            </div>
+            <div>
+                <dt>Posted contributions</dt>
+                <dd>{{ total_contributions }}</dd>
+            </div>
+        </dl>
     </div>
 
-    <div class="period-details">
+    <aside class="hero-period" aria-labelledby="active-period-title">
+        <div class="hero-period-heading">
+            <h2 id="active-period-title">Active period</h2>
+            <a href="{% url 'web_contribution_weeks' %}" class="section-link">
+                <span>Manage</span>
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
         <div class="period-item">
-            <i data-lucide="calendar-range" aria-hidden="true"></i>
+            <span class="period-item-icon"><i data-lucide="calendar-range" aria-hidden="true"></i></span>
             <span>
-                <small>Financial Year</small>
+                <small>Financial year</small>
                 <strong>{% if active_year %}{{ active_year.year }}{% else %}Not configured{% endif %}</strong>
             </span>
         </div>
 
         <div class="period-item">
-            <i data-lucide="calendar-check-2" aria-hidden="true"></i>
+            <span class="period-item-icon"><i data-lucide="calendar-check-2" aria-hidden="true"></i></span>
             <span>
-                <small>Active Week</small>
+                <small>Active week</small>
                 <strong>
                     {% if active_week %}
-                        Week {{ active_week.week_number }} - {{ active_week.sunday_date|date:"M j, Y" }}
+                        Week {{ active_week.week_number }} &middot; {{ active_week.sunday_date|date:"M j, Y" }}
                     {% else %}
                         No active week
                     {% endif %}
                 </strong>
             </span>
         </div>
-    </div>
 
-    <a href="{% url 'web_contribution_weeks' %}" class="period-link">
-        <span>Manage periods</span>
-        <i data-lucide="arrow-right" aria-hidden="true"></i>
-    </a>
-</section>
-
-<section class="card table-card dashboard-performance" aria-labelledby="category-performance-title">
-    <div class="performance-heading">
-        <div>
-            <h2 id="category-performance-title">Category Performance</h2>
-            <p>Target achievement by contribution category.</p>
+        <div class="dashboard-actions">
+            <a href="{% url 'web_contribution_create' %}" class="btn-primary">
+                <i data-lucide="plus" aria-hidden="true"></i>
+                <span>Record Contribution</span>
+            </a>
+            <a href="{% url 'web_contribution_summary_report' %}" class="btn-secondary">
+                <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
+                <span>View Report</span>
+            </a>
         </div>
-        <a href="{% url 'web_annual_targets' %}" class="section-link">
-            <span>View annual targets</span>
-            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
-        </a>
-    </div>
-
-    <div class="dashboard-table-wrap">
-        <table class="data-table dashboard-table{% if not category_performance %} is-empty{% endif %}">
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th class="numeric-column">Target (TZS)</th>
-                    <th class="numeric-column">Collected (TZS)</th>
-                    <th class="numeric-column">Remaining (TZS)</th>
-                    <th>Completion</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for item in category_performance %}
-                <tr>
-                    <td><strong>{{ item.category__name }}</strong></td>
-                    <td class="numeric-column">{{ item.total_target|floatformat:"0g" }}</td>
-                    <td class="numeric-column collected-value">{{ item.total_contributed|floatformat:"0g" }}</td>
-                    <td class="numeric-column">{{ item.total_remaining|floatformat:"0g" }}</td>
-                    <td class="completion-cell">
-                        <div class="completion-label">
-                            <strong>{{ item.completion_percentage|floatformat:"-2" }}%</strong>
-                            <span>complete</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="empty-state dashboard-empty-state">
-                        <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i>
-                        <strong>No category performance yet</strong>
-                        <span>Add annual targets to begin tracking progress.</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    </aside>
 </section>
+
+<section class="dashboard-grid" aria-label="Membership overview">
+    <article class="metric-card">
+        <span class="metric-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+        <div class="metric-body">
+            <span class="metric-label">Total Members</span>
+            <strong class="metric-value">{{ total_members }}</strong>
+            <span class="metric-context">All member records</span>
+        </div>
+    </article>
+
+    <article class="metric-card metric-card-green">
+        <span class="metric-icon"><i data-lucide="user-check" aria-hidden="true"></i></span>
+        <div class="metric-body">
+            <span class="metric-label">Approved Members</span>
+            <strong class="metric-value">{{ approved_members }}</strong>
+            <span class="metric-context">Ready for contributions</span>
+        </div>
+    </article>
+
+    <a href="{% url 'web_members' %}?approval_status=PENDING" class="metric-card metric-card-amber{% if pending_members %} needs-attention{% endif %}">
+        <span class="metric-icon"><i data-lucide="clock" aria-hidden="true"></i></span>
+        <div class="metric-body">
+            <span class="metric-label">Pending Approvals</span>
+            <strong class="metric-value">{{ pending_members }}</strong>
+            <span class="metric-context">
+                {% if pending_members %}Review now{% else %}Nothing awaiting review{% endif %}
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </span>
+        </div>
+    </a>
+
+    <article class="metric-card metric-card-blue">
+        <span class="metric-icon"><i data-lucide="landmark" aria-hidden="true"></i></span>
+        <div class="metric-body">
+            <span class="metric-label">Total Churches</span>
+            <strong class="metric-value">{{ total_churches }}</strong>
+            <span class="metric-context">Registered congregations</span>
+        </div>
+    </article>
+</section>
+
+<div class="dashboard-columns">
+    <section class="card table-card dashboard-performance" aria-labelledby="category-performance-title">
+        <div class="performance-heading">
+            <div>
+                <h2 id="category-performance-title">Category Performance</h2>
+                <p>Target achievement by contribution category.</p>
+            </div>
+            <a href="{% url 'web_annual_targets' %}" class="section-link">
+                <span>View annual targets</span>
+                <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div class="dashboard-table-wrap">
+            <table class="data-table dashboard-table{% if not category_performance %} is-empty{% endif %}">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th class="numeric-column">Target (TZS)</th>
+                        <th class="numeric-column">Collected (TZS)</th>
+                        <th class="numeric-column">Remaining (TZS)</th>
+                        <th>Completion</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in category_performance %}
+                    <tr>
+                        <td><strong>{{ item.category__name }}</strong></td>
+                        <td class="numeric-column">{{ item.total_target|floatformat:"0g" }}</td>
+                        <td class="numeric-column collected-value">{{ item.total_contributed|floatformat:"0g" }}</td>
+                        <td class="numeric-column">{{ item.total_remaining|floatformat:"0g" }}</td>
+                        <td class="completion-cell">
+                            <div class="completion-label">
+                                <strong>{{ item.completion_percentage|floatformat:"-2" }}%</strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-bar" data-progress="{{ item.completion_percentage }}"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state dashboard-empty-state">
+                            <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i>
+                            <strong>No category performance yet</strong>
+                            <span>Add annual targets to begin tracking progress.</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card dashboard-recent" aria-labelledby="recent-contributions-title">
+        <div class="performance-heading">
+            <div>
+                <h2 id="recent-contributions-title">Recent Contributions</h2>
+                <p>Latest recorded entries.</p>
+            </div>
+            <a href="{% url 'web_contributions' %}" class="section-link">
+                <span>View all</span>
+                <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <ul class="recent-list">
+            {% for contribution in recent_contributions %}
+            <li class="recent-item">
+                <span class="recent-avatar" aria-hidden="true">{{ contribution.member.user.full_name|default:contribution.bahasha_number|slice:":1"|upper }}</span>
+                <span class="recent-copy">
+                    <strong>{{ contribution.member.user.full_name|default:contribution.bahasha_number }}</strong>
+                    <small>{{ contribution.category.name }} &middot; {{ contribution.contribution_date|date:"M j" }}</small>
+                </span>
+                <span class="recent-amount{% if contribution.status != 'POSTED' %} is-{{ contribution.status|lower }}{% endif %}">
+                    {{ contribution.amount|floatformat:"0g" }}
+                    {% if contribution.status != "POSTED" %}<small>{{ contribution.get_status_display }}</small>{% endif %}
+                </span>
+            </li>
+            {% empty %}
+            <li class="empty-state dashboard-empty-state">
+                <i data-lucide="hand-coins" aria-hidden="true"></i>
+                <strong>No contributions yet</strong>
+                <span>Recorded contributions will appear here.</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
 
 {% endblock %}

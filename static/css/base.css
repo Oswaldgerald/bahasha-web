@@ -1,14 +1,14 @@
 /* Shared design tokens; feature stylesheets may reference these. */
 :root {
-    --color-brand: #0f5c5e;
-    --color-brand-strong: #0a4143;
-    --color-brand-soft: #e7f2f1;
+    --color-brand: #1e4a7a;
+    --color-brand-strong: #163a61;
+    --color-brand-soft: #e8eff8;
     --color-page: #f3f5f6;
     --color-surface: #ffffff;
     --color-surface-muted: #f7f8f9;
     --color-border: #e3e7ea;
     --color-border-strong: #cfd6db;
-    --color-text: #1d2a2c;
+    --color-text: #1b2733;
     --color-text-muted: #5f6b70;
     --color-text-subtle: #8a9499;
     --color-success: #16794b;
@@ -20,9 +20,9 @@
     --radius-sm: 6px;
     --radius: 10px;
     --radius-lg: 14px;
-    --shadow-sm: 0 1px 2px rgba(16, 33, 36, 0.05), 0 1px 3px rgba(16, 33, 36, 0.04);
-    --shadow-md: 0 4px 14px rgba(16, 33, 36, 0.07);
-    --focus-ring: 0 0 0 3px rgba(47, 125, 127, 0.24);
+    --shadow-sm: 0 1px 2px rgba(16, 28, 46, 0.05), 0 1px 3px rgba(16, 28, 46, 0.04);
+    --shadow-md: 0 4px 14px rgba(16, 28, 46, 0.07);
+    --focus-ring: 0 0 0 3px rgba(53, 102, 160, 0.24);
 }
 
 body {
@@ -108,13 +108,13 @@ textarea {
 
 .btn-primary {
     background: var(--color-brand);
-    box-shadow: 0 1px 2px rgba(10, 65, 67, 0.2);
+    box-shadow: 0 1px 2px rgba(22, 58, 97, 0.2);
     color: white;
 }
 
 .btn-primary:hover {
     background: var(--color-brand-strong);
-    box-shadow: 0 6px 14px rgba(15, 92, 94, 0.2);
+    box-shadow: 0 6px 14px rgba(30, 74, 122, 0.2);
 }
 
 .btn-primary:active,
@@ -194,7 +194,7 @@ textarea {
 }
 
 :focus-visible {
-    outline: 3px solid #3d8f91;
+    outline: 3px solid #4677b0;
     outline-offset: 2px;
 }
 

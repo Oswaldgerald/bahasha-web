@@ -56,9 +56,9 @@
 
 .section-icon {
     align-items: center;
-    background: #e7f2f1;
+    background: #e8eff8;
     border-radius: 7px;
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: flex;
     flex: 0 0 40px;
     height: 40px;
@@ -153,7 +153,7 @@
 }
 
 .setting-switch input[type="checkbox"] {
-    accent-color: #0f5c5e;
+    accent-color: #1e4a7a;
     flex: 0 0 auto;
     height: 18px;
     margin: 2px 0 0;
@@ -209,9 +209,9 @@
 
 .mobile-category-card {
     align-items: center;
-    background: var(--category-color, #0f5c5e);
+    background: var(--category-color, #1e4a7a);
     border-radius: 8px;
-    box-shadow: 0 12px 22px color-mix(in srgb, var(--category-color, #0f5c5e) 30%, transparent);
+    box-shadow: 0 12px 22px color-mix(in srgb, var(--category-color, #1e4a7a) 30%, transparent);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -267,7 +267,7 @@
 }
 
 .category-admin-card {
-    --category-color: #0f5c5e;
+    --category-color: #1e4a7a;
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 8px;

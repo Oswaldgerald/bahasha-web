@@ -17,8 +17,8 @@
 }
 
 .metric-card {
-    --metric-accent: #0f5c5e;
-    --metric-soft: #e7f2f1;
+    --metric-accent: #1e4a7a;
+    --metric-soft: #e8eff8;
     background: white;
     border: 1px solid #ebeaf0;
     border-radius: 8px;
@@ -69,7 +69,7 @@
 }
 
 .metric-value {
-    color: #123f41;
+    color: #17375c;
     display: block;
     font-size: 30px;
     line-height: 1.1;
@@ -165,9 +165,9 @@
 
 .period-heading-icon {
     align-items: center;
-    background: #e7f2f1;
+    background: #e8eff8;
     border-radius: 8px;
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: inline-flex;
     flex: 0 0 42px;
     height: 42px;
@@ -237,7 +237,7 @@
 .period-link,
 .section-link {
     align-items: center;
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: inline-flex;
     font-size: 13px;
     font-weight: 700;
@@ -337,7 +337,7 @@
 }
 
 .progress-bar {
-    background: #0f5c5e;
+    background: #1e4a7a;
     border-radius: inherit;
     height: 100%;
     width: 0;

@@ -67,7 +67,7 @@
 }
 
 .upload-summary-item strong {
-    color: #123f41;
+    color: #17375c;
     font-size: 22px;
 }
 
@@ -89,9 +89,9 @@
 
 .upload-section-heading > span {
     align-items: center;
-    background: #e7f2f1;
+    background: #e8eff8;
     border-radius: 7px;
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: inline-flex;
     flex: 0 0 40px;
     height: 40px;
@@ -169,7 +169,7 @@
 .contribution-file-dropzone:focus-within,
 .upload-file-field.is-dragging .contribution-file-dropzone {
     background: #f6f3ff;
-    border-color: #2b7476;
+    border-color: #305f92;
     box-shadow: 0 0 0 3px rgba(86, 60, 160, 0.1);
 }
 
@@ -187,7 +187,7 @@
     align-items: center;
     background: #ebe6fa;
     border-radius: 8px;
-    color: #165f61;
+    color: #234f80;
     display: inline-flex;
     height: 48px;
     justify-content: center;
@@ -218,7 +218,7 @@
 
 .contribution-file-browse {
     align-items: center;
-    background: #0f5c5e;
+    background: #1e4a7a;
     border-radius: 6px;
     color: white;
     display: inline-flex;

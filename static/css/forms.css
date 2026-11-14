@@ -49,7 +49,7 @@ textarea::placeholder {
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: #2f7d7f;
+    border-color: #3566a0;
     box-shadow: var(--focus-ring);
     outline: 0;
 }
@@ -97,8 +97,8 @@ textarea {
 
 .is-focused .choices__inner,
 .is-open .choices__inner {
-    border-color: #2f7d7f;
-    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.14);
+    border-color: #3566a0;
+    box-shadow: 0 0 0 3px rgba(53, 102, 160, 0.14);
 }
 
 .is-open .choices__inner {
@@ -121,7 +121,7 @@ textarea {
 .choices__list--dropdown .choices__item--selectable.is-highlighted,
 .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
     background: #eeeafc;
-    color: #0f5c5e;
+    color: #1e4a7a;
 }
 
 .choices__input {
@@ -133,12 +133,12 @@ textarea {
 }
 
 .choices[data-type*="select-one"]::after {
-    border-color: #4d7778 transparent transparent;
+    border-color: #4d6680 transparent transparent;
     right: 16px;
 }
 
 .choices[data-type*="select-one"].is-open::after {
-    border-color: transparent transparent #4d7778;
+    border-color: transparent transparent #4d6680;
 }
 
 .choices.is-disabled .choices__inner {
@@ -300,7 +300,7 @@ textarea {
 }
 
 .form-toggle input:checked + .form-toggle-control {
-    background: #0f5c5e;
+    background: #1e4a7a;
 }
 
 .form-toggle input:checked + .form-toggle-control::after {
@@ -308,7 +308,7 @@ textarea {
 }
 
 .form-toggle input:focus-visible + .form-toggle-control {
-    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.2);
+    box-shadow: 0 0 0 3px rgba(53, 102, 160, 0.2);
 }
 
 .form-toggle-copy {

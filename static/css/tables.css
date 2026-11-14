@@ -146,8 +146,8 @@
 }
 
 .status-badge.is-info {
-    background: #e7f2f1;
-    color: #0f5c5e;
+    background: #e8eff8;
+    color: #1e4a7a;
 }
 
 .status-badge.is-neutral {
@@ -164,7 +164,7 @@
 }
 
 .status-text.info {
-    color: #0f5c5e;
+    color: #1e4a7a;
 }
 
 .status-text.danger {
@@ -184,11 +184,11 @@
 
 .icon-action {
     align-items: center;
-    background: #ecf5f4;
+    background: #edf3fa;
     border: 0;
     border-radius: 6px;
     box-sizing: border-box;
-    color: #0f5c5e;
+    color: #1e4a7a;
     cursor: pointer;
     display: inline-flex;
     flex: 0 0 32px;
@@ -220,7 +220,7 @@
 }
 
 .action-link {
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: inline-block;
     font-weight: 600;
     margin-left: 10px;
@@ -304,12 +304,12 @@
 .pagination-page:hover {
     background: #f2effa;
     border-color: #aaa0ca;
-    color: #0f5c5e;
+    color: #1e4a7a;
 }
 
 .pagination-page.is-current {
-    background: #0f5c5e;
-    border-color: #0f5c5e;
+    background: #1e4a7a;
+    border-color: #1e4a7a;
     color: white;
 }
 

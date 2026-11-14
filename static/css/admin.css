@@ -1,6 +1,6 @@
 :root {
-    --primary: #0f5c5e;
-    --secondary: #2a7375;
+    --primary: #1e4a7a;
+    --secondary: #2f5e91;
     --accent: #f2b84b;
     --primary-fg: #fff;
     --body-fg: #292631;
@@ -9,14 +9,14 @@
     --body-loud-color: #1f1c26;
     --header-color: #fff;
     --header-branding-color: #fff;
-    --header-bg: #0f5c5e;
+    --header-bg: #1e4a7a;
     --header-link-color: #fff;
     --breadcrumbs-fg: #5f586b;
-    --breadcrumbs-link-fg: #0f5c5e;
+    --breadcrumbs-link-fg: #1e4a7a;
     --breadcrumbs-bg: #fff;
-    --link-fg: #1c686a;
-    --link-hover-color: #0a4143;
-    --link-selected-fg: #0f5c5e;
+    --link-fg: #285688;
+    --link-hover-color: #163a61;
+    --link-selected-fg: #1e4a7a;
     --hairline-color: #e7e4ec;
     --border-color: #dcd8e4;
     --error-fg: #a52820;
@@ -24,18 +24,18 @@
     --message-warning-bg: #fff5dc;
     --message-error-bg: #fdeceb;
     --darkened-bg: #f7f6fa;
-    --selected-bg: #e7f2f1;
+    --selected-bg: #e8eff8;
     --selected-row: #f8f6fd;
     --button-fg: #fff;
-    --button-bg: #0f5c5e;
-    --button-hover-bg: #0a4143;
-    --default-button-bg: #0f5c5e;
-    --default-button-hover-bg: #0a4143;
+    --button-bg: #1e4a7a;
+    --button-hover-bg: #163a61;
+    --default-button-bg: #1e4a7a;
+    --default-button-hover-bg: #163a61;
     --delete-button-bg: #b42318;
     --delete-button-hover-bg: #8f1c13;
     --object-tools-fg: #fff;
-    --object-tools-bg: #0f5c5e;
-    --object-tools-hover-bg: #0a4143;
+    --object-tools-bg: #1e4a7a;
+    --object-tools-hover-bg: #163a61;
     --close-button-bg: #6f6878;
     --close-button-hover-bg: #554e5e;
     --font-family-primary: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -121,7 +121,7 @@ textarea {
     align-items: center;
     background: #fff;
     border-radius: 8px;
-    color: #0f5c5e;
+    color: #1e4a7a;
     display: inline-flex;
     height: 46px;
     justify-content: center;
@@ -202,7 +202,7 @@ textarea {
     align-items: center;
     background: #fff;
     border-radius: 7px;
-    color: #0f5c5e !important;
+    color: #1e4a7a !important;
     display: inline-flex;
     flex: 0 0 auto;
     font-size: 12px;
@@ -674,14 +674,14 @@ select[multiple] option:checked {
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: #2f7d7f;
-    box-shadow: 0 0 0 3px rgba(47, 125, 127, 0.16);
+    border-color: #3566a0;
+    box-shadow: 0 0 0 3px rgba(53, 102, 160, 0.16);
     outline: 0;
 }
 
 input[type="checkbox"],
 input[type="radio"] {
-    accent-color: #0f5c5e;
+    accent-color: #1e4a7a;
 }
 
 .help,

@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ui-dev",
+      "runtimeExecutable": "/usr/bin/env",
+      "runtimeArgs": [
+        "PYTHONPATH=/private/tmp/claude-501/-Users-gezward-Projects-Bahasha-bahasha-system/4ef732d1-31b4-41a1-bf34-ba23409788ea/scratchpad/devsettings",
+        "DJANGO_SETTINGS_MODULE=ui_dev_settings",
+        "venv/bin/python", "manage.py", "runserver", "127.0.0.1:8010"
+      ],
+      "port": 8010
+    }
+  ]
+}

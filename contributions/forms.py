@@ -2,6 +2,7 @@ from django import forms
 
 from categories.models import ContributionCategory
 from contribution_weeks.models import ContributionWeek
+from contribution_weeks.querysets import current_week_first
 from financial_years.models import FinancialYear
 
 from .models import Contribution
@@ -45,10 +46,12 @@ class ContributionFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         years = FinancialYear.objects.select_related("church").order_by("-year")
-        weeks = ContributionWeek.objects.select_related(
-            "church",
-            "financial_year",
-        ).order_by("-sunday_date")
+        weeks = current_week_first(
+            ContributionWeek.objects.select_related(
+                "church",
+                "financial_year",
+            )
+        )
         categories = ContributionCategory.objects.select_related("church").order_by(
             "display_order",
             "name",

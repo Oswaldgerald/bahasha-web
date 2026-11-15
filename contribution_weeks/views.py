@@ -1,13 +1,10 @@
-from datetime import timedelta
-
 from django.contrib import messages
-from django.db.models import Case, IntegerField, Value, When
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from contribution_weeks.models import ContributionWeek
+from contribution_weeks.querysets import current_week_first
 from web.forms import ContributionWeekForm
 from web.forms import GenerateWeeksForm
 from web.pagination import paginate_queryset
@@ -18,22 +15,8 @@ from web.access import finance_management_required, scope_queryset_to_church
 def contribution_week_list(request):
     """List contribution weeks with the current week ordered first."""
 
-    today = timezone.localdate()
-    current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-    weeks = ContributionWeek.objects.select_related(
-        "church", "financial_year"
-    ).annotate(
-        list_priority=Case(
-            When(is_active=True, then=Value(0)),
-            When(sunday_date=current_sunday, then=Value(1)),
-            default=Value(2),
-            output_field=IntegerField(),
-        )
-    ).order_by(
-        "list_priority",
-        "-sunday_date",
-        "-week_number",
-        "church__church_name",
+    weeks = current_week_first(
+        ContributionWeek.objects.select_related("church", "financial_year")
     )
     weeks = scope_queryset_to_church(weeks, request.user)
     weeks = paginate_queryset(request, weeks)

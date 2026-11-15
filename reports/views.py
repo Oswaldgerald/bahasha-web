@@ -7,6 +7,7 @@ from annual_targets.models import MemberAnnualTarget
 from categories.models import ContributionCategory
 from churches.models import Church
 from contribution_weeks.models import ContributionWeek
+from contribution_weeks.querysets import current_week_first
 from contributions.models import Contribution
 from financial_years.models import FinancialYear
 from members.models import Member
@@ -140,9 +141,9 @@ def weekly_collection_report(request):
 
     week_id = request.GET.get("week")
 
-    weeks = ContributionWeek.objects.select_related(
-        "church", "financial_year"
-    ).order_by("-sunday_date")
+    weeks = current_week_first(
+        ContributionWeek.objects.select_related("church", "financial_year")
+    )
     weeks = scope_queryset_to_church(weeks, request.user)
 
     selected_week = None

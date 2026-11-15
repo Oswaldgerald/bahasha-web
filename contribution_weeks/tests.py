@@ -8,6 +8,8 @@ from churches.models import Church
 from contribution_weeks.models import ContributionWeek
 from financial_years.models import FinancialYear
 from users.models import User
+from contributions.forms import ContributionFilterForm
+from web.forms import ContributionForm, ExcelUploadForm
 
 
 class ContributionWeekListTests(TestCase):
@@ -57,7 +59,7 @@ class ContributionWeekListTests(TestCase):
         )
         self.assertEqual(second_page.context["weeks"][0].week_number, 1)
 
-    @patch("contribution_weeks.views.timezone.localdate")
+    @patch("contribution_weeks.querysets.timezone.localdate")
     def test_current_calendar_week_precedes_future_weeks(self, localdate):
         localdate.return_value = date(2026, 10, 9)
         current_week = ContributionWeek.objects.create(
@@ -77,7 +79,7 @@ class ContributionWeekListTests(TestCase):
 
         self.assertEqual(response.context["weeks"][0], current_week)
 
-    @patch("contribution_weeks.views.timezone.localdate")
+    @patch("contribution_weeks.querysets.timezone.localdate")
     def test_explicitly_active_week_has_highest_priority(self, localdate):
         localdate.return_value = date(2026, 10, 9)
         active_week = ContributionWeek.objects.create(
@@ -97,3 +99,93 @@ class ContributionWeekListTests(TestCase):
         response = self.client.get(reverse("web_contribution_weeks"))
 
         self.assertEqual(response.context["weeks"][0], active_week)
+
+
+class ContributionWeekDropdownOrderingTests(TestCase):
+    def setUp(self):
+        self.church = Church.objects.create(
+            church_code="WEEK-DROPDOWN",
+            church_name="Dropdown Test Church",
+        )
+        self.user = User.objects.create_user(
+            username="dropdown-admin",
+            password="strong-test-password",
+            full_name="Dropdown Administrator",
+            phone_number="255700000042",
+            role="ADMIN",
+            church=self.church,
+        )
+        self.financial_year = FinancialYear.objects.create(
+            church=self.church,
+            year=2026,
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 12, 31),
+        )
+        self.active_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=30,
+            sunday_date=date(2026, 7, 26),
+            is_active=True,
+        )
+        self.current_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=40,
+            sunday_date=date(2026, 10, 4),
+        )
+        self.future_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=52,
+            sunday_date=date(2026, 12, 27),
+        )
+        self.past_week = ContributionWeek.objects.create(
+            church=self.church,
+            financial_year=self.financial_year,
+            week_number=20,
+            sunday_date=date(2026, 5, 17),
+        )
+        self.client.force_login(self.user)
+
+    @patch("contribution_weeks.querysets.timezone.localdate")
+    def test_all_contribution_week_form_choices_use_shared_ordering(self, localdate):
+        localdate.return_value = date(2026, 10, 9)
+
+        forms = [
+            ContributionForm(request_user=self.user),
+            ExcelUploadForm(request_user=self.user),
+            ContributionFilterForm(request_user=self.user),
+        ]
+
+        expected_ids = [
+            self.active_week.id,
+            self.current_week.id,
+            self.future_week.id,
+            self.past_week.id,
+        ]
+        for form in forms:
+            with self.subTest(form=form.__class__.__name__):
+                actual_ids = list(
+                    form.fields["contribution_week"].queryset.values_list(
+                        "id", flat=True
+                    )
+                )
+                self.assertEqual(actual_ids, expected_ids)
+
+    @patch("contribution_weeks.querysets.timezone.localdate")
+    def test_weekly_report_dropdown_uses_shared_ordering(self, localdate):
+        localdate.return_value = date(2026, 10, 9)
+
+        response = self.client.get(reverse("web_weekly_collection_report"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            list(response.context["weeks"].values_list("id", flat=True)),
+            [
+                self.active_week.id,
+                self.current_week.id,
+                self.future_week.id,
+                self.past_week.id,
+            ],
+        )

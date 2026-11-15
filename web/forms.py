@@ -3,6 +3,7 @@ from churches.models import Church
 from jumuiya.models import Jumuiya
 from financial_years.models import FinancialYear
 from contribution_weeks.models import ContributionWeek
+from contribution_weeks.querysets import current_week_first
 from annual_targets.models import MemberAnnualTarget
 from contributions.models import Contribution
 from excel_uploads.models import ExcelUpload
@@ -207,6 +208,12 @@ class ExcelUploadForm(forms.ModelForm):
 
 def scope_financial_form_fields(form, request_user):
     """Scope church, period, category, and member choices consistently."""
+
+    if "contribution_week" in form.fields:
+        week_field = form.fields["contribution_week"]
+        week_field.queryset = current_week_first(
+            week_field.queryset.select_related("church", "financial_year")
+        )
 
     if not request_user or request_user.is_superuser:
         return

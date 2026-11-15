@@ -260,6 +260,12 @@ class UserManagementTests(TestCase):
         self.assertContains(response, self.member.full_name)
         self.assertNotContains(response, self.other_user.full_name)
 
+    def test_user_list_renders_supported_password_reset_icon(self):
+        response = self.client.get(reverse("web_users"))
+
+        self.assertContains(response, 'data-lucide="key-round"')
+        self.assertNotContains(response, 'data-lucide="mail-key"')
+
     def test_user_filters_by_role_and_account_state(self):
         self.member.is_active = False
         self.member.save(update_fields=["is_active"])

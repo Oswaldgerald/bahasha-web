@@ -34,6 +34,7 @@ COPY docker/entrypoint.sh /entrypoint.sh
 COPY . .
 
 RUN mkdir -p /app/staticfiles /app/media \
+    && sed -i 's/\r$//' /entrypoint.sh \
     && chown -R django:django /app /entrypoint.sh \
     && chmod +x /entrypoint.sh
 

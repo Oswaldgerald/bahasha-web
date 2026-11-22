@@ -1,0 +1,8 @@
+* text=auto
+
+# Docker containers run Linux scripts, even when the repository is checked out on Windows.
+*.sh text eol=lf
+Dockerfile text eol=lf
+compose*.yml text eol=lf
+*.py text eol=lf
+
